@@ -742,7 +742,7 @@
 }
 .sheet-scroll {
   overflow: auto;
-  border-radius: 4px;
+  border-radius: 14px;
   box-shadow: 0 4px 26px #20252c0b;
   background: #e6e8ed;
   padding: 0;
@@ -750,7 +750,7 @@
 .sheet-export {
   width: 800px;
   max-width: none;
-  background: white;
+  background: transparent;
 }
 .preview-hint {
   text-align: center;
@@ -759,122 +759,137 @@
   margin-top: 18px;
 }
 .plan-sheet {
+  --sheet-ink: #0b0c10;
+  border-radius: 20px 20px 0 0;
   font-family: Vazirmatn, Arial, sans-serif;
-  color: #20252c;
+  color: #111216;
   background: #fff;
   width: 800px;
   overflow: hidden;
 }
 .sheet-head {
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #161a20;
+  gap: 24px;
+  background: var(--sheet-ink);
   color: white;
-  padding: 28px 30px;
-  border-bottom: 5px solid var(--accent);
+  padding: 18px 26px;
+  min-height: 128px;
+}
+.sheet-heading {
+  flex: 1;
+  min-width: 0;
 }
 .sheet-eyebrow {
-  color: #b4b8c0;
-  font-size: 10px;
+  display: block;
+  color: #b7bac2;
+  font-size: 9px;
+  margin-bottom: 4px;
 }
 .sheet-head h2 {
-  font-size: 27px;
-  margin: 9px 0 5px;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0 0 3px;
   overflow-wrap: anywhere;
-  max-width: 430px;
 }
 .sheet-head p {
-  font-size: 12px;
+  font-size: 11px;
   margin: 0;
-  color: #c7cbd2;
-  max-width: 430px;
+  color: #d0d2d8;
   overflow-wrap: anywhere;
 }
-/* Clip the original image in CSS so its central branding stays intact. */
+.sheet-head-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 9px;
+  font-size: 9px;
+  color: #c2c5cd;
+}
+.sheet-head-details strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+.sheet-head-details > span + span {
+  border-inline-start: 1px solid #555861;
+  padding-inline-start: 12px;
+}
 .exir-brand {
-  position: relative;
-  width: 260px;
-  height: 146px;
+  width: 235px;
+  aspect-ratio: 2;
   flex-shrink: 0;
-  overflow: hidden;
-  background: #050505;
-  border-radius: 6px;
 }
 .exir-brand img {
-  position: absolute;
-  width: 150%;
+  display: block;
+  width: 100%;
   height: auto;
-  max-width: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  image-rendering: auto;
 }
 .exir-brand-compact {
   width: 64px;
-  height: 36px;
-  border-radius: 2px;
-}
-.sheet-head > div:first-child {
-  min-width: 0;
-  padding-inline-end: 20px;
 }
 .sheet-meta {
   display: flex;
-  gap: 0;
-  margin: 0 26px;
-  padding: 17px 0;
-  border-bottom: 1px solid #ddd;
-  font-size: 10px;
-  color: #7a7e86;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 26px;
+  color: #6c7078;
+  font-size: 9px;
+  border-bottom: 1px solid #e9eaed;
 }
-.sheet-meta > span {
-  padding: 0 17px;
-  border-left: 1px solid #ddd;
-}
-.sheet-meta > span:first-child {
-  padding-right: 0;
-}
-.sheet-meta > span:last-child {
-  border: 0;
+.sheet-meta b {
+  font-weight: 600;
+  color: #292b32;
 }
 .sheet-days {
-  padding: 22px 26px;
+  padding: 18px 26px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  align-items: start;
+  gap: 14px 16px;
+  align-items: stretch;
 }
 .sheet-day {
-  border: 1px solid #282d34;
+  border: 1.3px solid #24252a;
   border-radius: 6px;
   overflow: hidden;
+  background: white;
 }
 .sheet-day h3 {
   display: flex;
-  background: #191d24;
+  background: var(--sheet-ink);
   color: white;
   margin: 0;
   align-items: stretch;
-  font-size: 13px;
+  min-height: 42px;
 }
 .sheet-day h3 > b {
   background: var(--accent);
-  padding: 14px;
-  font: 900 23px Arial;
+  padding: 10px 8px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+  flex: 0 0 94px;
   display: flex;
+  justify-content: center;
   align-items: center;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 .sheet-day h3 > span {
-  padding: 11px 12px;
-  overflow-wrap: anywhere;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  flex: 1;
   min-width: 0;
-}
-.sheet-day h3 small {
-  display: block;
-  font-size: 8px;
-  color: #c1c6ce;
-  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 .sheet-day table {
   border-collapse: collapse;
@@ -882,82 +897,111 @@
   table-layout: fixed;
 }
 .sheet-day th {
-  background: #f0f1f3;
+  background: #f1f2f4;
   text-align: right;
-  font-size: 8px;
-  padding: 9px 7px;
-  color: #6b7078;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 6px 8px;
+  color: #35373e;
+  border-bottom: 1px solid #d5d7dc;
 }
 .sheet-day th:first-child {
-  width: 56%;
+  width: 57%;
 }
 .sheet-day th:nth-child(2) {
-  width: 23%;
+  width: 24%;
   text-align: center;
 }
 .sheet-day th:last-child {
+  width: 19%;
   text-align: center;
-  width: 21%;
 }
 .sheet-day td {
-  border-bottom: 1px solid #e3e4e7;
-  padding: 10px 7px;
-  font-size: 9px;
+  border-bottom: 1px solid #dcdde1;
+  padding: 6px 7px;
+  font-size: 10.5px;
+  line-height: 1.5;
   overflow-wrap: anywhere;
+  vertical-align: middle;
 }
 .sheet-day tr:last-child td {
   border-bottom: 0;
 }
 .sheet-day td:first-child {
-  font-weight: 600;
+  font-weight: 700;
 }
 .sheet-day td:not(:first-child) {
   text-align: center;
-  font-size: 8px;
-  white-space: normal;
+  font-size: 10px;
+  font-weight: 400;
 }
 .sheet-day td small {
   display: block;
-  font-size: 7px;
-  color: #858b94;
-  margin: 4px 21px 0;
+  font-size: 8px;
+  font-weight: 400;
+  color: #7a7c84;
+  margin: 2px 22px 0 0;
+  line-height: 1.4;
 }
 .ex-number {
-  background: #242830;
+  background: #191a1e;
   color: white;
   border-radius: 50%;
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font: 8px Arial;
-  margin-left: 6px;
+  font: 10px Arial;
+  margin-left: 5px;
+  vertical-align: middle;
 }
 .superset {
-  background: #fff4f6;
+  background: #fffafb;
 }
 .superset .ex-number {
   background: var(--accent);
 }
-.sheet-schedule {
-  margin: 0 26px 20px;
-  border: 1px solid #282d34;
-  border-radius: 5px;
+.sheet-day .superset-label td {
+  background: #fdf0f2;
+  color: var(--accent);
+  border-top: 1px solid #e6cdd2;
+  border-bottom: 1px solid #e6cdd2;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 500;
+}
+.sheet-bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 0 26px 14px;
+  align-items: stretch;
+}
+.sheet-bottom.has-cardio {
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+}
+.sheet-schedule,
+.sheet-cardio {
+  min-width: 0;
+  border: 1.3px solid #24252a;
+  border-radius: 6px;
   overflow: hidden;
 }
-.sheet-schedule h3 {
-  background: #191d24;
-  color: #fff;
-  font-size: 10px;
-  padding: 8px 12px;
+.sheet-schedule h3,
+.sheet-cardio h3 {
+  background: var(--sheet-ink);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
   margin: 0;
 }
 .sheet-schedule > div {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  padding: 12px;
-  gap: 6px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  padding: 10px 9px;
+  gap: 4px;
 }
 .sheet-schedule span {
   text-align: center;
@@ -966,97 +1010,118 @@
 }
 .sheet-schedule b {
   display: block;
-  background: #eef0f3;
-  padding: 5px;
-  font-size: 9px;
+  background: #f0f1f3;
+  padding: 4px 1px;
+  font-size: 8px;
+  font-weight: 700;
   border-radius: 3px;
 }
 .sheet-schedule .training b {
   background: var(--accent);
-  color: #fff;
+  color: white;
 }
 .sheet-schedule small {
   display: block;
   font-size: 7px;
-  margin-top: 6px;
+  margin-top: 5px;
+  line-height: 1.6;
 }
-.sheet-notes {
-  margin: 0 26px 24px;
-  display: grid;
-  gap: 12px;
-}
-.sheet-notes p {
+.sheet-cardio p {
   font-size: 10px;
-  line-height: 1.9;
+  font-weight: 600;
+  line-height: 1.8;
+  padding: 12px 14px;
   margin: 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.sheet-notes {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 26px 16px;
+}
 .sheet-notes b {
-  display: block;
-  font-size: 10px;
   color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sheet-notes p {
+  font-size: 9px;
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .plan-sheet > footer {
-  border-top: 1px solid #ddd;
-  padding: 14px 26px;
+  border-top: 1px solid #d9dbe0;
+  padding: 12px 26px;
   display: flex;
   justify-content: space-between;
-  background: #f6f6f8;
-  color: #8b8d94;
+  gap: 16px;
+  background: #f4f4f6;
+  color: #777b83;
   font-size: 8px;
 }
 .plan-sheet > footer b {
   font: inherit;
-  font-weight: 700;
+  font-weight: 600;
+}
+.plan-sheet > footer b::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-inline-end: 7px;
 }
 .template-minimal .sheet-head {
-  background: white;
+  background: #f0f2f4;
   color: #242a30;
 }
 .template-minimal .sheet-head p,
-.template-minimal .sheet-eyebrow {
-  color: #7e848d;
+.template-minimal .sheet-eyebrow,
+.template-minimal .sheet-head-details {
+  color: #626976;
+}
+.template-minimal .exir-brand,
+.preview-minimal .exir-brand {
+  background: #0b0c10;
+  border-radius: 4px;
 }
 .template-minimal .sheet-day {
-  border-color: #d6dce0;
-  border-radius: 0;
+  border-color: #bfc5cd;
 }
 .template-minimal .sheet-day h3 {
-  background: #eff2f3;
+  background: #edf0f3;
   color: #282e36;
 }
-.template-minimal .sheet-day h3 small {
-  color: #787e88;
-}
 .template-minimal .sheet-day h3 > b {
-  background: white;
-  color: var(--accent);
+  color: white;
 }
-.template-minimal .sheet-schedule h3 {
-  background: #eef1f3;
+.template-minimal .sheet-schedule h3,
+.template-minimal .sheet-cardio h3 {
+  background: #edf0f3;
   color: #232b32;
 }
 .template-bold .sheet-head {
   background: var(--accent);
-  border-color: #191d24;
 }
+.template-bold .sheet-head-details strong,
 .template-bold .sheet-head p,
 .template-bold .sheet-eyebrow {
-  color: #fff;
+  color: white;
 }
 .template-bold .sheet-day h3 {
   background: var(--accent);
 }
 .template-bold .sheet-day h3 > b {
-  background: #191d24;
-}
-.template-bold .sheet-day h3 small {
-  color: #fff;
+  background: var(--sheet-ink);
 }
 .template-bold .sheet-day {
-  border: 2px solid #191d24;
-  border-radius: 0;
+  border-width: 2px;
 }
 .section-title {
   display: flex;

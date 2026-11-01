@@ -122,7 +122,7 @@ function App() {
     try {
       await document.fonts.ready;
       const url = await toPng(sheet.current, {
-        pixelRatio: 2,
+        pixelRatio: 3,
         backgroundColor: "#ffffff",
       });
       const a = document.createElement("a");
@@ -801,7 +801,7 @@ function App() {
                     <Settings2 size={15} />
                     پیش نمایش زنده
                   </span>
-                  <small>خروجی تصویر با کیفیت دو برابر</small>
+                  <small>خروجی تصویر با کیفیت سه برابر</small>
                 </div>
                 <SheetPreview sheetRef={sheet}>
                   <PlanSheet plan={draft} coach={coach} />

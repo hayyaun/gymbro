@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Plan } from "./model";
 import ExirBrand from "./ExirBrand";
 export const weekdays = [
@@ -9,6 +10,7 @@ export const weekdays = [
   "پنجشنبه",
   "جمعه",
 ];
+
 export default function PlanSheet({
   plan,
   coach,
@@ -23,28 +25,28 @@ export default function PlanSheet({
       dir="rtl"
     >
       <header className="sheet-head">
-        <div>
+        <div className="sheet-heading">
           <span className="sheet-eyebrow">برنامه اختصاصی تمرین</span>
           <h2>{coach || "نام مربی"}</h2>
           <p>{plan.title || "برنامه تمرینی شما"}</p>
+          <div className="sheet-head-details">
+            <strong>{plan.days.length} روز تمرین</strong>
+            <span>{plan.goal}</span>
+            <span>{plan.weeks} هفته</span>
+          </div>
         </div>
         <ExirBrand />
       </header>
       <div className="sheet-meta">
-        <span>{plan.goal}</span>
-        <span>{plan.days.length} جلسه در هفته</span>
-        <span>{plan.weeks} هفته</span>
-        <span>ورزشکار: {plan.athlete || "نام ورزشکار"}</span>
+        <b>ورزشکار: {plan.athlete || "نام ورزشکار"}</b>
+        <span>برنامه تمرینی اختصاصی · باشگاه اکسیر</span>
       </div>
       <div className="sheet-days">
         {plan.days.map((day, i) => (
           <section className="sheet-day" key={day.id}>
             <h3>
-              <b>{String(i + 1).padStart(2, "0")}</b>
-              <span>
-                {day.name}
-                <small>{day.focus}</small>
-              </span>
+              <b>{day.name || `روز ${i + 1}`}</b>
+              <span>{day.focus || "جلسه تمرینی"}</span>
             </h3>
             <table>
               <thead>
@@ -56,51 +58,56 @@ export default function PlanSheet({
               </thead>
               <tbody>
                 {day.exercises.map((ex, j) => (
-                  <tr key={ex.id} className={ex.group ? "superset" : ""}>
-                    <td>
-                      <span className="ex-number">{ex.group || j + 1}</span>
-                      {ex.name || "نام حرکت"}
-                      {ex.note && <small>{ex.note}</small>}
-                    </td>
-                    <td dir="ltr">
-                      {ex.sets} × {ex.reps}
-                    </td>
-                    <td>{ex.rest} ثانیه</td>
-                  </tr>
+                  <Fragment key={ex.id}>
+                    {ex.group && day.exercises[j - 1]?.group !== ex.group && (
+                      <tr className="superset-label">
+                        <td colSpan={3}>سوپرست {ex.group}</td>
+                      </tr>
+                    )}
+                    <tr className={ex.group ? "superset" : ""}>
+                      <td>
+                        <span className="ex-number">{j + 1}</span>
+                        {ex.name || "نام حرکت"}
+                        {ex.note && <small>{ex.note}</small>}
+                      </td>
+                      <td dir="ltr">
+                        {ex.sets} × {ex.reps}
+                      </td>
+                      <td>{ex.rest} ثانیه</td>
+                    </tr>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
           </section>
         ))}
       </div>
-      <section className="sheet-schedule">
-        <h3>تقویم هفتگی</h3>
-        <div>
-          {weekdays.map((day, i) => (
-            <span
-              key={day}
-              className={plan.schedule[i] !== "استراحت" ? "training" : ""}
-            >
-              <b>{day}</b>
-              <small>{plan.schedule[i]}</small>
-            </span>
-          ))}
-        </div>
-      </section>
-      {(plan.cardio || plan.notes) && (
+      <div className={`sheet-bottom${plan.cardio ? " has-cardio" : ""}`}>
+        <section className="sheet-schedule">
+          <h3>تقویم هفتگی</h3>
+          <div>
+            {weekdays.map((day, i) => (
+              <span
+                key={day}
+                className={plan.schedule[i] !== "استراحت" ? "training" : ""}
+              >
+                <b>{day}</b>
+                <small>{plan.schedule[i]}</small>
+              </span>
+            ))}
+          </div>
+        </section>
+        {plan.cardio && (
+          <section className="sheet-cardio">
+            <h3>تمرین هوازی</h3>
+            <p>{plan.cardio}</p>
+          </section>
+        )}
+      </div>
+      {plan.notes && (
         <div className="sheet-notes">
-          {plan.cardio && (
-            <p>
-              <b>هوازی</b>
-              {plan.cardio}
-            </p>
-          )}
-          {plan.notes && (
-            <p>
-              <b>یادداشت مربی</b>
-              {plan.notes}
-            </p>
-          )}
+          <b>یادداشت مربی</b>
+          <p>{plan.notes}</p>
         </div>
       )}
       <footer>
