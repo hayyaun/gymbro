@@ -46,6 +46,6 @@ Implementation references: [Vite deployment](https://vite.dev/guide/static-deplo
 - Supported browsers show an in-app install button when installation is available. You can also use the browser's **Install app** menu; on iPhone/iPad use **Share → Add to Home Screen**.
 - Updates prompt before reloading. During unsaved edits, the existing save/discard/cancel dialog runs first.
 - Service workers are disabled in Vite development. To test the production PWA, run `npm run build` then `npm run preview` and open `/gymbro/`.
-- `public/app-icon.svg` and the PNG install icons share the existing Lucide dumbbell, rotated to horizontal. Regenerate them with `npm run icons`.
+- `public/app-icon.svg` and the PNG install icons preserve the original angled Lucide dumbbell inside an upright square. Regenerate them with `npm run icons`.
 
 PWA implementation: [Vite PWA React integration](https://vite-pwa-org.netlify.app/frameworks/react).

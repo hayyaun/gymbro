@@ -899,12 +899,7 @@ function Brand() {
   return (
     <div className="brand" dir="ltr">
       <span className="brand-icon">
-        <img
-          src={`${import.meta.env.BASE_URL}app-icon.svg`}
-          alt=""
-          width="35"
-          height="35"
-        />
+        <Dumbbell size={22} />
       </span>
       GYM<b>BRO</b>
       <i>.</i>
