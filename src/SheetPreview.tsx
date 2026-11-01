@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import "overlayscrollbars/overlayscrollbars.css";
 
 // Scale the preview's parent only, so PNG capture retains the sheet's 800px width.
 export default function SheetPreview({
@@ -23,7 +25,19 @@ export default function SheetPreview({
     return () => observer.disconnect();
   }, [sheetRef]);
   return (
-    <div className="sheet-scroll">
+    <OverlayScrollbarsComponent
+      className="sheet-scroll"
+      options={{
+        overflow: { x: "hidden", y: "scroll" },
+        scrollbars: {
+          theme: "os-theme-gymbro",
+          autoHide: "leave",
+          autoHideDelay: 650,
+          autoHideSuspend: true,
+        },
+      }}
+      defer
+    >
       <div
         ref={frame}
         className="preview-frame"
@@ -38,6 +52,6 @@ export default function SheetPreview({
           </div>
         </div>
       </div>
-    </div>
+    </OverlayScrollbarsComponent>
   );
 }

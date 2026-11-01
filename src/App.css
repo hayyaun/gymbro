@@ -745,7 +745,7 @@
   border-radius: 4px;
   box-shadow: 0 4px 26px #20252c0b;
   background: #e6e8ed;
-  padding: 18px;
+  padding: 0;
 }
 .sheet-export {
   width: 800px;
@@ -1602,9 +1602,6 @@
   .editor-layout {
     gap: 20px;
   }
-  .sheet-scroll {
-    padding: 10px;
-  }
   .login {
     grid-template-columns: 1fr;
   }
@@ -1649,4 +1646,18 @@
 .preview-bold .mini-head {
   background: #20252c;
   border-bottom-width: 6px;
+}
+
+/* Theme variables are the public OverlayScrollbars styling API. */
+.os-theme-gymbro {
+  --os-size: 9px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 4px;
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+  --os-handle-border-radius: 999px;
+  --os-handle-bg: rgb(112 124 143 / 26%);
+  --os-handle-bg-hover: rgb(112 124 143 / 44%);
+  --os-handle-bg-active: rgb(112 124 143 / 58%);
 }
