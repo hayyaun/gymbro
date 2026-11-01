@@ -23,6 +23,7 @@ import type { Day, Plan } from "./model";
 import PlanSheet, { weekdays } from "./PlanSheet";
 import SheetPreview from "./SheetPreview";
 import ExirBrand from "./ExirBrand";
+import PwaControls from "./PwaControls";
 import "./App.css";
 
 const templates = [
@@ -139,6 +140,7 @@ function App() {
   if (!coach)
     return (
       <div className="login" dir="rtl">
+        <PwaControls onUpdateRequested={(action) => action()} />
         <div className="login-art">
           <Dumbbell size={64} />
           <h1>
@@ -192,6 +194,7 @@ function App() {
   );
   return (
     <div className="app" dir="rtl">
+      <PwaControls onUpdateRequested={navigate} />
       <aside className="sidebar">
         <Brand />
         <span className="workspace-label">فضای کار مربی</span>
@@ -896,7 +899,12 @@ function Brand() {
   return (
     <div className="brand" dir="ltr">
       <span className="brand-icon">
-        <Dumbbell size={22} />
+        <img
+          src={`${import.meta.env.BASE_URL}app-icon.svg`}
+          alt=""
+          width="35"
+          height="35"
+        />
       </span>
       GYM<b>BRO</b>
       <i>.</i>

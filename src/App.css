@@ -41,7 +41,6 @@
   width: 35px;
   height: 35px;
   margin-right: 10px;
-  transform: rotate(-8deg);
 }
 .workspace-label {
   font-size: 10px;
@@ -1735,4 +1734,39 @@
   --os-handle-bg: rgb(112 124 143 / 26%);
   --os-handle-bg-hover: rgb(112 124 143 / 44%);
   --os-handle-bg-active: rgb(112 124 143 / 58%);
+}
+
+.brand-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pwa-controls {
+  position: fixed;
+  z-index: 40;
+  bottom: 20px;
+  left: 20px;
+  width: 330px;
+  max-width: calc(100vw - 40px);
+  padding: 20px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 8px 32px #20252c20;
+}
+.pwa-controls > b {
+  display: block;
+  padding-left: 20px;
+  font-size: 13px;
+}
+.pwa-controls p {
+  margin: 10px 0 14px;
+  font-size: 11px;
+  color: #777e88;
+  line-height: 1.9;
+}
+.pwa-dismiss {
+  position: absolute;
+  left: 8px;
+  top: 8px;
 }
