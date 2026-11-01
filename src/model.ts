@@ -60,7 +60,7 @@ const demo = (): Plan => ({
   ...newPlan(),
   id: "sample",
   title: "قدرت، در هر تکرار",
-  athlete: "ایمان قهرمانی",
+  athlete: "ورزشکار نمونه",
   notes:
     "قبل از شروع تمرین ۱۰ دقیقه گرم کنید. وزنه را با حفظ فرم صحیح افزایش دهید.",
   cardio: "۲ تا ۳ جلسه در هفته · ۲۰ دقیقه با شدت متوسط",
@@ -148,6 +148,21 @@ export const useStore = create<Store>()(
       remove: (id) =>
         set((s) => ({ plans: s.plans.filter((p) => p.id !== id) })),
     }),
-    { name: "gymbro-v1" },
+    {
+      name: "gymbro-v1",
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<Store> | undefined;
+        return {
+          ...current,
+          ...saved,
+          // Replace only the original sample name; preserve customized plans.
+          plans: (saved?.plans ?? current.plans).map((plan) =>
+            plan.id === "sample" && plan.athlete === "ایمان قهرمانی"
+              ? { ...plan, athlete: "ورزشکار نمونه" }
+              : plan,
+          ),
+        };
+      },
+    },
   ),
 );
