@@ -22,6 +22,7 @@ import { exercise, newPlan, uid, useStore } from "./model";
 import type { Day, Plan } from "./model";
 import PlanSheet, { weekdays } from "./PlanSheet";
 import SheetPreview from "./SheetPreview";
+import ExirBrand from "./ExirBrand";
 import "./App.css";
 
 const templates = [
@@ -343,7 +344,7 @@ function App() {
                       style={{ "--accent": p.color } as React.CSSProperties}
                     >
                       <div className="mini-head">
-                        <b>GYMBRO.</b>
+                        <ExirBrand compact />
                         <span>{p.athlete}</span>
                       </div>
                       <div className="mini-days">

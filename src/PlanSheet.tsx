@@ -1,4 +1,5 @@
 import type { Plan } from "./model";
+import ExirBrand from "./ExirBrand";
 export const weekdays = [
   "شنبه",
   "یکشنبه",
@@ -24,19 +25,16 @@ export default function PlanSheet({
       <header className="sheet-head">
         <div>
           <span className="sheet-eyebrow">برنامه اختصاصی تمرین</span>
-          <h2>{plan.athlete || "نام ورزشکار"}</h2>
+          <h2>{coach || "نام مربی"}</h2>
           <p>{plan.title || "برنامه تمرینی شما"}</p>
         </div>
-        <div className="sheet-brand" dir="ltr">
-          GYM<span>BRO.</span>
-          <small>BUILT FOR PROGRESS</small>
-        </div>
+        <ExirBrand />
       </header>
       <div className="sheet-meta">
         <span>{plan.goal}</span>
         <span>{plan.days.length} جلسه در هفته</span>
         <span>{plan.weeks} هفته</span>
-        <span>مربی: {coach || "مربی"}</span>
+        <span>ورزشکار: {plan.athlete || "نام ورزشکار"}</span>
       </div>
       <div className="sheet-days">
         {plan.days.map((day, i) => (
@@ -106,8 +104,8 @@ export default function PlanSheet({
         </div>
       )}
       <footer>
-        <span>طراحی شده برای پیشرفت شما</span>
-        <b dir="ltr">GYMBRO / COACHING STUDIO</b>
+        <b>باشگاه اکسیر · EXIR GYM</b>
+        <span>مربی: {coach || "نام مربی"}</span>
       </footer>
     </article>
   );

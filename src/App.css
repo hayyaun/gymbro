@@ -791,19 +791,33 @@
   max-width: 430px;
   overflow-wrap: anywhere;
 }
-.sheet-brand {
-  font: 900 32px Arial;
-  letter-spacing: -1px;
+/* Clip the original image in CSS so its central branding stays intact. */
+.exir-brand {
+  position: relative;
+  width: 260px;
+  height: 146px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #050505;
+  border-radius: 6px;
 }
-.sheet-brand span {
-  color: var(--accent);
+.exir-brand img {
+  position: absolute;
+  width: 150%;
+  height: auto;
+  max-width: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
-.sheet-brand small {
-  display: block;
-  font: 7px Arial;
-  letter-spacing: 2.5px;
-  margin-top: 9px;
-  color: #b8bcc3;
+.exir-brand-compact {
+  width: 64px;
+  height: 36px;
+  border-radius: 2px;
+}
+.sheet-head > div:first-child {
+  min-width: 0;
+  padding-inline-end: 20px;
 }
 .sheet-meta {
   display: flex;
@@ -993,8 +1007,8 @@
   font-size: 8px;
 }
 .plan-sheet > footer b {
-  font: 7px Arial;
-  letter-spacing: 1px;
+  font: inherit;
+  font-weight: 700;
 }
 .template-minimal .sheet-head {
   background: white;
@@ -1003,9 +1017,6 @@
 .template-minimal .sheet-head p,
 .template-minimal .sheet-eyebrow {
   color: #7e848d;
-}
-.template-minimal .sheet-brand {
-  color: #232b32;
 }
 .template-minimal .sheet-day {
   border-color: #d6dce0;
@@ -1029,9 +1040,6 @@
 .template-bold .sheet-head {
   background: var(--accent);
   border-color: #191d24;
-}
-.template-bold .sheet-brand span {
-  color: #191d24;
 }
 .template-bold .sheet-head p,
 .template-bold .sheet-eyebrow {

@@ -60,7 +60,7 @@ const demo = (): Plan => ({
   ...newPlan(),
   id: "sample",
   title: "قدرت، در هر تکرار",
-  athlete: "ورزشکار نمونه",
+  athlete: "آرمان رضایی",
   notes:
     "قبل از شروع تمرین ۱۰ دقیقه گرم کنید. وزنه را با حفظ فرم صحیح افزایش دهید.",
   cardio: "۲ تا ۳ جلسه در هفته · ۲۰ دقیقه با شدت متوسط",
@@ -155,10 +155,12 @@ export const useStore = create<Store>()(
         return {
           ...current,
           ...saved,
-          // Replace only the original sample name; preserve customized plans.
+          // Remove the original reference athlete from saved plans and copies.
+          coach: saved?.coach === "ایمان قهرمانی" ? "مربی" : (saved?.coach ?? current.coach),
           plans: (saved?.plans ?? current.plans).map((plan) =>
-            plan.id === "sample" && plan.athlete === "ایمان قهرمانی"
-              ? { ...plan, athlete: "ورزشکار نمونه" }
+            plan.athlete === "ایمان قهرمانی" ||
+            (plan.id === "sample" && plan.athlete === "ورزشکار نمونه")
+              ? { ...plan, athlete: "آرمان رضایی" }
               : plan,
           ),
         };
