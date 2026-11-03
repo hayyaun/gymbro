@@ -466,14 +466,14 @@
   background: #100c16;
   border-color: #a967ed;
 }
-.forge-mode-options,
-.forge-palette-options {
+.appearance-modes,
+.appearance-palettes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-.forge-mode-options button,
-.forge-palette-options button {
+.appearance-modes button,
+.appearance-palettes button {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -485,27 +485,27 @@
   font-weight: 600;
   min-height: 45px;
 }
-.forge-mode-options button.chosen,
-.forge-palette-options button.chosen {
+.appearance-modes button.chosen,
+.appearance-palettes button.chosen {
   border-color: #d92f44;
   background: #fff8f9;
 }
-.forge-mode-options button > svg:last-child {
+.appearance-modes button > svg:last-child {
   margin-inline-start: auto;
   opacity: 0;
   color: #d92f44;
 }
-.forge-mode-options button.chosen > svg:last-child {
+.appearance-modes button.chosen > svg:last-child {
   opacity: 1;
 }
-.forge-palette-options i {
+.appearance-palettes i {
   width: 22px;
   height: 22px;
   border-radius: 50%;
   display: grid;
   place-items: center;
 }
-.forge-design-note {
+.appearance-note {
   font-size: 10px;
   line-height: 1.9;
   color: #9298a2;

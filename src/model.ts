@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ForgeAccent, ForgeMode } from "./forgeTheme";
+import type { ProtocolAccent, ProtocolMode } from "./protocolTheme";
 
 export type Exercise = {
   id: string;
@@ -27,6 +28,8 @@ export type Plan = {
   color: string;
   forgeAccent?: ForgeAccent;
   forgeMode?: ForgeMode;
+  protocolAccent?: ProtocolAccent;
+  protocolMode?: ProtocolMode;
   notes: string;
   cardio: string;
   schedule: string[];

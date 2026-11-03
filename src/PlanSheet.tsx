@@ -2,6 +2,7 @@ import type { Plan } from "./model";
 import ExirBrand from "./ExirBrand";
 import ForgeSheet from "./ForgeSheet";
 import WorkoutDays from "./WorkoutDays";
+import ProtocolSheet from "./ProtocolSheet";
 export const weekdays = [
   "شنبه",
   "یکشنبه",
@@ -21,6 +22,9 @@ export default function PlanSheet({
 }) {
   if (plan.template === "forge") {
     return <ForgeSheet plan={plan} coach={coach} weekdays={weekdays} />;
+  }
+  if (plan.template === "protocol") {
+    return <ProtocolSheet plan={plan} coach={coach} weekdays={weekdays} />;
   }
   return (
     <article

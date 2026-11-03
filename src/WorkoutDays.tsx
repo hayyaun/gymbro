@@ -7,7 +7,7 @@ export default function WorkoutDays({ plan }: { plan: Plan }) {
       {plan.days.map((day, i) => (
         <section className="sheet-day" key={day.id}>
           <h3>
-            <b>{day.name || `روز ${i + 1}`}</b>
+            <b data-day-number={String(i + 1).padStart(2, "0")}>{day.name || `روز ${i + 1}`}</b>
             <span>{day.focus || "جلسه تمرینی"}</span>
           </h3>
           <table>
