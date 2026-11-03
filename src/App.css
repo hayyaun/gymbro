@@ -702,11 +702,48 @@
   gap: 12px;
   margin-bottom: 17px;
 }
-.schedule-editor {
+.weekday-picker {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
 }
+.weekday-picker button {
+  border: 1px solid #dfe2e7;
+  border-radius: 8px;
+  padding: 12px 6px;
+  background: white;
+  text-align: center;
+  min-height: 58px;
+}
+.weekday-picker button[aria-pressed="true"] {
+  border-color: #dc3045;
+  background: #fff0f3;
+  color: #b91f34;
+}
+.weekday-picker b, .weekday-picker small { display: block; }
+.weekday-picker b { font-size: 12px; }
+.weekday-picker small { font-size: 10px; margin-top: 4px; }
+.panel-content .week-help, .panel-content .week-warning {
+  font-size: 11px;
+  line-height: 1.9;
+  margin-bottom: 14px;
+}
+.panel-content .week-warning { color: #99621d; margin-top: 12px; }
+.session-drag-handle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  min-height: 44px;
+  flex-shrink: 0;
+  background: transparent;
+  color: #818a99;
+  cursor: grab;
+  touch-action: none;
+}
+.session-drag-handle:active { cursor: grabbing; }
+.day-editor.dragging { box-shadow: 0 8px 24px #20252c30; border-color: #dc3045; }
+.day-position { font-size: 12px; display: grid; gap: 8px; align-content: start; }
+.day-position b { padding: 10px 0; }
 .preview-panel {
   min-width: 0;
 }

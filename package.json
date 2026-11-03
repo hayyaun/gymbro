@@ -11,6 +11,8 @@
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
+    "@dnd-kit/dom": "^0.5.3",
+    "@dnd-kit/react": "^0.5.3",
     "@fontsource/vazirmatn": "^5.3.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^1.66.0",

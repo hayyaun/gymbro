@@ -31,6 +31,8 @@ import { forgePalettes, forgeVariables } from "./forgeTheme";
 import type { ForgeAccent } from "./forgeTheme";
 import { protocolVariables } from "./protocolTheme";
 import ProtocolDesignControls from "./ProtocolDesignControls";
+import { activeWeek, assignTrainingWeek, resizeTrainingWeek } from "./trainingWeek";
+import { SortableSession, SortableSessions } from "./SortableSessions";
 import "./App.css";
 
 const templates = [
@@ -50,6 +52,7 @@ function App() {
   const [notice, setNotice] = useState("");
   const [pending, setPending] = useState<(() => void) | null>(null);
   const [deleting, setDeleting] = useState<Plan | null>(null);
+  const [pendingWeek, setPendingWeek] = useState<boolean[] | null>(null);
   const [exporting, setExporting] = useState(false);
   const [loginName, setLoginName] = useState("");
   const [storageError, setStorageError] = useState("");
@@ -88,6 +91,25 @@ function App() {
     patch({
       days: draft.days.map((d) => (d.id === id ? { ...d, ...data } : d)),
     });
+  const applyWeek = (selected: boolean[]) => {
+    if (!draft) return;
+    patch(resizeTrainingWeek(draft, selected, () => ({ id: uid(), name: "", focus: "", exercises: [exercise()] })));
+    setPendingWeek(null);
+  };
+  const toggleWeekday = (index: number) => {
+    if (!draft) return;
+    const selected = activeWeek(draft);
+    selected[index] = !selected[index];
+    if (selected.filter(Boolean).length < draft.days.length) setPendingWeek(selected);
+    else applyWeek(selected);
+  };
+  const moveSession = (from: number, to: number) => {
+    if (!draft) return;
+    const days = [...draft.days];
+    const [moved] = days.splice(from, 1);
+    days.splice(to, 0, moved);
+    patch(assignTrainingWeek(days, activeWeek(draft)));
+  };
   const persistPlan = () => {
     if (!draft) return false;
     if (
@@ -96,6 +118,7 @@ function App() {
       !draft.weeks ||
       Number(draft.weeks) < 1 ||
       Number(draft.weeks) > 52 ||
+      draft.days.length === 0 ||
       draft.days.some(
         (d) =>
           !d.name.trim() ||
@@ -109,7 +132,7 @@ function App() {
           ),
       )
     ) {
-      setNotice("نام برنامه، ورزشکار، مدت و مشخصات حرکت ها را کامل کنید");
+      setNotice("نام برنامه، ورزشکار، مدت، روزهای تمرین و مشخصات حرکت ها را کامل کنید");
       return false;
     }
     const next = { ...draft, updatedAt: new Date().toISOString() };
@@ -585,29 +608,17 @@ function App() {
                         placeholder="نکات مهم برای ورزشکار..."
                       />
                     </label>
-                    <h3>تقویم هفتگی</h3>
-                    <div className="schedule-editor">
+                    <h3>روزهای تمرین در هفته</h3>
+                    <p className="week-help">روزهای تمرین را انتخاب کنید. از شنبه به بعد، اولین روز انتخاب شده جلسه اول است و برای هر روز یک جلسه ساخته می شود.</p>
+                    <div className="weekday-picker" role="group" aria-label="روزهای تمرین">
                       {weekdays.map((d, i) => (
-                        <label key={d}>
-                          {d}
-                          <select
-                            value={draft.schedule[i]}
-                            onChange={(e) =>
-                              patch({
-                                schedule: draft.schedule.map((v, j) =>
-                                  j === i ? e.target.value : v,
-                                ),
-                              })
-                            }
-                          >
-                            <option>استراحت</option>
-                            {draft.days.map((day) => (
-                              <option key={day.id}>{day.name}</option>
-                            ))}
-                          </select>
-                        </label>
+                        <button key={d} type="button" aria-pressed={activeWeek(draft)[i]} onClick={() => toggleWeekday(i)}>
+                          <b>{d}</b>
+                          <small>{activeWeek(draft)[i] ? `جلسه ${fa(activeWeek(draft).slice(0, i + 1).filter(Boolean).length)}` : "استراحت"}</small>
+                        </button>
                       ))}
                     </div>
+                    <p className="week-warning">کاهش تعداد روزهای انتخاب شده باعث حذف جلسه ها از انتهای برنامه و حرکت های داخل آن ها می شود. قبل از حذف از شما تایید می گیریم.</p>
                   </div>
                 )}
                 {tab === "workout" && (
@@ -616,9 +627,12 @@ function App() {
                       <h2>جلسه های تمرینی</h2>
                       <span>{fa(draft.days.length)} روز</span>
                     </div>
+                    <p className="week-help">برای جابجایی، دستگیره شش نقطه ای جلسه را نگه دارید و بکشید. ترتیب جلسه ها در تقویم هم به روز می شود.</p>
+                    <SortableSessions onMove={moveSession}>
                     {draft.days.map((day, i) => (
-                      <section className="day-editor" key={day.id}>
+                      <SortableSession id={day.id} index={i} key={day.id}>{(handle) => <>
                         <div className="day-editor-heading">
+                          {handle}
                           <button
                             className="day-toggle"
                             aria-expanded={!collapsedDays.has(day.id)}
@@ -637,41 +651,10 @@ function App() {
                               <small>{day.focus || "جلسه تمرینی"} · {fa(day.exercises.length)} حرکت</small>
                             </span>
                           </button>
-                          <button
-                            className="icon-button"
-                            disabled={draft.days.length === 1}
-                            aria-label={`حذف ${day.name}`}
-                            onClick={() =>
-                              patch({
-                                days: draft.days.filter((d) => d.id !== day.id),
-                                schedule: draft.schedule.map((s) =>
-                                  s === day.name ? "استراحت" : s,
-                                ),
-                              })
-                            }
-                          >
-                            <Trash2 size={16} />
-                          </button>
                         </div>
                         <div id={`day-fields-${day.id}`} className="day-editor-fields" hidden={collapsedDays.has(day.id)}>
                         <div className="two-fields">
-                          <label>
-                            نام روز
-                            <input
-                              value={day.name}
-                              onChange={(e) => {
-                                const name = e.target.value;
-                                patch({
-                                  days: draft.days.map((d) =>
-                                    d.id === day.id ? { ...d, name } : d,
-                                  ),
-                                  schedule: draft.schedule.map((s) =>
-                                    s === day.name ? name : s,
-                                  ),
-                                });
-                              }}
-                            />
-                          </label>
+                          <div className="day-position"><span>روز تمرین</span><b>{weekdays.filter((_, index) => activeWeek(draft)[index])[i] || day.name}</b></div>
                           <label>
                             تمرکز جلسه
                             <input
@@ -770,26 +753,15 @@ function App() {
                           افزودن حرکت
                         </button>
                         </div>
-                      </section>
+                      </>}</SortableSession>
                     ))}
+                    </SortableSessions>
                     <button
                       className="secondary full"
-                      onClick={() =>
-                        patch({
-                          days: [
-                            ...draft.days,
-                            {
-                              id: uid(),
-                              name: `روز ${fa(draft.days.length + 1)}`,
-                              focus: "",
-                              exercises: [exercise()],
-                            },
-                          ],
-                        })
-                      }
+                      onClick={() => setTab("details")}
                     >
-                      <Plus size={17} />
-                      افزودن جلسه تمرینی
+                      <Settings2 size={17} />
+                      انتخاب روزهای تمرین از مشخصات
                     </button>
                   </div>
                 )}
@@ -900,6 +872,17 @@ function App() {
           <button className="primary" onClick={() => setStorageError("")}>
             متوجه شدم
           </button>
+        </Modal>
+      )}
+      {pendingWeek && draft && (
+        <Modal title="حذف جلسه ها از انتهای برنامه" onClose={() => setPendingWeek(null)}>
+          <p>با این تغییر، {fa(draft.days.length - pendingWeek.filter(Boolean).length)} جلسه آخر و تمام حرکت های داخل آن ها حذف می شوند:</p>
+          <ul>{draft.days.slice(pendingWeek.filter(Boolean).length).map((day) => <li key={day.id}>{day.name} · {fa(day.exercises.length)} حرکت</li>)}</ul>
+          <p>جلسه های باقی مانده از ابتدای هفته مرتب می شوند. با ذخیره برنامه، این حذف ثبت می شود.</p>
+          <div className="modal-actions">
+            <button className="danger" onClick={() => applyWeek(pendingWeek)}>حذف جلسه های آخر و اعمال تغییر</button>
+            <button className="secondary" onClick={() => setPendingWeek(null)}>انصراف</button>
+          </div>
         </Modal>
       )}
       {pending && (

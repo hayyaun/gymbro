@@ -57,9 +57,7 @@ export const newPlan = (): Plan => ({
   notes: "",
   cardio: "",
   schedule: Array(7).fill("استراحت"),
-  days: [
-    { id: uid(), name: "روز اول", focus: "بالاتنه", exercises: [exercise()] },
-  ],
+  days: [],
   updatedAt: new Date().toISOString(),
 });
 const demo = (): Plan => ({
