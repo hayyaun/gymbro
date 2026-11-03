@@ -1087,6 +1087,46 @@
 .day-editor .section-title {
   font-size: 12px;
 }
+.day-editor-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.day-toggle {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 9px;
+  padding: 3px 0;
+  background: transparent;
+  text-align: right;
+}
+.day-toggle > svg {
+  color: #9298a2;
+  transition: transform 150ms;
+}
+.day-toggle[aria-expanded="false"] > svg {
+  transform: rotate(90deg);
+}
+.day-toggle > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.day-toggle b {
+  display: block;
+  font-size: 12px;
+}
+.day-toggle small {
+  display: block;
+  margin-top: 4px;
+  color: #89909b;
+  font-size: 9px;
+  line-height: 1.7;
+}
+.day-editor-fields:not([hidden]) {
+  margin-top: 14px;
+}
 .day-editor input {
   font-size: 11px;
   padding: 8px;

@@ -15,6 +15,7 @@ npm run dev
 
 - Local coach profile and workout library with search and template filters.
 - Create, edit, duplicate and delete plans; configure sessions, exercises, supersets, weekly schedule, notes and cardio.
+- Collapse sessions while editing; the first session starts open, others start collapsed, and newly added sessions open automatically. This editor-only state does not change saved workout data or PNG output.
 - Three selectable layouts, Studio, Forge and Protocol, with custom accent colors and live preview. Saved plans using the retired Minimal or Bold layouts open as Studio with their workout content preserved.
 - Forge anime poster template with dark/light backgrounds and purple, orange, lime or yellow palettes. Existing sample sessions remain unchanged; the new appearance settings are saved per program.
 - Protocol industrial template with paper/dark backgrounds, red/orange/purple/cyan/green palettes and matching graphic patterns. Its labels and session counts use actual program data; barcode-like graphics are decorative. No additional image assets or network requests are required.

@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronDown,
   ChevronLeft,
   Copy,
   Download,
@@ -45,6 +46,7 @@ function App() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [tab, setTab] = useState("details");
+  const [collapsedDays, setCollapsedDays] = useState<Set<string>>(() => new Set());
   const [notice, setNotice] = useState("");
   const [pending, setPending] = useState<(() => void) | null>(null);
   const [deleting, setDeleting] = useState<Plan | null>(null);
@@ -76,6 +78,7 @@ function App() {
     setDraft(structuredClone(plan));
     setBaseline(fresh ? "" : JSON.stringify(plan));
     setTab("details");
+    setCollapsedDays(new Set(plan.days.slice(1).map((day) => day.id)));
     window.scrollTo({ top: 0 });
   };
   const patch = (data: Partial<Plan>) =>
@@ -615,8 +618,25 @@ function App() {
                     </div>
                     {draft.days.map((day, i) => (
                       <section className="day-editor" key={day.id}>
-                        <div className="section-title">
-                          <b>جلسه {fa(i + 1)}</b>
+                        <div className="day-editor-heading">
+                          <button
+                            className="day-toggle"
+                            aria-expanded={!collapsedDays.has(day.id)}
+                            aria-controls={`day-fields-${day.id}`}
+                            aria-label={`${collapsedDays.has(day.id) ? "باز کردن" : "جمع کردن"} ${day.name || `جلسه ${fa(i + 1)}`}`}
+                            onClick={() => setCollapsedDays((current) => {
+                              const next = new Set(current);
+                              if (next.has(day.id)) next.delete(day.id);
+                              else next.add(day.id);
+                              return next;
+                            })}
+                          >
+                            <ChevronDown size={18} />
+                            <span>
+                              <b>{day.name || `جلسه ${fa(i + 1)}`}</b>
+                              <small>{day.focus || "جلسه تمرینی"} · {fa(day.exercises.length)} حرکت</small>
+                            </span>
+                          </button>
                           <button
                             className="icon-button"
                             disabled={draft.days.length === 1}
@@ -633,6 +653,7 @@ function App() {
                             <Trash2 size={16} />
                           </button>
                         </div>
+                        <div id={`day-fields-${day.id}`} className="day-editor-fields" hidden={collapsedDays.has(day.id)}>
                         <div className="two-fields">
                           <label>
                             نام روز
@@ -748,6 +769,7 @@ function App() {
                           <Plus size={16} />
                           افزودن حرکت
                         </button>
+                        </div>
                       </section>
                     ))}
                     <button
