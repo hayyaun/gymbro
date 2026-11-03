@@ -15,7 +15,8 @@ npm run dev
 
 - Local coach profile and workout library with search and template filters.
 - Create, edit, duplicate and delete plans; configure sessions, exercises, supersets, weekly schedule, notes and cardio.
-- Three selectable layouts with custom accent colors and live preview.
+- Two selectable layouts, Studio and Forge, with custom accent colors and live preview. Saved plans using the retired Minimal or Bold layouts open as Studio with their workout content preserved.
+- Forge anime poster template with dark/light backgrounds and purple, orange, lime or yellow palettes. Existing sample sessions remain unchanged; the new appearance settings are saved per program.
 - Download a complete high-resolution PNG, including all sessions.
 - Warn before leaving an unsaved editor; native browser warning on reload or closing the tab after interaction.
 - Self-hosted Vazirmatn font with no runtime CDN dependency.

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { ForgeAccent, ForgeMode } from "./forgeTheme";
 
 export type Exercise = {
   id: string;
@@ -24,6 +25,8 @@ export type Plan = {
   weeks: string;
   template: string;
   color: string;
+  forgeAccent?: ForgeAccent;
+  forgeMode?: ForgeMode;
   notes: string;
   cardio: string;
   schedule: string[];
@@ -157,12 +160,19 @@ export const useStore = create<Store>()(
           ...saved,
           // Remove the original reference athlete from saved plans and copies.
           coach: saved?.coach === "ایمان قهرمانی" ? "مربی" : (saved?.coach ?? current.coach),
-          plans: (saved?.plans ?? current.plans).map((plan) =>
-            plan.athlete === "ایمان قهرمانی" ||
-            (plan.id === "sample" && plan.athlete === "ورزشکار نمونه")
-              ? { ...plan, athlete: "آرمان رضایی" }
-              : plan,
-          ),
+          plans: (saved?.plans ?? current.plans).map((plan) => ({
+            ...plan,
+            athlete:
+              plan.athlete === "ایمان قهرمانی" ||
+              (plan.id === "sample" && plan.athlete === "ورزشکار نمونه")
+                ? "آرمان رضایی"
+                : plan.athlete,
+            // Retired appearances use Studio without changing workout content.
+            template:
+              plan.template === "minimal" || plan.template === "bold"
+                ? "studio"
+                : plan.template,
+          })),
         };
       },
     },

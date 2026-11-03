@@ -512,20 +512,6 @@
   color: #69707a;
   font-size: 9px;
 }
-.preview-minimal {
-  background: #e9efeb;
-}
-.preview-minimal .mini-head {
-  background: white;
-  color: #24292c;
-}
-.preview-bold {
-  background: #ede8df;
-}
-.preview-bold .mini-head {
-  background: var(--accent);
-  color: #222;
-}
 .card-info {
   padding: 19px 19px 13px;
 }
@@ -743,8 +729,7 @@
 .sheet-scroll {
   overflow: auto;
   border-radius: 14px;
-  box-shadow: 0 4px 26px #20252c0b;
-  background: #e6e8ed;
+  background: transparent;
   padding: 0;
 }
 .sheet-export {
@@ -1079,52 +1064,6 @@
   border-radius: 50%;
   margin-inline-end: 7px;
 }
-.template-minimal .sheet-head {
-  background: #f0f2f4;
-  color: #242a30;
-}
-.template-minimal .sheet-head p,
-.template-minimal .sheet-eyebrow,
-.template-minimal .sheet-head-details {
-  color: #626976;
-}
-.template-minimal .exir-brand,
-.preview-minimal .exir-brand {
-  background: #0b0c10;
-  border-radius: 4px;
-}
-.template-minimal .sheet-day {
-  border-color: #bfc5cd;
-}
-.template-minimal .sheet-day h3 {
-  background: #edf0f3;
-  color: #282e36;
-}
-.template-minimal .sheet-day h3 > b {
-  color: white;
-}
-.template-minimal .sheet-schedule h3,
-.template-minimal .sheet-cardio h3 {
-  background: #edf0f3;
-  color: #232b32;
-}
-.template-bold .sheet-head {
-  background: var(--accent);
-}
-.template-bold .sheet-head-details strong,
-.template-bold .sheet-head p,
-.template-bold .sheet-eyebrow {
-  color: white;
-}
-.template-bold .sheet-day h3 {
-  background: var(--accent);
-}
-.template-bold .sheet-day h3 > b {
-  background: var(--sheet-ink);
-}
-.template-bold .sheet-day {
-  border-width: 2px;
-}
 .section-title {
   display: flex;
   align-items: center;
@@ -1247,15 +1186,6 @@
   border-bottom: 5px solid #dc3045;
   color: #fff;
   border-radius: 3px;
-}
-.swatch-minimal {
-  background: #edf1ed;
-  color: #4e6960;
-}
-.swatch-bold {
-  background: #dc3045;
-  color: #fff;
-  border-color: #20252c;
 }
 .colors {
   display: flex;
@@ -1710,17 +1640,13 @@
 }
 .preview-scale {
   position: absolute;
-  right: 0;
+  right: max(0px, calc(50% - 400px));
   top: 0;
   transform-origin: top right;
   width: 800px;
 }
 .sheet-scroll {
   direction: rtl;
-}
-.preview-bold .mini-head {
-  background: #20252c;
-  border-bottom-width: 6px;
 }
 
 /* Theme variables are the public OverlayScrollbars styling API. */

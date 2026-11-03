@@ -10,9 +10,11 @@ import {
   FileText,
   LayoutGrid,
   LogOut,
+  Moon,
   Plus,
   Search,
   Settings2,
+  Sun,
   Trash2,
   Users,
   X,
@@ -24,12 +26,13 @@ import PlanSheet, { weekdays } from "./PlanSheet";
 import SheetPreview from "./SheetPreview";
 import ExirBrand from "./ExirBrand";
 import PwaControls from "./PwaControls";
+import { forgePalettes, forgeVariables } from "./forgeTheme";
+import type { ForgeAccent } from "./forgeTheme";
 import "./App.css";
 
 const templates = [
   { id: "studio", name: "استودیو", text: "قدرتمند و حرفه ای" },
-  { id: "minimal", name: "مینیمال", text: "ساده و منظم" },
-  { id: "bold", name: "بولد", text: "متفاوت و پرانرژی" },
+  { id: "forge", name: "فورج", text: "پوستر انیمه · تیره و روشن" },
 ];
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
@@ -343,11 +346,11 @@ function App() {
                     aria-label={`باز کردن ${p.title}`}
                   >
                     <div
-                      className="mini-sheet"
-                      style={{ "--accent": p.color } as React.CSSProperties}
+                      className={`mini-sheet${p.template === "forge" ? ` mini-forge forge-${p.forgeMode ?? "dark"}` : ""}`}
+                      style={(p.template === "forge" ? forgeVariables(p.forgeAccent, p.forgeMode) : { "--accent": p.color }) as React.CSSProperties}
                     >
                       <div className="mini-head">
-                        <ExirBrand compact />
+                        {p.template === "forge" ? <div className="mini-forge-title"><Dumbbell size={12} /><b>قوی تر از دیروز</b></div> : <ExirBrand compact />}
                         <span>{p.athlete}</span>
                       </div>
                       <div className="mini-days">
@@ -769,6 +772,27 @@ function App() {
                         {draft.template === t.id && <Check size={18} />}
                       </button>
                     ))}
+                    {draft.template === "forge" ? (
+                      <>
+                        <h3>پس زمینه برنامه</h3>
+                        <div className="forge-mode-options" role="group" aria-label="پس زمینه برنامه">
+                          {([
+                            { id: "dark", name: "تیره", icon: Moon },
+                            { id: "light", name: "روشن", icon: Sun },
+                          ] as const).map(({ id, name, icon: Icon }) => (
+                            <button key={id} className={(draft.forgeMode ?? "dark") === id ? "chosen" : ""} aria-pressed={(draft.forgeMode ?? "dark") === id} onClick={() => patch({ forgeMode: id })}><Icon size={18} />{name}<Check size={15} /></button>
+                          ))}
+                        </div>
+                        <h3>رنگ تم فورج</h3>
+                        <div className="forge-palette-options" role="group" aria-label="رنگ تم فورج">
+                          {(Object.entries(forgePalettes) as [ForgeAccent, typeof forgePalettes[ForgeAccent]][]).map(([id, palette]) => (
+                            <button key={id} className={(draft.forgeAccent ?? "purple") === id ? "chosen" : ""} aria-pressed={(draft.forgeAccent ?? "purple") === id} onClick={() => patch({ forgeAccent: id })}><i style={{ background: palette.color, color: palette.ink }}>{(draft.forgeAccent ?? "purple") === id && <Check size={14} />}</i>{palette.name}</button>
+                          ))}
+                        </div>
+                        <p className="forge-design-note">رنگ و پس زمینه فقط روی این قالب اعمال می شوند. تعداد جلسه ها و حرکت ها تغییری نمی کند.</p>
+                      </>
+                    ) : (
+                      <>
                     <h3>رنگ اختصاصی</h3>
                     <div className="colors">
                       {[
@@ -795,6 +819,8 @@ function App() {
                         onChange={(e) => patch({ color: e.target.value })}
                       />
                     </div>
+                      </>
+                    )}
                   </div>
                 )}
               </section>
