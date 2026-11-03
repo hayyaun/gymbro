@@ -440,7 +440,7 @@ function App() {
                           day: "numeric",
                         })}
                       </small>
-                      <div>
+                      <div onClick={(event) => event.stopPropagation()}>
                         <button
                           className="icon-button"
                           aria-label={`کپی ${p.title}`}
