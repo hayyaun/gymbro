@@ -117,6 +117,7 @@
   object-fit: contain;
   object-position: bottom;
   image-rendering: auto;
+  transform: scaleX(-1);
 }
 .forge-energy {
   position: absolute;
