@@ -13,9 +13,26 @@ export function assignTrainingWeek(days: Day[], selected: boolean[]) {
   };
 }
 
+function weekdayAssignments(plan: Plan) {
+  const used = new Set<string>();
+  const assigned = new Map<number, Day>();
+  activeWeek(plan).forEach((active, index) => {
+    if (!active) return;
+    const day = plan.days.find((day) => day.name === plan.schedule[index] && !used.has(day.id))
+      ?? plan.days.find((day) => !used.has(day.id));
+    if (day) { assigned.set(index, day); used.add(day.id); }
+  });
+  return { assigned, unassigned: plan.days.filter((day) => !used.has(day.id)) };
+}
+
+export const getWeekdaySession = (plan: Plan, index: number) => weekdayAssignments(plan).assigned.get(index);
+
 export function resizeTrainingWeek(plan: Plan, selected: boolean[], createDay: () => Day) {
-  const count = selected.filter(Boolean).length;
-  const days = plan.days.slice(0, count);
-  while (days.length < count) days.push(createDay());
-  return assignTrainingWeek(days, selected);
+  const { assigned, unassigned } = weekdayAssignments(plan);
+  const days: Day[] = [];
+  selected.forEach((active, index) => {
+    if (active) days.push(assigned.get(index) ?? unassigned.shift() ?? createDay());
+  });
+  // Preserve any old sessions that did not have a calendar assignment.
+  return assignTrainingWeek([...days, ...unassigned], selected);
 }

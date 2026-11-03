@@ -18,7 +18,7 @@ Session dragging uses the current [dnd kit React API](https://dndkit.com/react/g
 ## Features
 
 - Local coach profile and workout library with search and template filters.
-- Select training weekdays in Saturday-first order to create matching sessions automatically. Reducing the count requires confirmation before removing sessions and exercises from the end. Reorder whole sessions with six-dot handles using touch hold, mouse or keyboard.
+- Select training weekdays in Saturday-first order to create matching sessions automatically. Deselecting a weekday requires confirmation before deleting that specific day's session and exercises; other days retain their content, including when a new earlier weekday is added. Reorder whole sessions with six-dot handles using touch hold, mouse or keyboard.
 - Collapse sessions while editing; the first session starts open, others start collapsed, and newly added sessions open automatically. This editor-only state does not change saved workout data or PNG output.
 - Three selectable layouts, Studio, Forge and Protocol, with custom accent colors and live preview. Saved plans using the retired Minimal or Bold layouts open as Studio with their workout content preserved.
 - Forge anime poster template with dark/light backgrounds and purple, orange, lime or yellow palettes. Existing sample sessions remain unchanged; the new appearance settings are saved per program.

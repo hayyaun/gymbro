@@ -31,7 +31,7 @@ import { forgePalettes, forgeVariables } from "./forgeTheme";
 import type { ForgeAccent } from "./forgeTheme";
 import { protocolVariables } from "./protocolTheme";
 import ProtocolDesignControls from "./ProtocolDesignControls";
-import { activeWeek, assignTrainingWeek, resizeTrainingWeek } from "./trainingWeek";
+import { activeWeek, assignTrainingWeek, getWeekdaySession, resizeTrainingWeek } from "./trainingWeek";
 import { SortableSession, SortableSessions } from "./SortableSessions";
 import "./App.css";
 
@@ -52,7 +52,7 @@ function App() {
   const [notice, setNotice] = useState("");
   const [pending, setPending] = useState<(() => void) | null>(null);
   const [deleting, setDeleting] = useState<Plan | null>(null);
-  const [pendingWeek, setPendingWeek] = useState<boolean[] | null>(null);
+  const [pendingWeek, setPendingWeek] = useState<{ selected: boolean[]; weekday: number } | null>(null);
   const [exporting, setExporting] = useState(false);
   const [loginName, setLoginName] = useState("");
   const [storageError, setStorageError] = useState("");
@@ -100,7 +100,7 @@ function App() {
     if (!draft) return;
     const selected = activeWeek(draft);
     selected[index] = !selected[index];
-    if (selected.filter(Boolean).length < draft.days.length) setPendingWeek(selected);
+    if (!selected[index]) setPendingWeek({ selected, weekday: index });
     else applyWeek(selected);
   };
   const moveSession = (from: number, to: number) => {
@@ -608,8 +608,9 @@ function App() {
                         placeholder="نکات مهم برای ورزشکار..."
                       />
                     </label>
-                    <h3>روزهای تمرین در هفته</h3>
-                    <p className="week-help">روزهای تمرین را انتخاب کنید. از شنبه به بعد، اولین روز انتخاب شده جلسه اول است و برای هر روز یک جلسه ساخته می شود.</p>
+                    <section className="week-selection">
+                    <div className="week-selection-heading"><h3>روزهای تمرین</h3><span>{fa(activeWeek(draft).filter(Boolean).length)} جلسه در هفته</span></div>
+                    <p className="week-help">هر روز انتخاب شده یک جلسه است؛ ترتیب از شنبه شروع می شود.</p>
                     <div className="weekday-picker" role="group" aria-label="روزهای تمرین">
                       {weekdays.map((d, i) => (
                         <button key={d} type="button" aria-pressed={activeWeek(draft)[i]} onClick={() => toggleWeekday(i)}>
@@ -618,7 +619,8 @@ function App() {
                         </button>
                       ))}
                     </div>
-                    <p className="week-warning">کاهش تعداد روزهای انتخاب شده باعث حذف جلسه ها از انتهای برنامه و حرکت های داخل آن ها می شود. قبل از حذف از شما تایید می گیریم.</p>
+                    <p className="week-warning">با غیرفعال کردن هر روز، جلسه همان روز پس از تایید حذف می شود.</p>
+                    </section>
                   </div>
                 )}
                 {tab === "workout" && (
@@ -875,12 +877,11 @@ function App() {
         </Modal>
       )}
       {pendingWeek && draft && (
-        <Modal title="حذف جلسه ها از انتهای برنامه" onClose={() => setPendingWeek(null)}>
-          <p>با این تغییر، {fa(draft.days.length - pendingWeek.filter(Boolean).length)} جلسه آخر و تمام حرکت های داخل آن ها حذف می شوند:</p>
-          <ul>{draft.days.slice(pendingWeek.filter(Boolean).length).map((day) => <li key={day.id}>{day.name} · {fa(day.exercises.length)} حرکت</li>)}</ul>
-          <p>جلسه های باقی مانده از ابتدای هفته مرتب می شوند. با ذخیره برنامه، این حذف ثبت می شود.</p>
+        <Modal title={`غیرفعال کردن ${weekdays[pendingWeek.weekday]}`} onClose={() => setPendingWeek(null)}>
+          <p>جلسه تمرین {weekdays[pendingWeek.weekday]} ({getWeekdaySession(draft, pendingWeek.weekday)?.name || "جلسه تمرین"}) و تمام {fa(getWeekdaySession(draft, pendingWeek.weekday)?.exercises.length ?? 0)} حرکت داخل آن حذف می شود.</p>
+          <p>تمرین روزهای دیگر حفظ می شود و شماره جلسه ها به روز می شود. با ذخیره برنامه، این حذف ثبت می شود.</p>
           <div className="modal-actions">
-            <button className="danger" onClick={() => applyWeek(pendingWeek)}>حذف جلسه های آخر و اعمال تغییر</button>
+            <button className="danger" onClick={() => applyWeek(pendingWeek.selected)}>حذف جلسه همین روز</button>
             <button className="secondary" onClick={() => setPendingWeek(null)}>انصراف</button>
           </div>
         </Modal>

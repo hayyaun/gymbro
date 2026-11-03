@@ -704,16 +704,16 @@
 }
 .weekday-picker {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
 }
 .weekday-picker button {
   border: 1px solid #dfe2e7;
   border-radius: 8px;
-  padding: 12px 6px;
+  padding: 8px 2px;
   background: white;
   text-align: center;
-  min-height: 58px;
+  min-height: 52px;
 }
 .weekday-picker button[aria-pressed="true"] {
   border-color: #dc3045;
@@ -721,8 +721,14 @@
   color: #b91f34;
 }
 .weekday-picker b, .weekday-picker small { display: block; }
-.weekday-picker b { font-size: 12px; }
-.weekday-picker small { font-size: 10px; margin-top: 4px; }
+.weekday-picker b { font-size: 10px; }
+.weekday-picker small { font-size: 9px; margin-top: 4px; }
+.week-selection { margin-top: 22px; padding: 12px; border: 1px solid #e3e7ed; background: #fafbfc; border-radius: 10px; }
+.week-selection-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.panel-content .week-selection-heading h3 { margin: 0; font-size: 12px; }
+.week-selection-heading > span { font-size: 10px; color: #b73046; background: #fbecef; border-radius: 5px; padding: 4px 6px; }
+.panel-content .week-selection .week-help { font-size: 10px; margin: 8px 0 10px; color: #838b98; }
+.panel-content .week-selection .week-warning { font-size: 10px; margin: 10px 0 0; }
 .panel-content .week-help, .panel-content .week-warning {
   font-size: 11px;
   line-height: 1.9;
