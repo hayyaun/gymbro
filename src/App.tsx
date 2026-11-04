@@ -47,6 +47,7 @@ import BackupWorkspace from "./BackupWorkspace";
 import "./App.css";
 import "./DashboardStudents.css";
 import "./Workspace.css";
+import "./MobileLayout.css";
 
 const templates = [
   { id: "studio", name: "استودیو", text: "قدرتمند و حرفه ای" },
@@ -274,9 +275,9 @@ function App() {
       <aside className="sidebar">
         <Brand />
         <span className="workspace-label">فضای کار مربی</span>
-        <nav>
+        <nav aria-label="منوی اصلی">
           <button
-            className={page === "library" && !draft && activeStudent === null ? "nav-active" : ""}
+            className={page === "library" ? "nav-active" : ""}
             onClick={() => selectStudent(null)}
           >
             <LayoutGrid size={19} />
@@ -349,6 +350,7 @@ function App() {
           <span className="top-tag">
             <span className="status-dot" /> مدیریت برنامه های تمرینی
           </span>
+          <div className="mobile-header-brand"><Brand /></div>
         </header>
         {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : page === "blocks" ? <BlocksWorkspace editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} navigate={navigate} /> : page === "backup" ? <BackupWorkspace /> : !draft ? (
           <div className="dashboard">
