@@ -6,7 +6,6 @@ import type { Plan } from "./model";
 import { faDate, faNumber as fa, isDate, makeStudent, studentKey, today } from "./library";
 import type { Payment, Student } from "./library";
 import Dialog from "./Dialog";
-import "./Workspace.css";
 
 export type WorkspaceHandle = { save: () => boolean };
 type Props = {
@@ -45,7 +44,9 @@ export default function StudentsWorkspace({ studentId, editorRef, onDirtyChange,
       setError("مبلغ را به تومان و به صورت عدد صحیح مثبت وارد کنید و تاریخ را کامل کنید.");
       return null;
     }
-    return { ...editing, payments: [payment, ...editing.payments.filter((item) => item.id !== payment.id)] };
+    const payments = [payment, ...editing.payments.filter((item) => item.id !== payment.id)];
+    if (!Number.isSafeInteger(payments.reduce((total, item) => total + item.amount, 0))) { setError("مجموع پرداخت ها بیشتر از محدوده قابل ثبت است."); return null; }
+    return { ...editing, payments };
   };
   const save = () => {
     const next = withPayment();

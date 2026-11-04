@@ -4,6 +4,8 @@ import type { ForgeAccent, ForgeMode } from "./forgeTheme";
 import type { ProtocolAccent, ProtocolMode } from "./protocolTheme";
 import { linkStudents, updateStudent } from "./library";
 import type { Student, WorkoutBlock } from "./library";
+import { restoreData } from "./backup";
+import type { LibraryData, RestoreMode } from "./backup";
 
 export type Exercise = {
   id: string;
@@ -143,6 +145,7 @@ type Store = {
   saveStudent: (student: Student) => void;
   saveBlock: (block: WorkoutBlock) => void;
   removeBlock: (id: string) => void;
+  restoreLibrary: (data: LibraryData, mode: RestoreMode) => void;
   heroDismissed: boolean;
   dismissHero: () => void;
   setCoach: (name: string) => void;
@@ -163,6 +166,7 @@ export const useStore = create<Store>()(
       saveStudent: (student) => set((s) => updateStudent(s.plans, s.students, student)),
       saveBlock: (block) => set((s) => ({ blocks: [block, ...s.blocks.filter((item) => item.id !== block.id)] })),
       removeBlock: (id) => set((s) => ({ blocks: s.blocks.filter((item) => item.id !== id) })),
+      restoreLibrary: (data, mode) => set((s) => restoreData(s, data, mode)),
       remove: (id) =>
         set((s) => ({ plans: s.plans.filter((p) => p.id !== id) })),
     }),

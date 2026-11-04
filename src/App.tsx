@@ -42,9 +42,11 @@ import ExerciseEditor from "./ExerciseEditor";
 import BlocksWorkspace from "./BlocksWorkspace";
 import { SaveBlockDialog, InsertBlockDialog } from "./BlockDialogs";
 import { exerciseCatalog } from "./exerciseCatalog";
-import { cloneExercises, insertBlockExercises } from "./library";
+import { cloneExercises, insertBlockExercises, isExercisePlaceholder, trimTrailingPlaceholders } from "./library";
+import BackupWorkspace from "./BackupWorkspace";
 import "./App.css";
 import "./DashboardStudents.css";
+import "./Workspace.css";
 
 const templates = [
   { id: "studio", name: "استودیو", text: "قدرتمند و حرفه ای" },
@@ -54,7 +56,7 @@ const templates = [
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
   const { coach, plans, students: profiles, blocks, saveBlock, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
-  const [page, setPage] = useState<"library" | "students" | "blocks">("library");
+  const [page, setPage] = useState<"library" | "students" | "blocks" | "backup">("library");
   const [savingBlock, setSavingBlock] = useState<Day | null>(null);
   const [insertingBlock, setInsertingBlock] = useState<Day | null>(null);
   const [focusExerciseId, setFocusExerciseId] = useState("");
@@ -152,6 +154,7 @@ function App() {
   };
   const persistPlan = () => {
     if (!draft) return false;
+    const cleaned = { ...draft, days: draft.days.map((day) => ({ ...day, exercises: trimTrailingPlaceholders(day.exercises) })) };
     if (
       !draft.title.trim() ||
       !draft.athlete.trim() ||
@@ -159,7 +162,7 @@ function App() {
       Number(draft.weeks) < 1 ||
       Number(draft.weeks) > 52 ||
       draft.days.length === 0 ||
-      draft.days.some(
+      cleaned.days.some(
         (d) =>
           !d.name.trim() ||
           !d.exercises.length ||
@@ -175,7 +178,7 @@ function App() {
       setNotice("نام برنامه، ورزشکار، مدت، روزهای تمرین و مشخصات حرکت ها را کامل کنید");
       return false;
     }
-    const next = { ...draft, updatedAt: new Date().toISOString() };
+    const next = { ...cleaned, updatedAt: new Date().toISOString() };
     try {
       save(next);
       const savedPlan = useStore.getState().plans.find((plan) => plan.id === next.id)!;
@@ -281,6 +284,7 @@ function App() {
           </button>
           <button className={page === "students" ? "nav-active" : ""} aria-label="همه شاگردها" onClick={() => openStudents(null)}><Users size={19} />شاگردها <span>{fa(students.length)}</span></button>
           <button className={page === "blocks" ? "nav-active" : ""} aria-label="بلوک های تمرینی" onClick={openBlocks}><Layers size={19} />بلوک های تمرینی</button>
+          <button className={page === "backup" ? "nav-active" : ""} aria-label="پشتیبان گیری و بازیابی" onClick={() => navigate(() => { setDraft(null); setPage("backup"); setWorkspaceDirty(false); window.scrollTo({ top: 0 }); })}><Download size={19} />پشتیبان گیری</button>
           <button
             aria-label="ساخت برنامه جدید"
             onClick={() => navigate(startStudentPlan)}
@@ -340,13 +344,13 @@ function App() {
         <header className="topbar">
           <div className="breadcrumb">
             فضای کار <ChevronLeft size={14} />
-            <b>{page === "students" ? "پرونده شاگردها" : page === "blocks" ? "بلوک های تمرینی" : draft ? "ویرایش برنامه" : "برنامه های من"}</b>
+            <b>{page === "students" ? "پرونده شاگردها" : page === "blocks" ? "بلوک های تمرینی" : page === "backup" ? "پشتیبان گیری و بازیابی" : draft ? "ویرایش برنامه" : "برنامه های من"}</b>
           </div>
           <span className="top-tag">
             <span className="status-dot" /> مدیریت برنامه های تمرینی
           </span>
         </header>
-        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : page === "blocks" ? <BlocksWorkspace editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} navigate={navigate} /> : !draft ? (
+        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : page === "blocks" ? <BlocksWorkspace editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} navigate={navigate} /> : page === "backup" ? <BackupWorkspace /> : !draft ? (
           <div className="dashboard">
             <div className="page-heading">
               <div>
@@ -734,8 +738,9 @@ function App() {
                         </div>
                         <div id={`day-fields-${day.id}`} className="day-editor-fields" hidden={collapsedDays.has(day.id)}>
                         <div className="block-tools"><button onClick={() => setInsertingBlock(day)}><Layers size={14} />افزودن از بلوک ها</button><button onClick={() => {
-                          if (!day.exercises.length || day.exercises.some((item) => !item.name.trim() || !item.sets.trim() || !item.reps.trim() || !item.rest.trim())) setNotice("قبل از ذخیره بلوک، مشخصات حرکت ها را کامل کنید");
-                          else setSavingBlock(day);
+                          const exercises = trimTrailingPlaceholders(day.exercises);
+                          if (!exercises.length || exercises.some((item) => !item.name.trim() || !item.sets.trim() || !item.reps.trim() || !item.rest.trim())) setNotice("قبل از ذخیره بلوک، مشخصات حرکت ها را کامل کنید");
+                          else setSavingBlock({ ...day, exercises });
                         }}><Plus size={14} />ذخیره این جلسه به عنوان بلوک</button></div>
                         <div className="two-fields">
                           <div className="day-position"><span>روز تمرین</span><b>{weekdays.filter((_, index) => activeWeek(draft)[index])[i] || day.name}</b></div>
@@ -874,8 +879,8 @@ function App() {
       }} />}
       {insertingBlock && <InsertBlockDialog day={insertingBlock} blocks={blocks} onClose={() => setInsertingBlock(null)} onInsert={(block, replace) => {
         const first = insertingBlock.exercises[0];
-        const placeholder = insertingBlock.exercises.length === 1 && !first.name.trim() && !first.note && !first.group && first.sets === "3" && first.reps === "10–12" && first.rest === "60";
-        const existing = replace || placeholder ? [] : insertingBlock.exercises;
+        const placeholder = insertingBlock.exercises.length === 1 && isExercisePlaceholder(first);
+        const existing = replace || placeholder ? [] : trimTrailingPlaceholders(insertingBlock.exercises);
         patchDay(insertingBlock.id, { exercises: insertBlockExercises(existing, block.exercises), focus: replace || !insertingBlock.focus ? block.focus : insertingBlock.focus });
         setInsertingBlock(null); setNotice("بلوک به جلسه اضافه شد؛ برنامه را ذخیره کنید");
       }} />}

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { linkStudents, updateStudent, makeStudent, isDate, insertBlockExercises } from "../src/library.ts";
+import { linkStudents, updateStudent, makeStudent, isDate, insertBlockExercises, trimTrailingPlaceholders } from "../src/library.ts";
 
 test("legacy plans gain one stable profile per normalized name without losing workouts", () => {
   const days = [{ id: "session", exercises: [{ name: "اسکوات", sets: "4" }] }];
@@ -39,4 +39,12 @@ test("reusing blocks creates independent movement IDs and keeps supersets separa
   assert.notEqual(result[1].id, incoming[0].id);
   result[1].note = "تغییر";
   assert.equal(incoming[0].note, "یادداشت");
+});
+test("keyboard-created trailing placeholders are ignored without discarding custom notes or settings", () => {
+  const blank = { id: "blank", name: "", sets: "3", reps: "10–12", rest: "60", group: "", note: "" };
+  const filled = { ...blank, id: "filled", name: "اسکوات" };
+  assert.deepEqual(trimTrailingPlaceholders([filled, blank]), [filled]);
+  assert.equal(trimTrailingPlaceholders([blank]).length, 1);
+  assert.equal(trimTrailingPlaceholders([filled, { ...blank, note: "یادداشت مهم" }]).length, 2);
+  assert.equal(trimTrailingPlaceholders([filled, { ...blank, sets: "4" }]).length, 2);
 });

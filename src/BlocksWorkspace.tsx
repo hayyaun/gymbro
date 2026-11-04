@@ -4,7 +4,7 @@ import { ArrowRight, Check, Layers, Plus, Search, Trash2 } from "lucide-react";
 import { exercise, uid, useStore } from "./model";
 import type { Exercise } from "./model";
 import type { WorkoutBlock } from "./library";
-import { faNumber as fa } from "./library";
+import { faNumber as fa, trimTrailingPlaceholders } from "./library";
 import type { WorkspaceHandle } from "./StudentsWorkspace";
 import ExerciseEditor from "./ExerciseEditor";
 import { exerciseCatalog } from "./exerciseCatalog";
@@ -22,9 +22,10 @@ export default function BlocksWorkspace({ editorRef, onDirtyChange, navigate }: 
   const dirty = !!editing && JSON.stringify(editing) !== baseline;
   useEffect(() => { onDirtyChange(dirty); return () => onDirtyChange(false); }, [dirty, onDirtyChange]);
   const save = () => {
-    if (!editing || !editing.name.trim() || !editing.exercises.length || editing.exercises.some((item) => !item.name.trim() || !item.sets.trim() || !item.reps.trim() || !item.rest.trim())) { setError("نام بلوک و مشخصات تمام حرکت ها را کامل کنید."); return false; }
+    const exercises = trimTrailingPlaceholders(editing?.exercises ?? []);
+    if (!editing || !editing.name.trim() || !exercises.length || exercises.some((item) => !item.name.trim() || !item.sets.trim() || !item.reps.trim() || !item.rest.trim())) { setError("نام بلوک و مشخصات تمام حرکت ها را کامل کنید."); return false; }
     try {
-      const block = { ...editing, name: editing.name.trim(), updatedAt: new Date().toISOString() };
+      const block = { ...editing, name: editing.name.trim(), exercises, updatedAt: new Date().toISOString() };
       saveBlock(block); setEditing(block); setBaseline(JSON.stringify(block)); setError(""); setMessage("بلوک تمرینی ذخیره شد"); onDirtyChange(false); return true;
     } catch { setError("ذخیره بلوک انجام نشد. فضای مرورگر را بررسی کنید."); return false; }
   };

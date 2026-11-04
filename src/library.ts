@@ -66,6 +66,12 @@ export const faNumber = (value: number) => value.toLocaleString("fa-IR");
 export const faDate = (value: string) => new Date(`${value.slice(0, 10)}T12:00:00`).toLocaleDateString("fa-IR");
 
 export const cloneExercises = (exercises: Exercise[]) => exercises.map((item) => ({ ...item, id: crypto.randomUUID() }));
+export const isExercisePlaceholder = (item: Exercise) => !item.name.trim() && !item.note && !item.group && item.sets === "3" && item.reps === "10–12" && item.rest === "60";
+export function trimTrailingPlaceholders(exercises: Exercise[]) {
+  const result = [...exercises];
+  while (result.length > 1 && isExercisePlaceholder(result[result.length - 1])) result.pop();
+  return result;
+}
 export function insertBlockExercises(existing: Exercise[], incoming: Exercise[]) {
   const groups = new Set(existing.map((item) => item.group.trim()).filter(Boolean));
   const renamed = new Map<string, string>();
