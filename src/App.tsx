@@ -34,6 +34,9 @@ import ProtocolDesignControls from "./ProtocolDesignControls";
 import { activeWeek, assignTrainingWeek, getWeekdaySession, resizeTrainingWeek } from "./trainingWeek";
 import { SortableSession, SortableSessions } from "./SortableSessions";
 import { studentKey, studentsFromPlans } from "./students";
+import StudentsWorkspace from "./StudentsWorkspace";
+import type { WorkspaceHandle } from "./StudentsWorkspace";
+import Modal from "./Dialog";
 import "./App.css";
 import "./DashboardStudents.css";
 
@@ -44,7 +47,13 @@ const templates = [
 ];
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
-  const { coach, plans, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
+  const { coach, plans, students: profiles, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
+  const [page, setPage] = useState<"library" | "students">("library");
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [viewingStudentId, setViewingStudentId] = useState<string | null>(null);
+  const [workspaceVersion, setWorkspaceVersion] = useState(0);
+  const [workspaceDirty, setWorkspaceDirty] = useState(false);
+  const workspaceRef = useRef<WorkspaceHandle>(null);
   const [draft, setDraft] = useState<Plan | null>(null);
   const [baseline, setBaseline] = useState("");
   const [query, setQuery] = useState("");
@@ -59,11 +68,9 @@ function App() {
   const [loginName, setLoginName] = useState("");
   const [storageError, setStorageError] = useState("");
   const sheet = useRef<HTMLDivElement>(null);
-  const dirty = !!draft && JSON.stringify(draft) !== baseline;
-  const students = studentsFromPlans(plans);
-  const activeStudent = students.some((student) => student.name === selectedStudent)
-    ? selectedStudent
-    : null;
+  const dirty = (!!draft && JSON.stringify(draft) !== baseline) || workspaceDirty;
+  const students = studentsFromPlans(plans, profiles);
+  const activeStudent = students.find((student) => student.id === selectedStudent) ?? null;
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       if (dirty) {
@@ -84,6 +91,7 @@ function App() {
     else action();
   };
   const open = (plan: Plan, fresh = false) => {
+    setPage("library"); setWorkspaceDirty(false);
     setDraft(structuredClone(plan));
     setBaseline(fresh ? "" : JSON.stringify(plan));
     setTab("details");
@@ -91,12 +99,16 @@ function App() {
     window.scrollTo({ top: 0 });
   };
   const selectStudent = (name: string | null) => navigate(() => {
+    setPage("library"); setWorkspaceDirty(false);
     setDraft(null);
     setSelectedStudent(name);
     setQuery("");
     window.scrollTo({ top: 0 });
   });
-  const startStudentPlan = () => open({ ...newPlan(), athlete: activeStudent ?? "" }, true);
+  const openStudents = (id: string | null) => navigate(() => {
+    setDraft(null); setPage("students"); setProfileId(id); setWorkspaceVersion((version) => version + 1); setWorkspaceDirty(false); window.scrollTo({ top: 0 });
+  });
+  const startStudentPlan = () => open({ ...newPlan(), athlete: activeStudent?.name ?? "", studentId: activeStudent?.id }, true);
   const patch = (data: Partial<Plan>) =>
     setDraft((d) => (d ? { ...d, ...data } : d));
   const patchDay = (id: string, data: Partial<Day>) =>
@@ -151,8 +163,9 @@ function App() {
     const next = { ...draft, updatedAt: new Date().toISOString() };
     try {
       save(next);
-      setDraft(next);
-      setBaseline(JSON.stringify(next));
+      const savedPlan = useStore.getState().plans.find((plan) => plan.id === next.id)!;
+      setDraft(savedPlan);
+      setBaseline(JSON.stringify(savedPlan));
       setNotice("برنامه با موفقیت ذخیره شد");
       return true;
     } catch {
@@ -235,7 +248,7 @@ function App() {
   const visible = plans.filter(
     (p) =>
       `${p.title} ${p.athlete}`.includes(query) &&
-      (activeStudent === null || studentKey(p.athlete) === activeStudent),
+      (activeStudent === null || p.studentId === activeStudent.id),
   );
   return (
     <div className="app" dir="rtl">
@@ -245,12 +258,13 @@ function App() {
         <span className="workspace-label">فضای کار مربی</span>
         <nav>
           <button
-            className={!draft && activeStudent === null ? "nav-active" : ""}
+            className={page === "library" && !draft && activeStudent === null ? "nav-active" : ""}
             onClick={() => selectStudent(null)}
           >
             <LayoutGrid size={19} />
             برنامه های من <span>{fa(plans.length)}</span>
           </button>
+          <button className={page === "students" ? "nav-active" : ""} aria-label="همه شاگردها" onClick={() => openStudents(null)}><Users size={19} />شاگردها <span>{fa(students.length)}</span></button>
           <button
             aria-label="ساخت برنامه جدید"
             onClick={() => navigate(startStudentPlan)}
@@ -264,12 +278,12 @@ function App() {
           <div className="student-list">
             {students.map((student) => (
               <button
-                key={student.name}
-                className={`student-link${!draft && activeStudent === student.name ? " student-active" : ""}`}
-                aria-label={`برنامه های ${student.name}`}
-                aria-pressed={!draft && activeStudent === student.name}
+                key={student.id}
+                className={`student-link${page === "students" && viewingStudentId === student.id ? " student-active" : ""}`}
+                aria-label={`پرونده ${student.name}`}
+                aria-pressed={page === "students" && viewingStudentId === student.id}
                 title={`${student.name} · ${fa(student.count)} برنامه`}
-                onClick={() => selectStudent(student.name)}
+                onClick={() => openStudents(student.id)}
               >
                 <span className="student-avatar" aria-hidden="true">{student.name[0]}</span>
                 <span className="student-name">{student.name}</span>
@@ -310,13 +324,13 @@ function App() {
         <header className="topbar">
           <div className="breadcrumb">
             فضای کار <ChevronLeft size={14} />
-            <b>{draft ? "ویرایش برنامه" : "برنامه های من"}</b>
+            <b>{page === "students" ? "پرونده شاگردها" : draft ? "ویرایش برنامه" : "برنامه های من"}</b>
           </div>
           <span className="top-tag">
             <span className="status-dot" /> مدیریت برنامه های تمرینی
           </span>
         </header>
-        {!draft ? (
+        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : !draft ? (
           <div className="dashboard">
             <div className="page-heading">
               <div>
@@ -385,7 +399,7 @@ function App() {
             </div>
             <div className="library-heading">
               <h2>
-                {activeStudent ? `برنامه های ${activeStudent}` : "برنامه های شاگردها"} <span>{fa(visible.length)}</span>
+                {activeStudent ? `برنامه های ${activeStudent.name}` : "برنامه های شاگردها"} <span>{fa(visible.length)}</span>
               </h2>
               <label className="search">
                 <Search size={18} />
@@ -401,11 +415,11 @@ function App() {
               <button className={activeStudent === null ? "selected" : ""} aria-pressed={activeStudent === null} onClick={() => setSelectedStudent(null)}>همه شاگردها <span>{fa(plans.length)}</span></button>
               {students.map((student) => (
                 <button
-                  key={student.name}
-                  className={activeStudent === student.name ? "selected" : ""}
-                  aria-pressed={activeStudent === student.name}
+                  key={student.id}
+                  className={activeStudent?.id === student.id ? "selected" : ""}
+                  aria-pressed={activeStudent?.id === student.id}
                   title={student.name}
-                  onClick={() => setSelectedStudent(student.name)}
+                  onClick={() => setSelectedStudent(student.id)}
                 >
                   <span className="filter-name">{student.name}</span><span>{fa(student.count)}</span>
                 </button>
@@ -524,7 +538,7 @@ function App() {
                 <span>
                   <Plus size={26} />
                 </span>
-                <b>{activeStudent ? `برنامه جدید برای ${activeStudent}` : "ساخت برنامه جدید"}</b>
+                <b>{activeStudent ? `برنامه جدید برای ${activeStudent.name}` : "ساخت برنامه جدید"}</b>
                 <small>روزهای تمرین و حرکت ها را مشخص کنید</small>
               </button>
             </div>
@@ -604,10 +618,12 @@ function App() {
                       نام ورزشکار
                       <input
                         maxLength={80}
+                        list="student-names"
                         value={draft.athlete}
-                        onChange={(e) => patch({ athlete: e.target.value })}
+                        onChange={(e) => patch({ athlete: e.target.value, studentId: profiles.find((student) => studentKey(student.name) === studentKey(e.target.value))?.id })}
                         placeholder="نام و نام خانوادگی"
                       />
+                      <datalist id="student-names">{profiles.map((student) => <option key={student.id} value={student.name} />)}</datalist>
                     </label>
                     <div className="two-fields">
                       <label>
@@ -936,12 +952,12 @@ function App() {
           title="تغییرات را ذخیره نکرده اید"
           onClose={() => setPending(null)}
         >
-          <p>قبل از خروج، برنامه را ذخیره کنید تا تغییرات شما از دست نرود.</p>
+          <p>قبل از خروج، تغییرات را ذخیره کنید تا اطلاعات شما از دست نرود.</p>
           <div className="modal-actions">
             <button
               className="primary"
               onClick={() => {
-                if (persistPlan()) {
+                if (draft ? persistPlan() : workspaceRef.current?.save()) {
                   const action = pending;
                   setPending(null);
                   action();
@@ -1021,43 +1037,6 @@ function Stat({
         <small>{label}</small>
       </div>
     </div>
-  );
-}
-function Modal({
-  title,
-  children,
-  onClose,
-}: {
-  title: string;
-  children: React.ReactNode;
-  onClose: () => void;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const dialog = ref.current!;
-    dialog.showModal();
-    return () => dialog.close();
-  }, []);
-  return (
-    <dialog
-      ref={ref}
-      className="modal"
-      dir="rtl"
-      onCancel={(e) => {
-        e.preventDefault();
-        onClose();
-      }}
-    >
-      <button
-        className="modal-close icon-button"
-        aria-label="بستن"
-        onClick={onClose}
-      >
-        <X size={19} />
-      </button>
-      <h2>{title}</h2>
-      {children}
-    </dialog>
   );
 }
 export default App;

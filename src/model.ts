@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ForgeAccent, ForgeMode } from "./forgeTheme";
 import type { ProtocolAccent, ProtocolMode } from "./protocolTheme";
+import { linkStudents, updateStudent } from "./library";
+import type { Student, WorkoutBlock } from "./library";
 
 export type Exercise = {
   id: string;
@@ -22,6 +24,7 @@ export type Plan = {
   id: string;
   title: string;
   athlete: string;
+  studentId?: string;
   goal: string;
   weeks: string;
   template: string;
@@ -135,6 +138,11 @@ const demo = (): Plan => ({
 type Store = {
   coach: string;
   plans: Plan[];
+  students: Student[];
+  blocks: WorkoutBlock[];
+  saveStudent: (student: Student) => void;
+  saveBlock: (block: WorkoutBlock) => void;
+  removeBlock: (id: string) => void;
   heroDismissed: boolean;
   dismissHero: () => void;
   setCoach: (name: string) => void;
@@ -145,14 +153,16 @@ export const useStore = create<Store>()(
   persist(
     (set) => ({
       coach: "",
-      plans: [demo()],
+      ...linkStudents([demo()], []),
+      blocks: [],
       heroDismissed: false,
       dismissHero: () => set({ heroDismissed: true }),
       setCoach: (coach) => set({ coach }),
       save: (plan) =>
-        set((s) => ({
-          plans: [plan, ...s.plans.filter((p) => p.id !== plan.id)],
-        })),
+        set((s) => linkStudents([plan, ...s.plans.filter((p) => p.id !== plan.id)], s.students)),
+      saveStudent: (student) => set((s) => updateStudent(s.plans, s.students, student)),
+      saveBlock: (block) => set((s) => ({ blocks: [block, ...s.blocks.filter((item) => item.id !== block.id)] })),
+      removeBlock: (id) => set((s) => ({ blocks: s.blocks.filter((item) => item.id !== id) })),
       remove: (id) =>
         set((s) => ({ plans: s.plans.filter((p) => p.id !== id) })),
     }),
@@ -160,24 +170,17 @@ export const useStore = create<Store>()(
       name: "gymbro-v1",
       merge: (persisted, current) => {
         const saved = persisted as Partial<Store> | undefined;
+        const normalizedPlans = (saved?.plans ?? current.plans).map((plan) => ({
+          ...plan,
+          athlete: plan.athlete === "ایمان قهرمانی" || (plan.id === "sample" && plan.athlete === "ورزشکار نمونه") ? "آرمان رضایی" : plan.athlete,
+          template: plan.template === "minimal" || plan.template === "bold" ? "studio" : plan.template,
+        }));
         return {
           ...current,
           ...saved,
           // Remove the original reference athlete from saved plans and copies.
           coach: saved?.coach === "ایمان قهرمانی" ? "مربی" : (saved?.coach ?? current.coach),
-          plans: (saved?.plans ?? current.plans).map((plan) => ({
-            ...plan,
-            athlete:
-              plan.athlete === "ایمان قهرمانی" ||
-              (plan.id === "sample" && plan.athlete === "ورزشکار نمونه")
-                ? "آرمان رضایی"
-                : plan.athlete,
-            // Retired appearances use Studio without changing workout content.
-            template:
-              plan.template === "minimal" || plan.template === "bold"
-                ? "studio"
-                : plan.template,
-          })),
+          ...linkStudents(normalizedPlans, saved?.students ?? []),
         };
       },
     },

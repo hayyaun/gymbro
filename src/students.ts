@@ -1,16 +1,8 @@
 import type { Plan } from "./model";
+import type { Student } from "./library";
+export { studentKey } from "./library";
 
-export const studentKey = (name: string) =>
-  name.trim().replace(/\s+/g, " ").replace(/[يى]/g, "ی").replace(/ك/g, "ک");
-
-export function studentsFromPlans(plans: Plan[]) {
-  const students = new Map<string, { name: string; count: number }>();
-  for (const plan of plans) {
-    const name = studentKey(plan.athlete);
-    if (!name) continue;
-    const student = students.get(name);
-    if (student) student.count++;
-    else students.set(name, { name, count: 1 });
-  }
-  return [...students.values()].sort((a, b) => a.name.localeCompare(b.name, "fa"));
+export function studentsFromPlans(plans: Plan[], students: Student[]) {
+  return students.map((student) => ({ ...student, count: plans.filter((plan) => plan.studentId === student.id).length }))
+    .sort((a, b) => a.name.localeCompare(b.name, "fa"));
 }
