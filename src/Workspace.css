@@ -54,6 +54,14 @@
 .backup-modes label:last-child { margin-bottom: 0; }
 .backup-modes input { width: auto; margin-top: 5px; flex-shrink: 0; }
 .backup-modes small { display: block; margin-top: 5px; color: #929ba7; }
+@media(min-width:701px) {
+  .sidebar { padding-block: 28px; }
+  .sidebar .workspace-label { margin-top: 28px; }
+  .sidebar nav { gap: 5px; }
+  .sidebar nav button { padding: 11px 12px; }
+  .sidebar-students { margin: 18px 0 14px; }
+  .sidebar .local-note { padding: 12px 10px; margin-bottom: 16px; }
+}
 @media(max-width:700px) {
   .sidebar { flex-wrap: wrap; gap: 9px; }
   .sidebar nav { width: 100%; margin: 0; justify-content: space-between; gap: 2px; }
