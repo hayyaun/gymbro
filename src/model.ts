@@ -135,6 +135,8 @@ const demo = (): Plan => ({
 type Store = {
   coach: string;
   plans: Plan[];
+  heroDismissed: boolean;
+  dismissHero: () => void;
   setCoach: (name: string) => void;
   save: (plan: Plan) => void;
   remove: (id: string) => void;
@@ -144,6 +146,8 @@ export const useStore = create<Store>()(
     (set) => ({
       coach: "",
       plans: [demo()],
+      heroDismissed: false,
+      dismissHero: () => set({ heroDismissed: true }),
       setCoach: (coach) => set({ coach }),
       save: (plan) =>
         set((s) => ({

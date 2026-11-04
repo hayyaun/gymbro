@@ -33,7 +33,9 @@ import { protocolVariables } from "./protocolTheme";
 import ProtocolDesignControls from "./ProtocolDesignControls";
 import { activeWeek, assignTrainingWeek, getWeekdaySession, resizeTrainingWeek } from "./trainingWeek";
 import { SortableSession, SortableSessions } from "./SortableSessions";
+import { studentKey, studentsFromPlans } from "./students";
 import "./App.css";
+import "./DashboardStudents.css";
 
 const templates = [
   { id: "studio", name: "استودیو", text: "قدرتمند و حرفه ای" },
@@ -42,11 +44,11 @@ const templates = [
 ];
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
-  const { coach, plans, setCoach, save, remove } = useStore();
+  const { coach, plans, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
   const [draft, setDraft] = useState<Plan | null>(null);
   const [baseline, setBaseline] = useState("");
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [tab, setTab] = useState("details");
   const [collapsedDays, setCollapsedDays] = useState<Set<string>>(() => new Set());
   const [notice, setNotice] = useState("");
@@ -58,6 +60,10 @@ function App() {
   const [storageError, setStorageError] = useState("");
   const sheet = useRef<HTMLDivElement>(null);
   const dirty = !!draft && JSON.stringify(draft) !== baseline;
+  const students = studentsFromPlans(plans);
+  const activeStudent = students.some((student) => student.name === selectedStudent)
+    ? selectedStudent
+    : null;
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       if (dirty) {
@@ -84,6 +90,13 @@ function App() {
     setCollapsedDays(new Set(plan.days.slice(1).map((day) => day.id)));
     window.scrollTo({ top: 0 });
   };
+  const selectStudent = (name: string | null) => navigate(() => {
+    setDraft(null);
+    setSelectedStudent(name);
+    setQuery("");
+    window.scrollTo({ top: 0 });
+  });
+  const startStudentPlan = () => open({ ...newPlan(), athlete: activeStudent ?? "" }, true);
   const patch = (data: Partial<Plan>) =>
     setDraft((d) => (d ? { ...d, ...data } : d));
   const patchDay = (id: string, data: Partial<Day>) =>
@@ -222,7 +235,7 @@ function App() {
   const visible = plans.filter(
     (p) =>
       `${p.title} ${p.athlete}`.includes(query) &&
-      (filter === "all" || p.template === filter),
+      (activeStudent === null || studentKey(p.athlete) === activeStudent),
   );
   return (
     <div className="app" dir="rtl">
@@ -232,20 +245,40 @@ function App() {
         <span className="workspace-label">فضای کار مربی</span>
         <nav>
           <button
-            className="nav-active"
-            onClick={() => navigate(() => setDraft(null))}
+            className={!draft && activeStudent === null ? "nav-active" : ""}
+            onClick={() => selectStudent(null)}
           >
             <LayoutGrid size={19} />
             برنامه های من <span>{fa(plans.length)}</span>
           </button>
           <button
             aria-label="ساخت برنامه جدید"
-            onClick={() => navigate(() => open(newPlan(), true))}
+            onClick={() => navigate(startStudentPlan)}
           >
             <Plus size={19} />
             ساخت برنامه جدید
           </button>
         </nav>
+        <section className="sidebar-students" aria-label="لیست شاگردها">
+          <div className="students-heading"><Users size={14} /><h2>شاگردها</h2><span>{fa(students.length)}</span></div>
+          <div className="student-list">
+            {students.map((student) => (
+              <button
+                key={student.name}
+                className={`student-link${!draft && activeStudent === student.name ? " student-active" : ""}`}
+                aria-label={`برنامه های ${student.name}`}
+                aria-pressed={!draft && activeStudent === student.name}
+                title={`${student.name} · ${fa(student.count)} برنامه`}
+                onClick={() => selectStudent(student.name)}
+              >
+                <span className="student-avatar" aria-hidden="true">{student.name[0]}</span>
+                <span className="student-name">{student.name}</span>
+                <span className="student-count">{fa(student.count)}</span>
+              </button>
+            ))}
+            {students.length === 0 && <p className="students-empty">با ذخیره اولین برنامه، نام شاگرد اینجا اضافه می شود.</p>}
+          </div>
+        </section>
         <div className="sidebar-bottom">
           <div className="local-note">
             <span className="status-dot" /> فضای شخصی شما
@@ -280,38 +313,38 @@ function App() {
             <b>{draft ? "ویرایش برنامه" : "برنامه های من"}</b>
           </div>
           <span className="top-tag">
-            <span className="status-dot" /> آماده برای یک شروع قوی
+            <span className="status-dot" /> مدیریت برنامه های تمرینی
           </span>
         </header>
         {!draft ? (
           <div className="dashboard">
             <div className="page-heading">
               <div>
-                <span className="eyebrow">YOUR COACHING STUDIO</span>
+                <span className="eyebrow">فضای کار مربی</span>
                 <h1>
                   برنامه های من<span className="heading-dot">.</span>
                 </h1>
-                <p>هر برنامه، شروع یک تغییر بزرگ است.</p>
+                <p>برنامه های شاگردها را اینجا پیدا و ویرایش کنید.</p>
               </div>
-              <button className="primary" onClick={() => open(newPlan(), true)}>
+              <button className="primary" onClick={startStudentPlan}>
                 <Plus size={19} />
                 برنامه جدید
               </button>
             </div>
-            <section className="hero-banner">
+            {!heroDismissed && <section className="hero-banner">
               <div>
                 <span className="hero-label">
                   <span />
-                  از برنامه تا پیشرفت
+                  برنامه های تمرینی، یک جا
                 </span>
                 <h2>
-                  شما مسیر را می سازید.
+                  برنامه هر شاگرد را
                   <br />
-                  <em>ورزشکار، قوی تر می شود.</em>
+                  <em>همین جا آماده کنید.</em>
                 </h2>
-                <p>برنامه تمرینی اختصاصی، با امضای خودتان.</p>
-                <button onClick={() => open(newPlan(), true)}>
-                  اولین قدم را بردارید <ArrowLeft size={17} />
+                <p>جلسه ها و حرکت ها را مشخص کنید و از برنامه خروجی عکس بگیرید.</p>
+                <button onClick={startStudentPlan}>
+                  ساخت برنامه جدید <ArrowLeft size={17} />
                 </button>
               </div>
               <div className="hero-graphic" aria-hidden="true">
@@ -323,7 +356,16 @@ function App() {
                 <span className="graphic-caption">PLAN. TRAIN. REPEAT.</span>
               </div>
               <span className="hero-index">01 / PROGRESS</span>
-            </section>
+              <button
+                className="hero-dismiss"
+                aria-label="بستن همیشگی کادر راهنما"
+                title="این کادر دیگر نمایش داده نشود"
+                onClick={() => {
+                  try { dismissHero(); }
+                  catch { setStorageError("ذخیره تنظیمات انجام نشد. فضای مرورگر را بررسی کنید."); }
+                }}
+              ><X size={17} /></button>
+            </section>}
             <div className="stats">
               <Stat
                 icon={<FileText />}
@@ -332,8 +374,8 @@ function App() {
               />
               <Stat
                 icon={<Users />}
-                value={fa(new Set(plans.map((p) => p.athlete)).size)}
-                label="ورزشکار"
+                value={fa(students.length)}
+                label="شاگرد"
               />
               <Stat
                 icon={<Dumbbell />}
@@ -343,7 +385,7 @@ function App() {
             </div>
             <div className="library-heading">
               <h2>
-                کتابخانه برنامه ها <span>{fa(plans.length)}</span>
+                {activeStudent ? `برنامه های ${activeStudent}` : "برنامه های شاگردها"} <span>{fa(visible.length)}</span>
               </h2>
               <label className="search">
                 <Search size={18} />
@@ -355,14 +397,17 @@ function App() {
                 />
               </label>
             </div>
-            <div className="filters">
-              {[{ id: "all", name: "همه برنامه ها" }, ...templates].map((t) => (
+            <div className="filters student-filters" role="group" aria-label="فیلتر بر اساس شاگرد">
+              <button className={activeStudent === null ? "selected" : ""} aria-pressed={activeStudent === null} onClick={() => setSelectedStudent(null)}>همه شاگردها <span>{fa(plans.length)}</span></button>
+              {students.map((student) => (
                 <button
-                  key={t.id}
-                  className={filter === t.id ? "selected" : ""}
-                  onClick={() => setFilter(t.id)}
+                  key={student.name}
+                  className={activeStudent === student.name ? "selected" : ""}
+                  aria-pressed={activeStudent === student.name}
+                  title={student.name}
+                  onClick={() => setSelectedStudent(student.name)}
                 >
-                  {t.name}
+                  <span className="filter-name">{student.name}</span><span>{fa(student.count)}</span>
                 </button>
               ))}
             </div>
@@ -474,13 +519,13 @@ function App() {
               ))}
               <button
                 className="new-card"
-                onClick={() => open(newPlan(), true)}
+                onClick={startStudentPlan}
               >
                 <span>
                   <Plus size={26} />
                 </span>
-                <b>برنامه بعدی شما</b>
-                <small>یک شروع تازه برای یک هدف تازه</small>
+                <b>{activeStudent ? `برنامه جدید برای ${activeStudent}` : "ساخت برنامه جدید"}</b>
+                <small>روزهای تمرین و حرکت ها را مشخص کنید</small>
               </button>
             </div>
             {visible.length === 0 && (
@@ -490,7 +535,7 @@ function App() {
               </p>
             )}
             <footer className="app-footer">
-              <span>با دقت بنویسید. با قدرت پیش بروید.</span>
+              <span>برنامه ها در این مرورگر ذخیره می شوند.</span>
               <span dir="ltr">GYMBRO © {new Date().getFullYear()}</span>
             </footer>
           </div>
