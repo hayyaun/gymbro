@@ -10,6 +10,7 @@ import {
   Dumbbell,
   FileText,
   LayoutGrid,
+  Layers,
   LogOut,
   Moon,
   Plus,
@@ -37,6 +38,11 @@ import { studentKey, studentsFromPlans } from "./students";
 import StudentsWorkspace from "./StudentsWorkspace";
 import type { WorkspaceHandle } from "./StudentsWorkspace";
 import Modal from "./Dialog";
+import ExerciseEditor from "./ExerciseEditor";
+import BlocksWorkspace from "./BlocksWorkspace";
+import { SaveBlockDialog, InsertBlockDialog } from "./BlockDialogs";
+import { exerciseCatalog } from "./exerciseCatalog";
+import { cloneExercises, insertBlockExercises } from "./library";
 import "./App.css";
 import "./DashboardStudents.css";
 
@@ -47,8 +53,11 @@ const templates = [
 ];
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
-  const { coach, plans, students: profiles, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
-  const [page, setPage] = useState<"library" | "students">("library");
+  const { coach, plans, students: profiles, blocks, saveBlock, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
+  const [page, setPage] = useState<"library" | "students" | "blocks">("library");
+  const [savingBlock, setSavingBlock] = useState<Day | null>(null);
+  const [insertingBlock, setInsertingBlock] = useState<Day | null>(null);
+  const [focusExerciseId, setFocusExerciseId] = useState("");
   const [profileId, setProfileId] = useState<string | null>(null);
   const [viewingStudentId, setViewingStudentId] = useState<string | null>(null);
   const [workspaceVersion, setWorkspaceVersion] = useState(0);
@@ -71,6 +80,7 @@ function App() {
   const dirty = (!!draft && JSON.stringify(draft) !== baseline) || workspaceDirty;
   const students = studentsFromPlans(plans, profiles);
   const activeStudent = students.find((student) => student.id === selectedStudent) ?? null;
+  const catalog = exerciseCatalog(plans, blocks);
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       if (dirty) {
@@ -109,6 +119,7 @@ function App() {
     setDraft(null); setPage("students"); setProfileId(id); setWorkspaceVersion((version) => version + 1); setWorkspaceDirty(false); window.scrollTo({ top: 0 });
   });
   const startStudentPlan = () => open({ ...newPlan(), athlete: activeStudent?.name ?? "", studentId: activeStudent?.id }, true);
+  const openBlocks = () => navigate(() => { setDraft(null); setPage("blocks"); setWorkspaceDirty(false); window.scrollTo({ top: 0 }); });
   const patch = (data: Partial<Plan>) =>
     setDraft((d) => (d ? { ...d, ...data } : d));
   const patchDay = (id: string, data: Partial<Day>) =>
@@ -116,6 +127,10 @@ function App() {
     patch({
       days: draft.days.map((d) => (d.id === id ? { ...d, ...data } : d)),
     });
+  const addExerciseAfter = (day: Day, index: number) => {
+    const next = exercise(); const exercises = [...day.exercises]; exercises.splice(index + 1, 0, next);
+    patchDay(day.id, { exercises }); setFocusExerciseId(next.id);
+  };
   const applyWeek = (selected: boolean[]) => {
     if (!draft) return;
     patch(resizeTrainingWeek(draft, selected, () => ({ id: uid(), name: "", focus: "", exercises: [exercise()] })));
@@ -265,6 +280,7 @@ function App() {
             برنامه های من <span>{fa(plans.length)}</span>
           </button>
           <button className={page === "students" ? "nav-active" : ""} aria-label="همه شاگردها" onClick={() => openStudents(null)}><Users size={19} />شاگردها <span>{fa(students.length)}</span></button>
+          <button className={page === "blocks" ? "nav-active" : ""} aria-label="بلوک های تمرینی" onClick={openBlocks}><Layers size={19} />بلوک های تمرینی</button>
           <button
             aria-label="ساخت برنامه جدید"
             onClick={() => navigate(startStudentPlan)}
@@ -324,13 +340,13 @@ function App() {
         <header className="topbar">
           <div className="breadcrumb">
             فضای کار <ChevronLeft size={14} />
-            <b>{page === "students" ? "پرونده شاگردها" : draft ? "ویرایش برنامه" : "برنامه های من"}</b>
+            <b>{page === "students" ? "پرونده شاگردها" : page === "blocks" ? "بلوک های تمرینی" : draft ? "ویرایش برنامه" : "برنامه های من"}</b>
           </div>
           <span className="top-tag">
             <span className="status-dot" /> مدیریت برنامه های تمرینی
           </span>
         </header>
-        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : !draft ? (
+        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : page === "blocks" ? <BlocksWorkspace editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} navigate={navigate} /> : !draft ? (
           <div className="dashboard">
             <div className="page-heading">
               <div>
@@ -691,6 +707,7 @@ function App() {
                       <span>{fa(draft.days.length)} روز</span>
                     </div>
                     <p className="week-help">برای جابجایی، دستگیره شش نقطه ای جلسه را نگه دارید و بکشید. ترتیب جلسه ها در تقویم هم به روز می شود.</p>
+                    <p className="keyboard-tip">Enter: انتخاب حرکت ← ست ← تکرار ← استراحت ← حرکت بعدی. نام دلخواه را هم می توانید بنویسید.</p>
                     <SortableSessions onMove={moveSession}>
                     {draft.days.map((day, i) => (
                       <SortableSession id={day.id} index={i} key={day.id}>{(handle) => <>
@@ -716,6 +733,10 @@ function App() {
                           </button>
                         </div>
                         <div id={`day-fields-${day.id}`} className="day-editor-fields" hidden={collapsedDays.has(day.id)}>
+                        <div className="block-tools"><button onClick={() => setInsertingBlock(day)}><Layers size={14} />افزودن از بلوک ها</button><button onClick={() => {
+                          if (!day.exercises.length || day.exercises.some((item) => !item.name.trim() || !item.sets.trim() || !item.reps.trim() || !item.rest.trim())) setNotice("قبل از ذخیره بلوک، مشخصات حرکت ها را کامل کنید");
+                          else setSavingBlock(day);
+                        }}><Plus size={14} />ذخیره این جلسه به عنوان بلوک</button></div>
                         <div className="two-fields">
                           <div className="day-position"><span>روز تمرین</span><b>{weekdays.filter((_, index) => activeWeek(draft)[index])[i] || day.name}</b></div>
                           <label>
@@ -728,93 +749,11 @@ function App() {
                             />
                           </label>
                         </div>
-                        {day.exercises.map((ex, j) => (
-                          <div className="exercise-editor" key={ex.id}>
-                            <div className="exercise-top">
-                              <span>{fa(j + 1)}</span>
-                              <input
-                                aria-label={`نام حرکت ${j + 1} جلسه ${i + 1}`}
-                                placeholder="نام حرکت"
-                                value={ex.name}
-                                onChange={(e) =>
-                                  patchDay(day.id, {
-                                    exercises: day.exercises.map((x) =>
-                                      x.id === ex.id
-                                        ? { ...x, name: e.target.value }
-                                        : x,
-                                    ),
-                                  })
-                                }
-                              />
-                              <button
-                                className="icon-button"
-                                aria-label={`حذف حرکت ${j + 1} جلسه ${i + 1}`}
-                                onClick={() =>
-                                  patchDay(day.id, {
-                                    exercises: day.exercises.filter(
-                                      (x) => x.id !== ex.id,
-                                    ),
-                                  })
-                                }
-                              >
-                                <X size={15} />
-                              </button>
-                            </div>
-                            <div className="exercise-fields">
-                              {(
-                                [
-                                  { key: "sets", label: "ست" },
-                                  { key: "reps", label: "تکرار" },
-                                  { key: "rest", label: "استراحت (ثانیه)" },
-                                  { key: "group", label: "سوپرست" },
-                                ] as const
-                              ).map(({ key, label }) => (
-                                <label key={key}>
-                                  {label}
-                                  <input
-                                    value={ex[key]}
-                                    placeholder={key === "group" ? "A / B" : ""}
-                                    onChange={(e) =>
-                                      patchDay(day.id, {
-                                        exercises: day.exercises.map((x) =>
-                                          x.id === ex.id
-                                            ? { ...x, [key]: e.target.value }
-                                            : x,
-                                        ),
-                                      })
-                                    }
-                                  />
-                                </label>
-                              ))}
-                            </div>
-                            <input
-                              className="note-input"
-                              aria-label={`توضیح حرکت ${j + 1} جلسه ${i + 1}`}
-                              value={ex.note}
-                              placeholder="توضیح حرکت (اختیاری)"
-                              onChange={(e) =>
-                                patchDay(day.id, {
-                                  exercises: day.exercises.map((x) =>
-                                    x.id === ex.id
-                                      ? { ...x, note: e.target.value }
-                                      : x,
-                                  ),
-                                })
-                              }
-                            />
-                          </div>
-                        ))}
-                        <button
-                          className="add-exercise"
-                          onClick={() =>
-                            patchDay(day.id, {
-                              exercises: [...day.exercises, exercise()],
-                            })
-                          }
-                        >
-                          <Plus size={16} />
-                          افزودن حرکت
-                        </button>
+                        {day.exercises.map((ex, j) => <ExerciseEditor key={ex.id} value={ex} index={j} session={i + 1} catalog={catalog} autoFocus={focusExerciseId === ex.id}
+                          onChange={(value) => patchDay(day.id, { exercises: day.exercises.map((item) => item.id === value.id ? value : item) })}
+                          onRemove={() => patchDay(day.id, { exercises: day.exercises.filter((item) => item.id !== ex.id) })}
+                          onAddAfter={() => addExerciseAfter(day, j)} />)}
+                        <button className="add-exercise" onClick={() => addExerciseAfter(day, day.exercises.length - 1)}><Plus size={16} />افزودن حرکت</button>
                         </div>
                       </>}</SortableSession>
                     ))}
@@ -929,6 +868,17 @@ function App() {
           </button>
         </div>
       )}
+      {savingBlock && <SaveBlockDialog day={savingBlock} onClose={() => setSavingBlock(null)} onSave={(name) => {
+        try { saveBlock({ id: uid(), name, focus: savingBlock.focus, exercises: cloneExercises(savingBlock.exercises), updatedAt: new Date().toISOString() }); setSavingBlock(null); setNotice("بلوک تمرینی ذخیره شد"); }
+        catch { setStorageError("ذخیره بلوک انجام نشد."); }
+      }} />}
+      {insertingBlock && <InsertBlockDialog day={insertingBlock} blocks={blocks} onClose={() => setInsertingBlock(null)} onInsert={(block, replace) => {
+        const first = insertingBlock.exercises[0];
+        const placeholder = insertingBlock.exercises.length === 1 && !first.name.trim() && !first.note && !first.group && first.sets === "3" && first.reps === "10–12" && first.rest === "60";
+        const existing = replace || placeholder ? [] : insertingBlock.exercises;
+        patchDay(insertingBlock.id, { exercises: insertBlockExercises(existing, block.exercises), focus: replace || !insertingBlock.focus ? block.focus : insertingBlock.focus });
+        setInsertingBlock(null); setNotice("بلوک به جلسه اضافه شد؛ برنامه را ذخیره کنید");
+      }} />}
       {storageError && (
         <Modal title="ذخیره ناموفق" onClose={() => setStorageError("")}>
           <p>{storageError}</p>

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { linkStudents, updateStudent, makeStudent, isDate } from "../src/library.ts";
+import { linkStudents, updateStudent, makeStudent, isDate, insertBlockExercises } from "../src/library.ts";
 
 test("legacy plans gain one stable profile per normalized name without losing workouts", () => {
   const days = [{ id: "session", exercises: [{ name: "اسکوات", sets: "4" }] }];
@@ -27,4 +27,16 @@ test("payment dates reject impossible calendar dates", () => {
   assert.equal(isDate("2026-02-30"), false);
   assert.equal(isDate("2024-02-29"), true);
   assert.equal(isDate("bad"), false);
+});
+test("reusing blocks creates independent movement IDs and keeps supersets separate", () => {
+  const existing = [{ id: "original", name: "پرس سینه", group: "A", note: "یادداشت", sets: "3", reps: "8", rest: "90" }];
+  const incoming = [{ ...existing[0], id: "block-one", name: "جلو بازو" }, { ...existing[0], id: "block-two", name: "پشت بازو" }];
+  const result = insertBlockExercises(existing, incoming);
+  assert.equal(result[0], existing[0]);
+  assert.equal(result[1].group, result[2].group);
+  assert.notEqual(result[1].group, existing[0].group);
+  assert.equal(new Set(result.map((item) => item.id)).size, 3);
+  assert.notEqual(result[1].id, incoming[0].id);
+  result[1].note = "تغییر";
+  assert.equal(incoming[0].note, "یادداشت");
 });

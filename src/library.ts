@@ -64,3 +64,18 @@ export function isDate(value: string) {
 }
 export const faNumber = (value: number) => value.toLocaleString("fa-IR");
 export const faDate = (value: string) => new Date(`${value.slice(0, 10)}T12:00:00`).toLocaleDateString("fa-IR");
+
+export const cloneExercises = (exercises: Exercise[]) => exercises.map((item) => ({ ...item, id: crypto.randomUUID() }));
+export function insertBlockExercises(existing: Exercise[], incoming: Exercise[]) {
+  const groups = new Set(existing.map((item) => item.group.trim()).filter(Boolean));
+  const renamed = new Map<string, string>();
+  for (const item of incoming) {
+    const label = item.group.trim();
+    if (!label || renamed.has(label)) continue;
+    let next = label;
+    let suffix = 2;
+    while (groups.has(next)) next = `${label}${suffix++}`;
+    groups.add(next); renamed.set(label, next);
+  }
+  return [...existing, ...cloneExercises(incoming).map((item) => ({ ...item, group: renamed.get(item.group.trim()) ?? "" }))];
+}
