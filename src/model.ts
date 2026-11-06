@@ -7,8 +7,8 @@ import type { Student, WorkoutBlock } from "./library";
 import { restoreData } from "./backup";
 import type { LibraryData, RestoreMode } from "./backup";
 import type { TrainingSystem } from "./trainingSystems";
-import { sheetSectionOptions, sheetTemplates } from "./sheetSections";
-import type { HiddenSheetSections, SheetSection } from "./sheetSections";
+import { orderedSheetSections, sheetSectionOptions, sheetTemplates } from "./sheetSections";
+import type { HiddenSheetSections, SheetSection, SheetSectionOrder } from "./sheetSections";
 
 export type Exercise = {
   id: string;
@@ -40,6 +40,7 @@ export type Plan = {
   protocolAccent?: ProtocolAccent;
   protocolMode?: ProtocolMode;
   hiddenSections?: HiddenSheetSections;
+  sectionOrder?: SheetSectionOrder;
   notes: string;
   cardio: string;
   schedule: string[];
@@ -56,9 +57,9 @@ export const exercise = (name = ""): Exercise => ({
   note: "",
   group: "",
 });
-export type PlanAppearance = Pick<Plan, "template" | "color" | "forgeAccent" | "forgeMode" | "protocolAccent" | "protocolMode" | "hiddenSections">;
-const planAppearance = ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections }: PlanAppearance): PlanAppearance =>
-  ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections });
+export type PlanAppearance = Pick<Plan, "template" | "color" | "forgeAccent" | "forgeMode" | "protocolAccent" | "protocolMode" | "hiddenSections" | "sectionOrder">;
+const planAppearance = ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections, sectionOrder }: PlanAppearance): PlanAppearance =>
+  ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections, sectionOrder });
 
 export const newPlan = (appearance?: PlanAppearance): Plan => ({
   id: uid(),
@@ -180,7 +181,13 @@ export const useStore = create<Store>()(
             defaultAppearance = planAppearance(plan);
           } else {
             const changedSections: HiddenSheetSections = {};
+            const changedOrder: SheetSectionOrder = {};
             for (const template of sheetTemplates) {
+              const beforeOrder = orderedSheetSections({ ...previous, template });
+              const afterOrder = orderedSheetSections({ ...plan, template });
+              if (afterOrder.some((section, index) => section !== beforeOrder[index])) {
+                changedOrder[template] = afterOrder;
+              }
               const options: readonly SheetSection[] = sheetSectionOptions[template];
               const before = previous.hiddenSections?.[template] ?? [];
               const after = plan.hiddenSections?.[template] ?? [];
@@ -192,9 +199,13 @@ export const useStore = create<Store>()(
                 (changed.includes(section) ? after : remembered).includes(section),
               );
             }
-            if (Object.keys(changedSections).length) {
+            if (Object.keys(changedSections).length || Object.keys(changedOrder).length) {
               const appearance = defaultAppearance ?? planAppearance(plan);
-              defaultAppearance = { ...appearance, hiddenSections: { ...appearance.hiddenSections, ...changedSections } };
+              defaultAppearance = {
+                ...appearance,
+                hiddenSections: { ...appearance.hiddenSections, ...changedSections },
+                sectionOrder: { ...appearance.sectionOrder, ...changedOrder },
+              };
             }
           }
           return {

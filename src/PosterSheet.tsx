@@ -1,6 +1,7 @@
 import { BedDouble, Check, Dumbbell, HeartPulse, NotebookPen, Square } from "lucide-react";
 import type { Plan } from "./model";
-import { showsSheetSection } from "./sheetSections";
+import { orderedSheetSections, showsSheetSection } from "./sheetSections";
+import { renderSheetSections } from "./renderSheetSections";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import WorkoutDays from "./WorkoutDays";
 import "./PosterSheet.css";
@@ -137,31 +138,33 @@ export default function PosterSheet({ plan, coach, weekdays, variant }: {
   const TrainingIcon = isOverdrive ? Check : Dumbbell;
   const RestIcon = isOverdrive ? Square : BedDouble;
   const firstDay = plan.days[0];
-  const firstHeadingInHero = !isOverdrive && showArt && !!firstDay && plan.days.length <= 3 && !firstDay.focus;
+  const order = orderedSheetSections(plan);
+  const workoutsFollowHero = order.indexOf("workouts") === order.indexOf("heroArt") + 1;
+  const firstHeadingInHero = workoutsFollowHero && !isOverdrive && showArt && !!firstDay && plan.days.length <= 3 && !firstDay.focus;
 
   return (
     <article className={`plan-sheet poster-sheet template-${variant}`} dir="rtl">
-      <header className={`poster-hero${showArt ? "" : " poster-hero-without-art"}${firstHeadingInHero ? " poster-hero-with-session" : ""}`}>
-        {isOverdrive
-          ? showArt && <div className="overdrive-art"><OverdriveArt /></div>
-          : showArt && <PahlavanArt />}
-        <div className="poster-hero-copy">
-          <div className="poster-brand" dir="ltr"><strong>GYMBRO</strong><span aria-hidden="true" /></div>
-          {isOverdrive && showArt && <OverdriveTitleTrace />}
-          <div className="poster-edition" dir="ltr"><span>{isOverdrive ? "02" : "04"}</span>{edition}</div>
-          {isOverdrive && showArt && <OverdriveTitleTrace lower />}
-          <h2>{plan.title || "برنامه تمرینی"}</h2>
-          <div className="poster-athlete"><span>ورزشکار</span><b>{plan.athlete || "نام ورزشکار"}</b></div>
-          <div className="poster-facts"><span>{plan.goal}</span><span>{plan.weeks} هفته</span><span>{fa(plan.days.length)} جلسه در هفته</span></div>
-        </div>
-        {firstHeadingInHero && <h3 className="pahlavan-first-day"><b>{firstDay.name || "روز ۱"}</b></h3>}
-      </header>
+      {renderSheetSections(plan, {
+        heroArt: <header className={`poster-hero${showArt ? "" : " poster-hero-without-art"}${firstHeadingInHero ? " poster-hero-with-session" : ""}`}>
+          {isOverdrive
+            ? showArt && <div className="overdrive-art"><OverdriveArt /></div>
+            : showArt && <PahlavanArt />}
+          <div className="poster-hero-copy">
+            <div className="poster-brand" dir="ltr"><strong>GYMBRO</strong><span aria-hidden="true" /></div>
+            {isOverdrive && showArt && <OverdriveTitleTrace />}
+            <div className="poster-edition" dir="ltr"><span>{isOverdrive ? "02" : "04"}</span>{edition}</div>
+            {isOverdrive && showArt && <OverdriveTitleTrace lower />}
+            <h2>{plan.title || "برنامه تمرینی"}</h2>
+            <div className="poster-athlete"><span>ورزشکار</span><b>{plan.athlete || "نام ورزشکار"}</b></div>
+            <div className="poster-facts"><span>{plan.goal}</span><span>{plan.weeks} هفته</span><span>{fa(plan.days.length)} جلسه در هفته</span></div>
+          </div>
+          {firstHeadingInHero && <h3 className="pahlavan-first-day"><b>{firstDay.name || "روز ۱"}</b></h3>}
+        </header>,
 
-      <WorkoutDays plan={plan} firstHeadingInHero={firstHeadingInHero} />
+        workouts: <WorkoutDays plan={plan} firstHeadingInHero={firstHeadingInHero} />,
 
-      <div className="poster-reference">
-        <TrainingSystemLegend plan={plan} />
-        {showsSheetSection(plan, "calendar") && (
+        legend: <TrainingSystemLegend plan={plan} />,
+        calendar: showsSheetSection(plan, "calendar") && (
           <section className="poster-calendar">
             <h3><span>تقویم هفتگی</span></h3>
             <ul>
@@ -175,16 +178,17 @@ export default function PosterSheet({ plan, coach, weekdays, variant }: {
               })}
             </ul>
           </section>
-        )}
-      </div>
-
-      {(showNotes || showCardio) && (
-        <div className="poster-supplements">
-          {showNotes && <section><h3><span><NotebookPen size={16} />یادداشت مربی</span></h3><p>{plan.notes}</p></section>}
-          {showCardio && <section><h3><span><HeartPulse size={16} />تمرین هوازی</span></h3><p>{plan.cardio}</p></section>}
-        </div>
-      )}
-      <footer><b>باشگاه اکسیر</b><span>مربی: {coach || "نام مربی"}</span><strong dir="ltr">{edition} / GYMBRO</strong></footer>
+        ),
+        notes: showNotes && <section><h3><span><NotebookPen size={16} />یادداشت مربی</span></h3><p>{plan.notes}</p></section>,
+        cardio: showCardio && <section><h3><span><HeartPulse size={16} />تمرین هوازی</span></h3><p>{plan.cardio}</p></section>,
+        footer: showsSheetSection(plan, "footer") && <footer><b>باشگاه اکسیر</b><span>مربی: {coach || "نام مربی"}</span><strong dir="ltr">{edition} / GYMBRO</strong></footer>,
+      }, [{
+        members: ["calendar", "legend"],
+        wrap: (children) => <div className="poster-reference">{children}</div>,
+      }, {
+        members: ["notes", "cardio"],
+        wrap: (children) => <div className="poster-supplements">{children}</div>,
+      }])}
     </article>
   );
 }

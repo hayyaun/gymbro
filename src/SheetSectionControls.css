@@ -34,3 +34,27 @@
   margin: 0;
   accent-color: #c32d42;
 }
+
+.sheet-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 6px;
+}
+
+.sheet-section-row.dragging {
+  background: #fff0f3;
+}
+
+.sheet-section-required {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sheet-section-required small {
+  display: block;
+  color: #626b78;
+  font-size: 10px;
+}

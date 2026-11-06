@@ -5,6 +5,7 @@ import { getProtocolPalette, protocolVariables } from "./protocolTheme";
 import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import { showsSheetSection } from "./sheetSections";
+import { renderSheetSections } from "./renderSheetSections";
 import "./ProtocolSheet.css";
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
@@ -53,57 +54,59 @@ export default function ProtocolSheet({
         <div><span>مدت برنامه</span><b>{plan.weeks || "—"}<small> هفته</small></b></div>
       </section>
 
-      {showsSheetSection(plan, "signal") && <div className="protocol-signal-strip">
-        <div className="protocol-pattern" aria-hidden="true" />
-        <div className="protocol-signal-label"><Dumbbell size={19} /><b>تمرکز. تکرار. پیشرفت.</b><span>{fa(exerciseCount)} حرکت</span></div>
-      </div>}
+      {renderSheetSections(plan, {
+        signal: showsSheetSection(plan, "signal") && <div className="protocol-signal-strip">
+          <div className="protocol-pattern" aria-hidden="true" />
+          <div className="protocol-signal-label"><Dumbbell size={19} /><b>تمرکز. تکرار. پیشرفت.</b><span>{fa(exerciseCount)} حرکت</span></div>
+        </div>,
 
-      <section className="protocol-training">
-        <div className="protocol-section-label"><h3><span>01</span> ساختار تمرین</h3><small>{fa(plan.days.length)} جلسه / {fa(exerciseCount)} حرکت</small></div>
-        <WorkoutDays plan={plan} />
-        <TrainingSystemLegend plan={plan} />
-      </section>
+        workouts: <>
+          <div className="protocol-section-label"><h3><span>01</span> ساختار تمرین</h3><small>{fa(plan.days.length)} جلسه / {fa(exerciseCount)} حرکت</small></div>
+          <WorkoutDays plan={plan} />
+        </>,
+        legend: <TrainingSystemLegend plan={plan} />,
 
-      {showsSheetSection(plan, "calendar") && <section className="protocol-week">
-        <div className="protocol-section-label"><h3><span>02</span> چرخه هفتگی</h3><small>تعادل تمرین و بازیابی</small></div>
-        <div className="protocol-timeline">
-          {weekdays.map((day, index) => {
-            const training = plan.schedule[index] !== "استراحت";
-            return (
-              <div key={day} className={training ? "training" : "rest"}>
-                <b>{day}</b>
-                <span>{training ? <Zap size={18} /> : <Moon size={17} />}</span>
-                <small>{plan.schedule[index]}</small>
-              </div>
-            );
-          })}
-        </div>
-      </section>}
+        calendar: showsSheetSection(plan, "calendar") && <section className="protocol-week">
+          <div className="protocol-section-label"><h3><span>02</span> چرخه هفتگی</h3><small>تعادل تمرین و بازیابی</small></div>
+          <div className="protocol-timeline">
+            {weekdays.map((day, index) => {
+              const training = plan.schedule[index] !== "استراحت";
+              return (
+                <div key={day} className={training ? "training" : "rest"}>
+                  <b>{day}</b>
+                  <span>{training ? <Zap size={18} /> : <Moon size={17} />}</span>
+                  <small>{plan.schedule[index]}</small>
+                </div>
+              );
+            })}
+          </div>
+        </section>,
 
-      {(showNotes || showCardio) && (
-        <div className={`protocol-supplements${showNotes && showCardio ? " has-both" : ""}`}>
-          {showNotes && (
-            <section className="protocol-notes">
-              <h3><Focus size={18} /> یادداشت مربی</h3>
-              <p>{plan.notes}</p>
-              <span className="protocol-note-signature">با امضای {coach || "مربی"}<ArrowUpLeft size={17} /></span>
-            </section>
-          )}
-          {showCardio && (
-            <section className="protocol-cardio">
-              <h3><Crosshair size={18} /> تمرین هوازی</h3>
-              <p>{plan.cardio}</p>
-              <div className="protocol-barcode" aria-hidden="true" />
-            </section>
-          )}
-        </div>
-      )}
-
-      <footer>
-        <div><Dumbbell size={28} /><b>اکسیر<span>استودیو تمرین</span></b></div>
-        <strong>متعهد به پیشرفت<MoveUpRight size={27} /></strong>
-        <span className="protocol-footer-mark" aria-hidden="true"><i /><i /><i /></span>
-      </footer>
+        notes: showNotes && <section className="protocol-notes">
+          <h3><Focus size={18} /> یادداشت مربی</h3>
+          <p>{plan.notes}</p>
+          <span className="protocol-note-signature">با امضای {coach || "مربی"}<ArrowUpLeft size={17} /></span>
+        </section>,
+        cardio: showCardio && <section className="protocol-cardio">
+          <h3><Crosshair size={18} /> تمرین هوازی</h3>
+          <p>{plan.cardio}</p>
+          <div className="protocol-barcode" aria-hidden="true" />
+        </section>,
+        footer: showsSheetSection(plan, "footer") && <footer>
+          <div><Dumbbell size={28} /><b>اکسیر<span>استودیو تمرین</span></b></div>
+          <strong>متعهد به پیشرفت<MoveUpRight size={27} /></strong>
+          <span className="protocol-footer-mark" aria-hidden="true"><i /><i /><i /></span>
+        </footer>,
+      }, [{
+        members: ["workouts", "legend"],
+        wrap: (children) => <section className="protocol-training">{children}</section>,
+      }, {
+        members: ["notes", "cardio"],
+        wrap: (children, order) => <div className={`protocol-supplements${order.length === 2 ? " has-both" : ""}`}
+          style={order.length === 2 && order[0] === "cardio" ? { gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.5fr)" } : undefined}>
+          {children}
+        </div>,
+      }])}
     </article>
   );
 }

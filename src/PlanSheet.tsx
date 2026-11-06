@@ -4,6 +4,7 @@ import ForgeSheet from "./ForgeSheet";
 import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import { showsSheetSection } from "./sheetSections";
+import { renderSheetSections } from "./renderSheetSections";
 import ProtocolSheet from "./ProtocolSheet";
 import PosterSheet from "./PosterSheet";
 export const weekdays = [
@@ -57,40 +58,36 @@ export default function PlanSheet({
         <b>ورزشکار: {plan.athlete || "نام ورزشکار"}</b>
         <span>برنامه تمرینی اختصاصی · باشگاه اکسیر</span>
       </div>
-      <WorkoutDays plan={plan} />
-      <TrainingSystemLegend plan={plan} />
-      {(showCalendar || showCardio) && <div className={`sheet-bottom${showCalendar && showCardio ? " has-cardio" : ""}`}>
-        {showCalendar && <section className="sheet-schedule">
+      {renderSheetSections(plan, {
+        workouts: <WorkoutDays plan={plan} />,
+        legend: <TrainingSystemLegend plan={plan} />,
+        calendar: showCalendar && <section className="sheet-schedule">
           <h3>تقویم هفتگی</h3>
           <div>
             {weekdays.map((day, i) => (
-              <span
-                key={day}
-                className={plan.schedule[i] !== "استراحت" ? "training" : ""}
-              >
-                <b>{day}</b>
-                <small>{plan.schedule[i]}</small>
-              </span>
+              <span key={day} className={plan.schedule[i] !== "استراحت" ? "training" : ""}><b>{day}</b><small>{plan.schedule[i]}</small></span>
             ))}
           </div>
-        </section>}
-        {showCardio && (
-          <section className="sheet-cardio">
-            <h3>تمرین هوازی</h3>
-            <p>{plan.cardio}</p>
-          </section>
-        )}
-      </div>}
-      {plan.notes && showsSheetSection(plan, "notes") && (
-        <div className="sheet-notes">
+        </section>,
+        cardio: showCardio && <section className="sheet-cardio">
+          <h3>تمرین هوازی</h3>
+          <p>{plan.cardio}</p>
+        </section>,
+        notes: plan.notes && showsSheetSection(plan, "notes") && <div className="sheet-notes">
           <b>یادداشت مربی</b>
           <p>{plan.notes}</p>
-        </div>
-      )}
-      <footer>
-        <b>باشگاه اکسیر · EXIR GYM</b>
-        <span>مربی: {coach || "نام مربی"}</span>
-      </footer>
+        </div>,
+        footer: showsSheetSection(plan, "footer") && <footer>
+          <b>باشگاه اکسیر · EXIR GYM</b>
+          <span>مربی: {coach || "نام مربی"}</span>
+        </footer>,
+      }, [{
+        members: ["calendar", "cardio"],
+        wrap: (children, order) => <div className={`sheet-bottom${order.length === 2 ? " has-cardio" : ""}`}
+          style={order.length === 2 && order[0] === "cardio" ? { gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.7fr)" } : undefined}>
+          {children}
+        </div>,
+      }])}
     </article>
   );
 }

@@ -7,11 +7,12 @@ export const sheetSectionLabels = {
   rhythm: "ردیف تمرکز تمرین",
   signal: "نوار شعار و الگو",
   heroArt: "تصویر بالای پوستر",
+  footer: "پاورقی",
 };
 
 export type SheetSection = keyof typeof sheetSectionLabels;
 
-const commonSections = ["calendar", "legend", "notes", "cardio"] as const;
+const commonSections = ["calendar", "legend", "notes", "cardio", "footer"] as const;
 export const sheetSectionOptions = {
   studio: commonSections,
   forge: ["pillars", "rhythm", ...commonSections],
@@ -22,10 +23,29 @@ export const sheetSectionOptions = {
 
 export type SheetTemplate = keyof typeof sheetSectionOptions;
 export type HiddenSheetSections = Partial<Record<SheetTemplate, SheetSection[]>>;
+export type SheetLayoutSection = SheetSection | "workouts";
+export type SheetSectionOrder = Partial<Record<SheetTemplate, SheetLayoutSection[]>>;
 export const sheetTemplates = Object.keys(sheetSectionOptions) as SheetTemplate[];
+
+const defaultOrders: Record<SheetTemplate, readonly SheetLayoutSection[]> = {
+  studio: ["workouts", "legend", "calendar", "cardio", "notes", "footer"],
+  forge: ["pillars", "workouts", "rhythm", "calendar", "cardio", "legend", "notes", "footer"],
+  protocol: ["signal", "workouts", "legend", "calendar", "notes", "cardio", "footer"],
+  overdrive: ["heroArt", "workouts", "legend", "calendar", "notes", "cardio", "footer"],
+  pahlavan: ["heroArt", "workouts", "legend", "calendar", "notes", "cardio", "footer"],
+};
 
 export function sheetTemplate(template: string): SheetTemplate {
   return sheetTemplates.find((id) => id === template) ?? "studio";
+}
+
+export function orderedSheetSections(
+  { template, sectionOrder }: { template: string; sectionOrder?: SheetSectionOrder },
+): SheetLayoutSection[] {
+  const id = sheetTemplate(template);
+  const defaults = defaultOrders[id];
+  const saved = sectionOrder?.[id] ?? [];
+  return [...new Set([...saved.filter((section) => defaults.includes(section)), ...defaults])];
 }
 
 export function showsSheetSection(

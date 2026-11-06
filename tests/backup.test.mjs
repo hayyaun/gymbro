@@ -47,12 +47,17 @@ test("poster themes and their independent visibility preferences survive backup"
   const original = data.plans[0];
   data.plans = [
     { ...original, template: "overdrive", hiddenSections: { overdrive: ["heroArt", "calendar"] } },
-    { ...original, id: "pahlavan", template: "pahlavan", hiddenSections: { pahlavan: ["legend", "notes"] } },
+    {
+      ...original, id: "pahlavan", template: "pahlavan",
+      hiddenSections: { pahlavan: ["legend", "notes", "footer"] },
+      sectionOrder: { pahlavan: ["calendar", "heroArt", "workouts", "legend", "notes", "cardio", "footer"] },
+    },
   ];
   data.defaultAppearance = {
     template: "pahlavan",
     color: original.color,
     hiddenSections: { overdrive: ["heroArt"], pahlavan: ["cardio"] },
+    sectionOrder: { pahlavan: ["heroArt", "workouts", "footer", "legend", "calendar", "notes", "cardio"] },
   };
   assert.deepEqual(parseBackup(JSON.stringify(makeBackup(data))).data, data);
 });

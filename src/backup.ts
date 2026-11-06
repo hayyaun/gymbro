@@ -1,8 +1,8 @@
 import type { Day, Exercise, Plan, PlanAppearance } from "./model";
 import { isDate, linkStudents } from "./library.ts";
 import { trainingSystemIds } from "./trainingSystems.ts";
-import { sheetSectionOptions, sheetTemplates } from "./sheetSections.ts";
-import type { HiddenSheetSections, SheetSection } from "./sheetSections";
+import { orderedSheetSections, sheetSectionOptions, sheetTemplates } from "./sheetSections.ts";
+import type { HiddenSheetSections, SheetSection, SheetSectionOrder } from "./sheetSections";
 import type { Payment, Student, WorkoutBlock } from "./library";
 
 export type LibraryData = { coach: string; heroDismissed: boolean; plans: Plan[]; students: Student[]; blocks: WorkoutBlock[]; defaultAppearance?: PlanAppearance };
@@ -50,6 +50,17 @@ function readAppearance(value: unknown): PlanAppearance {
       hiddenSections[template] = options.filter((section) => hidden.includes(section));
     }
     appearance.hiddenSections = hiddenSections;
+  }
+  if (item.sectionOrder !== undefined) {
+    const source = object(item.sectionOrder);
+    const sectionOrder: SheetSectionOrder = {};
+    for (const template of sheetTemplates) {
+      if (source[template] === undefined) continue;
+      const options = orderedSheetSections({ template });
+      const saved = list(source[template], (section) => choice(section, options), options.length);
+      sectionOrder[template] = orderedSheetSections({ template, sectionOrder: { [template]: saved } });
+    }
+    appearance.sectionOrder = sectionOrder;
   }
   return appearance;
 }

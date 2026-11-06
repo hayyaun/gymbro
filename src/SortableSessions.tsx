@@ -12,7 +12,7 @@ const pointer = PointerSensor.configure({
   },
 });
 
-export function SortableSessions({ children, onMove }: { children: ReactNode; onMove: (from: number, to: number) => void }) {
+export function SortableList({ children, onMove }: { children: ReactNode; onMove: (from: number, to: number) => void }) {
   return (
     <DragDropProvider
       sensors={(defaults) => [...defaults.filter((sensor) => sensor !== PointerSensor), pointer]}
@@ -24,6 +24,8 @@ export function SortableSessions({ children, onMove }: { children: ReactNode; on
     >{children}</DragDropProvider>
   );
 }
+
+export { SortableList as SortableSessions };
 
 export function SortableSession({ id, index, children }: { id: string; index: number; children: (handle: ReactNode) => ReactNode }) {
   const { ref, handleRef, isDragging } = useSortable({ id, index });
