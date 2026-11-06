@@ -6,6 +6,9 @@ import { linkStudents, updateStudent } from "./library";
 import type { Student, WorkoutBlock } from "./library";
 import { restoreData } from "./backup";
 import type { LibraryData, RestoreMode } from "./backup";
+import type { TrainingSystem } from "./trainingSystems";
+import { sheetSectionOptions, sheetTemplates } from "./sheetSections";
+import type { HiddenSheetSections, SheetSection } from "./sheetSections";
 
 export type Exercise = {
   id: string;
@@ -15,6 +18,7 @@ export type Exercise = {
   rest: string;
   note: string;
   group: string;
+  trainingSystem?: TrainingSystem;
 };
 export type Day = {
   id: string;
@@ -35,6 +39,7 @@ export type Plan = {
   forgeMode?: ForgeMode;
   protocolAccent?: ProtocolAccent;
   protocolMode?: ProtocolMode;
+  hiddenSections?: HiddenSheetSections;
   notes: string;
   cardio: string;
   schedule: string[];
@@ -51,9 +56,9 @@ export const exercise = (name = ""): Exercise => ({
   note: "",
   group: "",
 });
-export type PlanAppearance = Pick<Plan, "template" | "color" | "forgeAccent" | "forgeMode" | "protocolAccent" | "protocolMode">;
-const planAppearance = ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode }: PlanAppearance): PlanAppearance =>
-  ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode });
+export type PlanAppearance = Pick<Plan, "template" | "color" | "forgeAccent" | "forgeMode" | "protocolAccent" | "protocolMode" | "hiddenSections">;
+const planAppearance = ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections }: PlanAppearance): PlanAppearance =>
+  ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections });
 
 export const newPlan = (appearance?: PlanAppearance): Plan => ({
   id: uid(),
@@ -168,10 +173,35 @@ export const useStore = create<Store>()(
       dismissHero: () => set({ heroDismissed: true }),
       setCoach: (coach) => set({ coach }),
       save: (plan) =>
-        set((s) => ({
-          ...linkStudents([plan, ...s.plans.filter((p) => p.id !== plan.id)], s.students),
-          ...(!s.plans.some((p) => p.id === plan.id) && { defaultAppearance: planAppearance(plan) }),
-        })),
+        set((s) => {
+          const previous = s.plans.find((item) => item.id === plan.id);
+          let defaultAppearance = s.defaultAppearance;
+          if (!previous) {
+            defaultAppearance = planAppearance(plan);
+          } else {
+            const changedSections: HiddenSheetSections = {};
+            for (const template of sheetTemplates) {
+              const options: readonly SheetSection[] = sheetSectionOptions[template];
+              const before = previous.hiddenSections?.[template] ?? [];
+              const after = plan.hiddenSections?.[template] ?? [];
+              const changed = options.filter((section) => before.includes(section) !== after.includes(section));
+              if (!changed.length) continue;
+
+              const remembered = defaultAppearance ? (defaultAppearance.hiddenSections?.[template] ?? []) : before;
+              changedSections[template] = options.filter((section) =>
+                (changed.includes(section) ? after : remembered).includes(section),
+              );
+            }
+            if (Object.keys(changedSections).length) {
+              const appearance = defaultAppearance ?? planAppearance(plan);
+              defaultAppearance = { ...appearance, hiddenSections: { ...appearance.hiddenSections, ...changedSections } };
+            }
+          }
+          return {
+            ...linkStudents([plan, ...s.plans.filter((item) => item.id !== plan.id)], s.students),
+            defaultAppearance,
+          };
+        }),
       saveStudent: (student) => set((s) => updateStudent(s.plans, s.students, student)),
       saveBlock: (block) => set((s) => ({ blocks: [block, ...s.blocks.filter((item) => item.id !== block.id)] })),
       removeBlock: (id) => set((s) => ({ blocks: s.blocks.filter((item) => item.id !== id) })),

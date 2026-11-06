@@ -1,5 +1,8 @@
 import type { Day, Exercise, Plan, PlanAppearance } from "./model";
 import { isDate, linkStudents } from "./library.ts";
+import { trainingSystemIds } from "./trainingSystems.ts";
+import { sheetSectionOptions, sheetTemplates } from "./sheetSections.ts";
+import type { HiddenSheetSections, SheetSection } from "./sheetSections";
 import type { Payment, Student, WorkoutBlock } from "./library";
 
 export type LibraryData = { coach: string; heroDismissed: boolean; plans: Plan[]; students: Student[]; blocks: WorkoutBlock[]; defaultAppearance?: PlanAppearance };
@@ -20,7 +23,8 @@ function list<T>(value: unknown, parse: (value: unknown) => T, max = 10000): T[]
 function unique<T extends { id: string }>(values: T[]): T[] { return new Set(values.map((value) => value.id)).size === values.length ? values : invalid(); }
 function readExercise(value: unknown): Exercise {
   const item = object(value);
-  return { id: id(item.id), name: string(item.name), sets: string(item.sets), reps: string(item.reps), rest: string(item.rest), note: string(item.note), group: string(item.group) };
+  return { id: id(item.id), name: string(item.name), sets: string(item.sets), reps: string(item.reps), rest: string(item.rest), note: string(item.note), group: string(item.group),
+    ...(item.trainingSystem !== undefined && { trainingSystem: choice(item.trainingSystem, trainingSystemIds) }) };
 }
 function readDay(value: unknown): Day {
   const item = object(value);
@@ -36,6 +40,17 @@ function readAppearance(value: unknown): PlanAppearance {
   if (item.forgeMode !== undefined) appearance.forgeMode = choice(item.forgeMode, ["dark", "light"]);
   if (item.protocolAccent !== undefined) appearance.protocolAccent = choice(item.protocolAccent, ["orange", "red", "purple", "cyan", "green"]);
   if (item.protocolMode !== undefined) appearance.protocolMode = choice(item.protocolMode, ["paper", "dark"]);
+  if (item.hiddenSections !== undefined) {
+    const source = object(item.hiddenSections);
+    const hiddenSections: HiddenSheetSections = {};
+    for (const template of sheetTemplates) {
+      if (source[template] === undefined) continue;
+      const options: readonly SheetSection[] = sheetSectionOptions[template];
+      const hidden = list(source[template], (section) => choice(section, options), options.length);
+      hiddenSections[template] = options.filter((section) => hidden.includes(section));
+    }
+    appearance.hiddenSections = hiddenSections;
+  }
   return appearance;
 }
 function readPlan(value: unknown): Plan {

@@ -2,6 +2,8 @@ import type { Plan } from "./model";
 import ExirBrand from "./ExirBrand";
 import ForgeSheet from "./ForgeSheet";
 import WorkoutDays from "./WorkoutDays";
+import TrainingSystemLegend from "./TrainingSystemLegend";
+import { showsSheetSection } from "./sheetSections";
 import ProtocolSheet from "./ProtocolSheet";
 export const weekdays = [
   "شنبه",
@@ -26,6 +28,8 @@ export default function PlanSheet({
   if (plan.template === "protocol") {
     return <ProtocolSheet plan={plan} coach={coach} weekdays={weekdays} />;
   }
+  const showCalendar = showsSheetSection(plan, "calendar");
+  const showCardio = plan.cardio && showsSheetSection(plan, "cardio");
   return (
     <article
       className="plan-sheet template-studio"
@@ -50,8 +54,9 @@ export default function PlanSheet({
         <span>برنامه تمرینی اختصاصی · باشگاه اکسیر</span>
       </div>
       <WorkoutDays plan={plan} />
-      <div className={`sheet-bottom${plan.cardio ? " has-cardio" : ""}`}>
-        <section className="sheet-schedule">
+      <TrainingSystemLegend plan={plan} />
+      {(showCalendar || showCardio) && <div className={`sheet-bottom${showCalendar && showCardio ? " has-cardio" : ""}`}>
+        {showCalendar && <section className="sheet-schedule">
           <h3>تقویم هفتگی</h3>
           <div>
             {weekdays.map((day, i) => (
@@ -64,15 +69,15 @@ export default function PlanSheet({
               </span>
             ))}
           </div>
-        </section>
-        {plan.cardio && (
+        </section>}
+        {showCardio && (
           <section className="sheet-cardio">
             <h3>تمرین هوازی</h3>
             <p>{plan.cardio}</p>
           </section>
         )}
-      </div>
-      {plan.notes && (
+      </div>}
+      {plan.notes && showsSheetSection(plan, "notes") && (
         <div className="sheet-notes">
           <b>یادداشت مربی</b>
           <p>{plan.notes}</p>

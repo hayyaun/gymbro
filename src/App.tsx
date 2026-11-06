@@ -33,6 +33,7 @@ import { forgePalettes, forgeVariables } from "./forgeTheme";
 import type { ForgeAccent } from "./forgeTheme";
 import { protocolVariables } from "./protocolTheme";
 import ProtocolDesignControls from "./ProtocolDesignControls";
+import SheetSectionControls from "./SheetSectionControls";
 import { activeWeek, assignTrainingWeek, getWeekdaySession, resizeTrainingWeek } from "./trainingWeek";
 import { SortableSession, SortableSessions } from "./SortableSessions";
 import { studentKey, studentsFromPlans } from "./students";
@@ -782,7 +783,7 @@ function App() {
                 {tab === "design" && (
                   <div className="panel-content">
                     <h2>با امضای شما</h2>
-                    <p>قالب و رنگ برنامه را انتخاب کنید.</p>
+                    <p>قالب، رنگ و بخش های برنامه را انتخاب کنید.</p>
                     {templates.map((t) => (
                       <button
                         className={`template-option ${draft.template === t.id ? "chosen" : ""}`}
@@ -850,6 +851,7 @@ function App() {
                     </div>
                       </>
                     )}
+                    <SheetSectionControls plan={draft} onChange={patch} />
                   </div>
                 )}
               </section>

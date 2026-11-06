@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import type { Plan } from "./model";
+import { TrainingSystemMark } from "./TrainingSystemLegend";
 
 export default function WorkoutDays({ plan }: { plan: Plan }) {
   return (
@@ -30,6 +31,7 @@ export default function WorkoutDays({ plan }: { plan: Plan }) {
                     <td>
                       <span className="ex-number">{j + 1}</span>
                       {ex.name || "نام حرکت"}
+                      {ex.trainingSystem && <TrainingSystemMark system={ex.trainingSystem} />}
                       {ex.note && <small>{ex.note}</small>}
                     </td>
                     <td dir="ltr">{ex.sets} × {ex.reps}</td>

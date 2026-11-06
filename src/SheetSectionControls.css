@@ -1,0 +1,36 @@
+.sheet-section-controls {
+  min-inline-size: 0;
+  margin: 20px 0 0;
+  padding: 10px 12px 6px;
+  border: 1px solid #dfe2e7;
+  border-radius: 8px;
+}
+
+.sheet-section-controls legend {
+  padding-inline: 4px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sheet-section-controls p {
+  margin: 0 0 6px;
+  color: #59616e;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.sheet-section-controls label {
+  flex-direction: row;
+  align-items: center;
+  min-height: 40px;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.sheet-section-controls input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  accent-color: #c32d42;
+}

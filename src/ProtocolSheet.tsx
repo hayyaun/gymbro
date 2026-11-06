@@ -3,6 +3,8 @@ import type { CSSProperties } from "react";
 import type { Plan } from "./model";
 import { getProtocolPalette, protocolVariables } from "./protocolTheme";
 import WorkoutDays from "./WorkoutDays";
+import TrainingSystemLegend from "./TrainingSystemLegend";
+import { showsSheetSection } from "./sheetSections";
 import "./ProtocolSheet.css";
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
@@ -17,6 +19,8 @@ export default function ProtocolSheet({
   weekdays: string[];
 }) {
   const palette = getProtocolPalette(plan.protocolAccent);
+  const showNotes = plan.notes && showsSheetSection(plan, "notes");
+  const showCardio = plan.cardio && showsSheetSection(plan, "cardio");
   const exerciseCount = plan.days.reduce((sum, day) => sum + day.exercises.length, 0);
   return (
     <article
@@ -49,17 +53,18 @@ export default function ProtocolSheet({
         <div><span>مدت برنامه</span><b>{plan.weeks || "—"}<small> هفته</small></b></div>
       </section>
 
-      <div className="protocol-signal-strip">
+      {showsSheetSection(plan, "signal") && <div className="protocol-signal-strip">
         <div className="protocol-pattern" aria-hidden="true" />
         <div className="protocol-signal-label"><Dumbbell size={19} /><b>تمرکز. تکرار. پیشرفت.</b><span>{fa(exerciseCount)} حرکت</span></div>
-      </div>
+      </div>}
 
       <section className="protocol-training">
         <div className="protocol-section-label"><h3><span>01</span> ساختار تمرین</h3><small>{fa(plan.days.length)} جلسه / {fa(exerciseCount)} حرکت</small></div>
         <WorkoutDays plan={plan} />
+        <TrainingSystemLegend plan={plan} />
       </section>
 
-      <section className="protocol-week">
+      {showsSheetSection(plan, "calendar") && <section className="protocol-week">
         <div className="protocol-section-label"><h3><span>02</span> چرخه هفتگی</h3><small>تعادل تمرین و بازیابی</small></div>
         <div className="protocol-timeline">
           {weekdays.map((day, index) => {
@@ -73,18 +78,18 @@ export default function ProtocolSheet({
             );
           })}
         </div>
-      </section>
+      </section>}
 
-      {(plan.notes || plan.cardio) && (
-        <div className={`protocol-supplements${plan.notes && plan.cardio ? " has-both" : ""}`}>
-          {plan.notes && (
+      {(showNotes || showCardio) && (
+        <div className={`protocol-supplements${showNotes && showCardio ? " has-both" : ""}`}>
+          {showNotes && (
             <section className="protocol-notes">
               <h3><Focus size={18} /> یادداشت مربی</h3>
               <p>{plan.notes}</p>
               <span className="protocol-note-signature">با امضای {coach || "مربی"}<ArrowUpLeft size={17} /></span>
             </section>
           )}
-          {plan.cardio && (
+          {showCardio && (
             <section className="protocol-cardio">
               <h3><Crosshair size={18} /> تمرین هوازی</h3>
               <p>{plan.cardio}</p>

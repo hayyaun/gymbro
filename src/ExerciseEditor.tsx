@@ -2,6 +2,7 @@ import { useId, useRef, useState } from "react";
 import { X } from "lucide-react";
 import type { Exercise } from "./model";
 import { exerciseSearchKey } from "./exerciseCatalog";
+import { trainingSystemIds, trainingSystems } from "./trainingSystems";
 import "./ExerciseTools.css";
 
 export default function ExerciseEditor({ value, index, session, catalog, onChange, onRemove, onAddAfter, autoFocus = false }: {
@@ -9,6 +10,8 @@ export default function ExerciseEditor({ value, index, session, catalog, onChang
   onChange: (value: Exercise) => void; onRemove: () => void; onAddAfter: () => void; autoFocus?: boolean;
 }) {
   const listId = useId();
+  const systemHintId = useId();
+  const system = value.trainingSystem && trainingSystems[value.trainingSystem];
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(0);
   const sets = useRef<HTMLInputElement>(null);
@@ -49,6 +52,23 @@ export default function ExerciseEditor({ value, index, session, catalog, onChang
       if (next) { next.current?.focus(); next.current?.select(); }
       else onAddAfter();
     }} /></label>)}</div>
+    <div className="exercise-system-field">
+      <label>
+        سیستم تمرینی
+        <select value={value.trainingSystem ?? ""} aria-describedby={system ? systemHintId : undefined}
+          onChange={(event) => {
+            const trainingSystem = trainingSystemIds.find((id) => id === event.target.value);
+            const next = { ...value };
+            if (trainingSystem) next.trainingSystem = trainingSystem;
+            else delete next.trainingSystem;
+            onChange(next);
+          }}>
+          <option value="">عادی</option>
+          {trainingSystemIds.map((id) => <option key={id} value={id}>{trainingSystems[id].name}</option>)}
+        </select>
+      </label>
+      {system && <small id={systemHintId}>{system.hint}</small>}
+    </div>
     <input ref={note} className="note-input" aria-label={`توضیح حرکت ${index + 1} جلسه ${session}`} maxLength={2000} value={value.note} placeholder="توضیح حرکت (اختیاری)" onChange={(event) => onChange({ ...value, note: event.target.value })} onKeyDown={(event) => { if (event.key === "Enter" && !event.nativeEvent.isComposing) { event.preventDefault(); onAddAfter(); } }} />
   </div>;
 }

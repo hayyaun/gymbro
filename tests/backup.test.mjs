@@ -25,10 +25,18 @@ test("invalid backups cannot partially modify the existing library", () => {
   assert.throws(() => parseBackup("not JSON"));
   assert.throws(() => parseBackup(JSON.stringify({ ...makeBackup(current), version: 999 })));
 });
-test("a saved appearance preference survives backup and merge preserves the current choice", () => {
-  const incoming = { ...fixture(), defaultAppearance: { template: "protocol", color: "#dc3045", protocolAccent: "cyan", protocolMode: "dark" } };
+test("saved appearance and section visibility survive backup and merge preserves the current choice", () => {
+  const incoming = {
+    ...fixture(),
+    defaultAppearance: {
+      template: "protocol", color: "#dc3045", protocolAccent: "cyan", protocolMode: "dark",
+      hiddenSections: { forge: ["pillars"], protocol: ["calendar", "legend"] },
+    },
+  };
+  incoming.plans[0].hiddenSections = { forge: ["rhythm", "calendar"] };
   const parsed = parseBackup(JSON.stringify(makeBackup(incoming))).data;
   assert.deepEqual(parsed.defaultAppearance, incoming.defaultAppearance);
+  assert.deepEqual(parsed.plans[0].hiddenSections, incoming.plans[0].hiddenSections);
   assert.deepEqual(restoreData(fixture(), parsed, "merge").defaultAppearance, incoming.defaultAppearance);
   const current = { ...fixture(), defaultAppearance: { template: "studio", color: "#123456" } };
   assert.deepEqual(restoreData(current, parsed, "merge").defaultAppearance, current.defaultAppearance);
@@ -67,4 +75,15 @@ test("full replacement restores the exact snapshot independently of current memo
   result.plans[0].days[0].exercises[0].name = "تغییر";
   assert.equal(incoming.plans[0].days[0].exercises[0].name, "اسکوات");
   assert.equal(current.students[0].payments.length, 1);
+});
+test("training systems survive backup in plans and blocks, and unknown systems are rejected", () => {
+  const data = fixture();
+  data.plans[0].days[0].exercises = [
+    { ...data.plans[0].days[0].exercises[0], trainingSystem: "drop-set", reps: "۱۲-۶" },
+    { ...data.plans[0].days[0].exercises[0], id: "pause", trainingSystem: "rest-pause", reps: "۵-۵-۵" },
+  ];
+  data.blocks[0].exercises[0].trainingSystem = "fst-7";
+  assert.deepEqual(parseBackup(JSON.stringify(makeBackup(data))).data, data);
+  data.blocks[0].exercises[0].trainingSystem = "unknown";
+  assert.throws(() => parseBackup(JSON.stringify(makeBackup(data))));
 });
