@@ -5,6 +5,7 @@ import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import { showsSheetSection } from "./sheetSections";
 import ProtocolSheet from "./ProtocolSheet";
+import PosterSheet from "./PosterSheet";
 export const weekdays = [
   "شنبه",
   "یکشنبه",
@@ -27,6 +28,9 @@ export default function PlanSheet({
   }
   if (plan.template === "protocol") {
     return <ProtocolSheet plan={plan} coach={coach} weekdays={weekdays} />;
+  }
+  if (plan.template === "overdrive" || plan.template === "pahlavan") {
+    return <PosterSheet plan={plan} coach={coach} weekdays={weekdays} variant={plan.template} />;
   }
   const showCalendar = showsSheetSection(plan, "calendar");
   const showCardio = plan.cardio && showsSheetSection(plan, "cardio");

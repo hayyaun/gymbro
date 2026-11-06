@@ -6,6 +6,7 @@ export const sheetSectionLabels = {
   pillars: "باکس های شعار",
   rhythm: "ردیف تمرکز تمرین",
   signal: "نوار شعار و الگو",
+  heroArt: "تصویر بالای پوستر",
 };
 
 export type SheetSection = keyof typeof sheetSectionLabels;
@@ -15,6 +16,8 @@ export const sheetSectionOptions = {
   studio: commonSections,
   forge: ["pillars", "rhythm", ...commonSections],
   protocol: ["signal", ...commonSections],
+  overdrive: ["heroArt", ...commonSections],
+  pahlavan: ["heroArt", ...commonSections],
 } satisfies Record<string, readonly SheetSection[]>;
 
 export type SheetTemplate = keyof typeof sheetSectionOptions;
@@ -22,7 +25,7 @@ export type HiddenSheetSections = Partial<Record<SheetTemplate, SheetSection[]>>
 export const sheetTemplates = Object.keys(sheetSectionOptions) as SheetTemplate[];
 
 export function sheetTemplate(template: string): SheetTemplate {
-  return template === "forge" || template === "protocol" ? template : "studio";
+  return sheetTemplates.find((id) => id === template) ?? "studio";
 }
 
 export function showsSheetSection(

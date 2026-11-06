@@ -32,7 +32,7 @@ function readDay(value: unknown): Day {
 }
 function readAppearance(value: unknown): PlanAppearance {
   const item = object(value);
-  const template = choice(item.template, ["studio", "forge", "protocol", "minimal", "bold"]);
+  const template = choice(item.template, [...sheetTemplates, "minimal", "bold"]);
   const color = string(item.color, 9);
   if (!/^#[\da-f]{6}$/i.test(color)) invalid();
   const appearance: PlanAppearance = { template: template === "minimal" || template === "bold" ? "studio" : template, color };

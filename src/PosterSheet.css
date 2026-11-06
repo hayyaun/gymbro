@@ -1,0 +1,440 @@
+/* Poster themes share workout and reference geometry. Their inks and edge treatments are independent. */
+.plan-sheet.poster-sheet {
+  position: relative;
+  padding: 21px;
+  background: var(--poster-paper);
+  color: var(--poster-ink);
+  border-radius: 0;
+}
+.template-overdrive {
+  --poster-paper: #0b102b;
+  --poster-ink: #f0f6ff;
+  --poster-muted: #b4cde4;
+  --poster-panel: #111c38;
+  --poster-line: #57c4d8;
+  --poster-rule: #3e6a88;
+  --poster-label: #d8f846;
+  --poster-on-label: #10182d;
+  --accent: var(--poster-label);
+}
+.template-pahlavan {
+  --poster-paper: #eed6ac;
+  --poster-ink: #153b2d;
+  --poster-muted: #405b42;
+  --poster-panel: #f7e4c2;
+  --poster-line: #365a45;
+  --poster-rule: #8e9475;
+  --poster-label: #1c4434;
+  --poster-on-label: #fff1d5;
+  --accent: #a7552e;
+}
+.plan-sheet.template-pahlavan {
+  background:
+    radial-gradient(circle, #6b44282b .5px, transparent .8px) 0 0 / 4px 5px,
+    repeating-linear-gradient(114deg, #9a5c260a 0 1px, transparent 1px 6px),
+    radial-gradient(ellipse at 48% 27%, #fff0cf 2%, #f0d8ae 65%, #d3a979 100%);
+}
+.poster-hero {
+  position: relative;
+  display: grid;
+  min-height: 354px;
+  border: 1px solid var(--poster-line);
+  isolation: isolate;
+  overflow: hidden;
+}
+.poster-hero-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 53%;
+  padding: 25px 25px;
+  min-width: 0;
+}
+.poster-brand { display: flex; align-items: center; gap: 12px; }
+.poster-brand strong { font: italic 900 62px/.96 Arial, sans-serif; letter-spacing: -.08em; }
+.poster-edition {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-block-start: 10px;
+  font: 900 19px/1.15 Arial, sans-serif;
+  letter-spacing: .16em;
+}
+.poster-hero h2 {
+  margin: 17px 0 10px;
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.poster-athlete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+  max-width: 100%;
+  padding: 4px 10px;
+  border-inline-start: 3px solid var(--accent);
+}
+.poster-athlete span { font-size: 11px; }
+.poster-athlete b { font-size: 20px; line-height: 1.4; overflow-wrap: anywhere; }
+.poster-facts { display: flex; flex-wrap: wrap; gap: 5px 10px; margin-block-start: 11px; color: var(--poster-muted); font-size: 11px; font-weight: 700; }
+.poster-facts span { overflow-wrap: anywhere; }
+.poster-facts span + span::before { content: "/"; margin-inline-end: 8px; opacity: .65; }
+
+.poster-sheet::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+}
+.template-overdrive.poster-sheet::after {
+  border-block: 1px solid #4aaabd;
+  background:
+    linear-gradient(#4aaabd, #4aaabd) left top / 1px 38px,
+    linear-gradient(#4aaabd, #4aaabd) right bottom / 1px 38px,
+    repeating-linear-gradient(90deg, #65d8ef 0 1px, transparent 1px 7px) left bottom / 97px 5px,
+    repeating-linear-gradient(125deg, #c8f53b 0 10px, transparent 10px 15px) right bottom / 100px 5px;
+  background-repeat: no-repeat;
+}
+.template-overdrive .poster-hero {
+  --hud-surface: repeating-linear-gradient(0deg, #5bd9ee0e 0 1px, transparent 1px 5px), radial-gradient(ellipse at 75% 52%, #142b51, #0b1230 68%);
+  justify-items: end;
+}
+.template-overdrive .poster-hero::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(125deg, #67e5f5 0 9px, transparent 9px 15px) right top / 72px 7px,
+    repeating-linear-gradient(125deg, #67e5f5 0 9px, transparent 9px 15px) left bottom / 55px 7px,
+    linear-gradient(#67e5f5, #67e5f5) right top / 1px 27px,
+    linear-gradient(#67e5f5, #67e5f5) left bottom / 1px 26px;
+  background-repeat: no-repeat;
+}
+.template-overdrive .poster-hero-copy { align-items: flex-end; }
+.template-overdrive .poster-brand span {
+  width: 49px;
+  height: 30px;
+  transform: skew(-18deg);
+  background: repeating-conic-gradient(var(--poster-label) 0 25%, transparent 0 50%) 0 0 / 30px 30px;
+}
+.template-overdrive .poster-edition { color: #e6f5ff; font-style: italic; }
+.template-overdrive .poster-edition span { color: var(--poster-label); font-size: 29px; line-height: .9; }
+.template-overdrive .poster-edition span::after { content: " /"; color: #76cce3; font-size: 18px; }
+.template-overdrive .poster-hero h2 {
+  padding: 5px 19px;
+  color: var(--poster-on-label);
+  background: var(--poster-label);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.template-overdrive .poster-athlete {
+  border: 1px solid var(--poster-line);
+  border-inline-end-width: 3px;
+  background: var(--poster-panel);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+.overdrive-art {
+  position: absolute;
+  inset: 15px 12px 15px auto;
+  width: 50%;
+  display: grid;
+  align-items: center;
+  color: #70e8ff;
+}
+.overdrive-diagram { display: block; width: 100%; height: auto; }
+
+.template-pahlavan.poster-sheet::after {
+  border: 1px solid #395641;
+  outline: 1px solid #a15d37;
+  outline-offset: 3px;
+  background:
+    radial-gradient(circle, #31523f 2px, #ecd3a7 2.4px 3.5px, #a7542d 4px 5px, transparent 5.4px) left top / 13px 13px,
+    radial-gradient(circle, #31523f 2px, #ecd3a7 2.4px 3.5px, #a7542d 4px 5px, transparent 5.4px) right top / 13px 13px,
+    radial-gradient(circle, #31523f 2px, #ecd3a7 2.4px 3.5px, #a7542d 4px 5px, transparent 5.4px) left bottom / 13px 13px,
+    radial-gradient(circle, #31523f 2px, #ecd3a7 2.4px 3.5px, #a7542d 4px 5px, transparent 5.4px) right bottom / 13px 13px;
+  background-repeat: no-repeat;
+}
+.template-pahlavan .poster-hero { border: 0; border-block-end: 3px double var(--poster-line); }
+.template-pahlavan .poster-hero-copy { justify-self: start; }
+.template-pahlavan .poster-brand strong { color: var(--poster-label); }
+.template-pahlavan .poster-edition { color: #704528; }
+.template-pahlavan .poster-edition span::after { content: " ·"; }
+.template-pahlavan .poster-edition::before,
+.template-pahlavan .poster-edition::after {
+  content: "";
+  width: 23px;
+  height: 4px;
+  background: var(--accent);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+.template-pahlavan .poster-edition::after { transform: scaleX(-1); }
+.template-pahlavan .poster-hero h2 { position: relative; padding-block-end: 7px; }
+.template-pahlavan .poster-hero h2::after {
+  content: "";
+  position: absolute;
+  inset: auto 5% 0 5%;
+  height: 7px;
+  background: var(--accent);
+  clip-path: polygon(0 92%, 18% 36%, 65% 20%, 100% 0, 88% 46%, 57% 62%, 22% 74%);
+}
+.template-pahlavan .poster-athlete {
+  background: repeating-linear-gradient(114deg, #e7d0a816 0 1px, transparent 1px 4px), var(--poster-label);
+  color: var(--poster-on-label);
+  padding-inline: 13px;
+  border: 0;
+  clip-path: polygon(2% 3%, 37% 5%, 70% 0, 100% 5%, 98% 40%, 100% 75%, 97% 98%, 50% 95%, 3% 100%, 0 64%);
+}
+.template-pahlavan .poster-facts {
+  padding: 3px 8px;
+  background: #f5dfb8;
+  border-inline-start: 2px solid var(--accent);
+  color: #304b37;
+}
+.pahlavan-art { position: absolute; inset: 0; pointer-events: none; }
+.pahlavan-art svg { display: block; width: 100%; height: 100%; }
+.pahlavan-art img {
+  position: absolute;
+  inset: auto auto 0 0;
+  width: 52%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.poster-hero-without-art .poster-hero-copy { width: min(100%, 620px); }
+
+/* Use the same training rows, markers and Legend content as the other templates. */
+.poster-sheet .sheet-days {
+  gap: 13px;
+  padding: 13px 0 0;
+}
+.poster-sheet .sheet-days:empty { display: none; }
+.poster-sheet .sheet-day {
+  min-width: 0;
+  border: 1px solid var(--poster-line);
+  background: var(--poster-panel);
+  border-radius: 0;
+}
+.poster-sheet .sheet-day h3 {
+  min-height: 36px;
+  background: var(--poster-paper);
+  color: var(--poster-ink);
+  border-bottom: 1px solid var(--poster-line);
+}
+.poster-sheet .sheet-day h3 > b {
+  flex: 0 1 auto;
+  min-width: 120px;
+  padding: 6px 18px;
+  background: var(--poster-label);
+  color: var(--poster-on-label);
+  font-size: 17px;
+}
+.poster-sheet .sheet-day h3 > span { color: var(--poster-muted); font-size: 12px; }
+.poster-sheet .sheet-day th {
+  background: var(--poster-panel);
+  color: var(--poster-ink);
+  font-size: 12px;
+  border-color: var(--poster-line);
+  padding: 7px 11px;
+}
+.poster-sheet .sheet-day th:first-child { width: 53%; }
+.poster-sheet .sheet-day th:nth-child(2) { width: 27%; }
+.poster-sheet .sheet-day th:last-child { width: 20%; }
+.poster-sheet .sheet-day td {
+  color: var(--poster-ink);
+  font-size: 14px;
+  padding: 8px 10px;
+  border-color: var(--poster-rule);
+}
+.poster-sheet .sheet-day :is(th, td) + :is(th, td) { border-inline-start: 1px solid var(--poster-rule); }
+.poster-sheet .sheet-day td:not(:first-child) { font-size: 13px; font-weight: 700; }
+.poster-sheet .sheet-day td small { font-size: 11px; color: var(--poster-muted); }
+.poster-sheet .ex-number { background: var(--poster-label); color: var(--poster-on-label); }
+.poster-sheet .sheet-day .superset { background: var(--poster-paper); }
+.poster-sheet .sheet-day .superset-label td {
+  color: var(--poster-ink);
+  background: var(--poster-paper);
+  font-size: 11px;
+  padding: 4px 9px;
+}
+.poster-reference, .poster-supplements {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  margin-block-start: 13px;
+}
+.poster-reference:empty { display: none; }
+.poster-reference > section, .poster-supplements > section {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  border: 1px solid var(--poster-line);
+  background: var(--poster-panel);
+  color: var(--poster-ink);
+}
+.poster-reference > .poster-calendar {
+  flex: 1.65;
+  display: flex;
+  flex-direction: column;
+}
+.poster-reference > .training-system-legend {
+  padding: 0;
+  border-radius: 0;
+}
+.poster-reference h3, .poster-supplements h3 {
+  margin: 0;
+  padding: 6px 10px;
+  min-height: 33px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--poster-label);
+  color: var(--poster-on-label);
+  font-size: 14px;
+  font-weight: 800;
+}
+.poster-reference .training-system-legend h3 { font-size: 12px; }
+.poster-reference .training-system-legend h3 span { font-size: 10px; }
+.poster-reference .training-system-legend ul { gap: 0; }
+.poster-reference .training-system-legend li { padding: 7px 9px; font-size: 11px; }
+.poster-reference .training-system-legend li + li { border-top: 1px solid var(--poster-rule); }
+.poster-reference .training-system-legend li p { color: var(--poster-muted); }
+.poster-calendar ul {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.poster-calendar li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  padding-block-end: 9px;
+  color: var(--poster-muted);
+}
+.poster-calendar li + li { border-inline-start: 1px solid var(--poster-rule); }
+.poster-calendar li b {
+  width: 100%;
+  padding: 6px 1px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--poster-rule);
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+.poster-calendar .training { color: var(--poster-ink); background: var(--poster-paper); }
+.poster-calendar-mark {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  place-items: center;
+  margin-top: auto;
+}
+.poster-calendar .training .poster-calendar-mark { color: var(--accent); }
+.poster-calendar small {
+  padding: 5px 2px 0;
+  margin-bottom: auto;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.poster-supplements p { margin: 0; padding: 9px 11px; font-size: 12px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.plan-sheet.poster-sheet > footer {
+  margin: 13px 0 0;
+  padding: 9px 8px 0;
+  border-top: 1px solid var(--poster-line);
+  background: transparent;
+  color: var(--poster-muted);
+}
+.poster-sheet > footer b::before { background: var(--accent); }
+.poster-sheet > footer strong { font-size: 9px; letter-spacing: .11em; }
+
+/* The HUD frame uses two chamfered layers so the corners render as part of the PNG. */
+.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section) {
+  --hud-corner: 10px;
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  background: var(--poster-line);
+  clip-path: polygon(var(--hud-corner) 0, 100% 0, 100% calc(100% - var(--hud-corner)), calc(100% - var(--hud-corner)) 100%, 0 100%, 0 var(--hud-corner));
+}
+.template-overdrive :is(.sheet-day, .poster-reference > section, .poster-supplements > section) { padding: 1px; }
+.template-overdrive .poster-hero { --hud-corner: 16px; }
+.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 1px;
+  clip-path: inherit;
+  background: var(--hud-surface, var(--poster-panel));
+}
+.template-overdrive :is(.sheet-day h3, .poster-reference h3, .poster-supplements h3) {
+  background:
+    repeating-linear-gradient(130deg, #d8f846 0 7px, transparent 7px 12px) left 10px center / 41px 9px no-repeat,
+    var(--poster-paper);
+  color: var(--poster-ink);
+  border-block-end: 1px solid var(--poster-line);
+}
+.template-overdrive .sheet-day h3 > b {
+  clip-path: polygon(13px 0, 100% 0, 100% 100%, 0 100%);
+  padding-inline-end: 23px;
+}
+.template-overdrive .sheet-day h3 > span { padding-inline-end: 52px; }
+.template-overdrive :is(.poster-reference, .poster-supplements) h3 {
+  background: var(--poster-label);
+  color: var(--poster-on-label);
+  margin: 4px 4px 0;
+  padding-inline: 13px;
+  clip-path: polygon(9px 0, 100% 0, 100% 100%, 0 100%);
+}
+.template-overdrive .sheet-day th { background: #18284b; }
+.template-overdrive .sheet-day tbody tr:nth-child(even):not(.superset-label, .superset) { background: #101831; }
+.template-overdrive .ex-number { border-radius: 2px; }
+.template-overdrive .poster-calendar li b { color: #eaf8ff; background: #18284b; }
+.template-overdrive .poster-calendar .training .poster-calendar-mark {
+  background: var(--poster-label);
+  color: var(--poster-on-label);
+  box-shadow: 0 0 0 3px #d8f84632;
+}
+
+.template-pahlavan :is(.sheet-day, .poster-reference > section, .poster-supplements > section) {
+  border: 1px solid var(--poster-line);
+  border-radius: 6px;
+  background: radial-gradient(circle, #72513420 .45px, transparent .7px) 0 0 / 5px 5px, var(--poster-panel);
+  overflow: hidden;
+}
+.template-pahlavan .sheet-day h3 {
+  background: repeating-linear-gradient(122deg, #a9582c15 0 1px, transparent 1px 6px), #ecd1a6;
+}
+.template-pahlavan .sheet-day h3 > b,
+.template-pahlavan :is(.poster-reference, .poster-supplements) h3 {
+  background:
+    repeating-linear-gradient(118deg, #f1d7a81b 0 1px, transparent 1px 5px),
+    var(--poster-label);
+  color: var(--poster-on-label);
+  border-inline-end: 5px solid var(--accent);
+}
+.template-pahlavan .sheet-day h3 > b { clip-path: polygon(13px 0, 100% 0, 100% 100%, 0 100%); padding-inline-end: 23px; }
+.template-pahlavan .sheet-day th { background: #e6c49c8f; }
+.template-pahlavan .poster-calendar li b { background: #e6c49c8f; }
+.template-pahlavan .poster-calendar .training .poster-calendar-mark {
+  color: var(--poster-ink);
+  border: 1px solid #ae774f;
+  border-radius: 50%;
+}
+
+.template-swatch.swatch-overdrive { background: #111a35; color: #d8f846; border: 1px solid #57c4d8; }
+.template-swatch.swatch-pahlavan { background: #ead1a7; color: #1c4434; border: 1px solid #a7552e; }
+.preview-overdrive .mini-sheet { --accent: #d8f846; background: #0b102b; color: #eff7ff; }
+.preview-pahlavan .mini-sheet { --accent: #1c4434; background: #eed6ac; color: #153b2d; }
+.preview-overdrive .mini-days > div { border-color: #57c4d8; background: #111c38; }
+.preview-pahlavan .mini-days > div { border-color: #365a45; background: #f7e4c2; }
+.preview-overdrive .mini-days > div > b { color: #10182d; }

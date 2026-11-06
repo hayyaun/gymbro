@@ -4,7 +4,7 @@ import { TrainingSystemMark } from "./TrainingSystemLegend";
 
 export default function WorkoutDays({ plan }: { plan: Plan }) {
   return (
-    <div className="sheet-days">
+    <div className={`sheet-days${plan.days.length > 3 ? " sheet-days-two-columns" : ""}`}>
       {plan.days.map((day, i) => (
         <section className="sheet-day" key={day.id}>
           <h3>

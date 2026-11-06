@@ -42,6 +42,20 @@ test("saved appearance and section visibility survive backup and merge preserves
   assert.deepEqual(restoreData(current, parsed, "merge").defaultAppearance, current.defaultAppearance);
   assert.equal(restoreData(current, fixture(), "replace").defaultAppearance, undefined);
 });
+test("poster themes and their independent visibility preferences survive backup", () => {
+  const data = fixture();
+  const original = data.plans[0];
+  data.plans = [
+    { ...original, template: "overdrive", hiddenSections: { overdrive: ["heroArt", "calendar"] } },
+    { ...original, id: "pahlavan", template: "pahlavan", hiddenSections: { pahlavan: ["legend", "notes"] } },
+  ];
+  data.defaultAppearance = {
+    template: "pahlavan",
+    color: original.color,
+    hiddenSections: { overdrive: ["heroArt"], pahlavan: ["cardio"] },
+  };
+  assert.deepEqual(parseBackup(JSON.stringify(makeBackup(data))).data, data);
+});
 test("duplicate IDs, broken student links and impossible payment dates are rejected", () => {
   const duplicate = makeBackup(fixture()); duplicate.data.plans.push(structuredClone(duplicate.data.plans[0]));
   assert.throws(() => parseBackup(JSON.stringify(duplicate)));

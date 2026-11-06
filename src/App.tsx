@@ -22,7 +22,8 @@ import {
   X,
 } from "lucide-react";
 import { toPng } from "html-to-image";
-import { exportForgePng } from "./exportForgePng";
+import { exportPortraitPng } from "./exportPortraitPng";
+import { showsSheetSection } from "./sheetSections";
 import { exercise, newPlan, uid, useStore } from "./model";
 import type { Day, Plan } from "./model";
 import PlanSheet, { weekdays } from "./PlanSheet";
@@ -55,6 +56,8 @@ const templates = [
   { id: "studio", name: "استودیو", text: "قدرتمند و حرفه ای" },
   { id: "forge", name: "فورج", text: "پوستر انیمه · تیره و روشن" },
   { id: "protocol", name: "پروتکل", text: "صنعتی · تایپوگرافی و الگو" },
+  { id: "overdrive", name: "اوردرایو", text: "بازی مسابقه ای · خطوط نئونی" },
+  { id: "pahlavan", name: "پهلوان", text: "پوستر زورخانه · چاپ روی کاغذ" },
 ];
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
@@ -198,7 +201,7 @@ function App() {
   };
   const exportImage = async () => {
     const sheetNode = sheet.current;
-    if (!sheetNode) return;
+    if (!sheetNode || !draft) return;
     setExporting(true);
     try {
       await document.fonts.ready;
@@ -206,11 +209,13 @@ function App() {
         pixelRatio: 3,
         backgroundColor: "#ffffff",
       };
-      const url = draft?.template === "forge"
-        ? await exportForgePng(sheetNode, options.pixelRatio, options.backgroundColor)
+      const template = draft.template;
+      const hasPortrait = template === "forge" || (template === "pahlavan" && showsSheetSection(draft, "heroArt"));
+      const url = hasPortrait
+        ? await exportPortraitPng(sheetNode, template, options)
         : await toPng(sheetNode, options);
       const a = document.createElement("a");
-      a.download = `${draft?.athlete || "gymbro"}-workout.png`;
+      a.download = `${draft.athlete || "gymbro"}-workout.png`;
       a.href = url;
       a.click();
       setNotice("خروجی تصویر آماده شد");
@@ -474,7 +479,9 @@ function App() {
                           ? forgeVariables(p.forgeAccent, p.forgeMode)
                           : p.template === "protocol"
                             ? protocolVariables(p.protocolAccent)
-                            : { "--accent": p.color }
+                            : p.template === "studio"
+                              ? { "--accent": p.color }
+                              : undefined
                       ) as React.CSSProperties}
                     >
                       <div className="mini-head">
@@ -482,6 +489,8 @@ function App() {
                           <div className="mini-forge-title"><Dumbbell size={12} /><b>قوی تر از دیروز</b></div>
                         ) : p.template === "protocol" ? (
                           <b>پروتکل تمرین</b>
+                        ) : p.template === "overdrive" || p.template === "pahlavan" ? (
+                          <b>{templates.find((template) => template.id === p.template)?.name}</b>
                         ) : <ExirBrand compact />}
                         <span>{p.athlete}</span>
                       </div>
@@ -787,6 +796,7 @@ function App() {
                     {templates.map((t) => (
                       <button
                         className={`template-option ${draft.template === t.id ? "chosen" : ""}`}
+                        aria-pressed={draft.template === t.id}
                         onClick={() => patch({ template: t.id })}
                         key={t.id}
                       >
@@ -821,7 +831,7 @@ function App() {
                       </>
                     ) : draft.template === "protocol" ? (
                       <ProtocolDesignControls plan={draft} onChange={patch} />
-                    ) : (
+                    ) : draft.template === "studio" && (
                       <>
                     <h3>رنگ اختصاصی</h3>
                     <div className="colors">
