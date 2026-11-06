@@ -2,15 +2,17 @@ import { Fragment } from "react";
 import type { Plan } from "./model";
 import { TrainingSystemMark } from "./TrainingSystemLegend";
 
-export default function WorkoutDays({ plan }: { plan: Plan }) {
+export default function WorkoutDays({ plan, firstHeadingInHero = false }: { plan: Plan; firstHeadingInHero?: boolean }) {
   return (
     <div className={`sheet-days${plan.days.length > 3 ? " sheet-days-two-columns" : ""}`}>
       {plan.days.map((day, i) => (
-        <section className="sheet-day" key={day.id}>
-          <h3>
-            <b data-day-number={String(i + 1).padStart(2, "0")}>{day.name || `روز ${i + 1}`}</b>
-            <span>{day.focus || "جلسه تمرینی"}</span>
-          </h3>
+        <section className="sheet-day" key={day.id} aria-label={firstHeadingInHero && i === 0 ? day.name || "روز ۱" : undefined}>
+          {(!firstHeadingInHero || i > 0) && (
+            <h3>
+              <b data-day-number={String(i + 1).padStart(2, "0")}>{day.name || `روز ${i + 1}`}</b>
+              <span className={day.focus ? undefined : "sheet-day-focus-placeholder"}>{day.focus || "جلسه تمرینی"}</span>
+            </h3>
+          )}
           <table>
             <thead>
               <tr>
@@ -29,9 +31,11 @@ export default function WorkoutDays({ plan }: { plan: Plan }) {
                   )}
                   <tr className={ex.group ? "superset" : ""}>
                     <td>
-                      <span className="ex-number">{j + 1}</span>
-                      {ex.name || "نام حرکت"}
-                      {ex.trainingSystem && <TrainingSystemMark system={ex.trainingSystem} />}
+                      <div className="exercise-line">
+                        <span className="ex-number">{j + 1}</span>
+                        <span className="exercise-label">{ex.name || "نام حرکت"}</span>
+                        {ex.trainingSystem && <TrainingSystemMark system={ex.trainingSystem} />}
+                      </div>
                       {ex.note && <small>{ex.note}</small>}
                     </td>
                     <td dir="ltr">{ex.sets} × {ex.reps}</td>

@@ -1,18 +1,21 @@
 /* Poster themes share workout and reference geometry. Their inks and edge treatments are independent. */
 .plan-sheet.poster-sheet {
   position: relative;
-  padding: 21px;
+  padding: 27px 24px 25px;
   background: var(--poster-paper);
   color: var(--poster-ink);
   border-radius: 0;
 }
+.overdrive-preview .sheet-scroll,
+.pahlavan-preview .sheet-scroll { border-radius: 0; }
+
 .template-overdrive {
-  --poster-paper: #0b102b;
+  --poster-paper: #090c25;
   --poster-ink: #f0f6ff;
   --poster-muted: #b4cde4;
-  --poster-panel: #111c38;
-  --poster-line: #57c4d8;
-  --poster-rule: #3e6a88;
+  --poster-panel: #0b122d;
+  --poster-line: #6de7f4;
+  --poster-rule: #50aabd;
   --poster-label: #d8f846;
   --poster-on-label: #10182d;
   --accent: var(--poster-label);
@@ -30,8 +33,7 @@
 }
 .plan-sheet.template-pahlavan {
   background:
-    radial-gradient(circle, #6b44282b .5px, transparent .8px) 0 0 / 4px 5px,
-    repeating-linear-gradient(114deg, #9a5c260a 0 1px, transparent 1px 6px),
+    url("./pahlavan-paper-grain.svg"),
     radial-gradient(ellipse at 48% 27%, #fff0cf 2%, #f0d8ae 65%, #d3a979 100%);
 }
 .poster-hero {
@@ -49,8 +51,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  width: 53%;
-  padding: 25px 25px;
+  width: 52%;
+  padding: 25px 23px;
   min-width: 0;
 }
 .poster-brand { display: flex; align-items: center; gap: 12px; }
@@ -65,9 +67,9 @@
 }
 .poster-hero h2 {
   margin: 17px 0 10px;
-  font-size: 42px;
+  font-size: 49px;
   font-weight: 900;
-  line-height: 1.3;
+  line-height: 1.22;
   overflow-wrap: anywhere;
 }
 .poster-athlete {
@@ -91,30 +93,20 @@
   inset: 7px;
   pointer-events: none;
 }
+.plan-sheet.template-overdrive { padding-block-end: 40px; }
 .template-overdrive.poster-sheet::after {
-  border-block: 1px solid #4aaabd;
+  inset: 6px;
+  border-inline: 1px solid #4aaabd;
   background:
-    linear-gradient(#4aaabd, #4aaabd) left top / 1px 38px,
-    linear-gradient(#4aaabd, #4aaabd) right bottom / 1px 38px,
-    repeating-linear-gradient(90deg, #65d8ef 0 1px, transparent 1px 7px) left bottom / 97px 5px,
-    repeating-linear-gradient(125deg, #c8f53b 0 10px, transparent 10px 15px) right bottom / 100px 5px;
+    url("./overdrive-rail.svg") center top / 100% 18px,
+    url("./overdrive-rail.svg") center bottom / 100% 18px,
+    repeating-linear-gradient(90deg, #65d8ef 0 1px, transparent 1px 7px) left 15px bottom 19px / 150px 7px,
+    repeating-linear-gradient(125deg, #c8f53b 0 10px, transparent 10px 15px) right 16px bottom 19px / 103px 6px;
   background-repeat: no-repeat;
 }
 .template-overdrive .poster-hero {
-  --hud-surface: repeating-linear-gradient(0deg, #5bd9ee0e 0 1px, transparent 1px 5px), radial-gradient(ellipse at 75% 52%, #142b51, #0b1230 68%);
+  --hud-surface: radial-gradient(ellipse at 73% 50%, #112344, #090c25 69%);
   justify-items: end;
-}
-.template-overdrive .poster-hero::after {
-  content: "";
-  position: absolute;
-  inset: 9px;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(125deg, #67e5f5 0 9px, transparent 9px 15px) right top / 72px 7px,
-    repeating-linear-gradient(125deg, #67e5f5 0 9px, transparent 9px 15px) left bottom / 55px 7px,
-    linear-gradient(#67e5f5, #67e5f5) right top / 1px 27px,
-    linear-gradient(#67e5f5, #67e5f5) left bottom / 1px 26px;
-  background-repeat: no-repeat;
 }
 .template-overdrive .poster-hero-copy { align-items: flex-end; }
 .template-overdrive .poster-brand span {
@@ -123,24 +115,50 @@
   transform: skew(-18deg);
   background: repeating-conic-gradient(var(--poster-label) 0 25%, transparent 0 50%) 0 0 / 30px 30px;
 }
-.template-overdrive .poster-edition { color: #e6f5ff; font-style: italic; }
+.template-overdrive .poster-edition { color: #e6f5ff; font-style: italic; margin-block-start: 0; }
 .template-overdrive .poster-edition span { color: var(--poster-label); font-size: 29px; line-height: .9; }
-.template-overdrive .poster-edition span::after { content: " /"; color: #76cce3; font-size: 18px; }
+.template-overdrive .poster-edition span::after { content: " —"; color: #c9e7f3; font-size: 18px; }
 .template-overdrive .poster-hero h2 {
-  padding: 5px 19px;
+  position: relative;
+  isolation: isolate;
+  padding: 5px 24px 9px;
+  margin-block-start: 5px;
   color: var(--poster-on-label);
+}
+.template-overdrive .poster-hero h2::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--poster-label);
-  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
 }
 .template-overdrive .poster-athlete {
-  border: 1px solid var(--poster-line);
-  border-inline-end-width: 3px;
-  background: var(--poster-panel);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  position: relative;
+  isolation: isolate;
+  padding: 5px 21px;
+  border: 0;
+}
+.template-overdrive .poster-athlete::before,
+.template-overdrive .poster-athlete::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+.template-overdrive .poster-athlete::before { inset: 0; background: var(--poster-line); }
+.template-overdrive .poster-athlete::after { inset: 1.5px 4px 1.5px 2px; background: var(--poster-panel); }
+.overdrive-title-trace {
+  display: block;
+  width: 100%;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--poster-line);
+  margin-block: 3px;
 }
 .overdrive-art {
   position: absolute;
-  inset: 15px 12px 15px auto;
+  inset: 17px 13px 17px auto;
   width: 50%;
   display: grid;
   align-items: center;
@@ -159,9 +177,34 @@
     radial-gradient(circle, #31523f 2px, #ecd3a7 2.4px 3.5px, #a7542d 4px 5px, transparent 5.4px) right bottom / 13px 13px;
   background-repeat: no-repeat;
 }
-.template-pahlavan .poster-hero { border: 0; border-block-end: 3px double var(--poster-line); }
+.template-pahlavan .poster-hero { min-height: 444px; border: 0; border-block-end: 3px double var(--poster-line); }
 .template-pahlavan .poster-hero-copy { justify-self: start; }
-.template-pahlavan .poster-brand strong { color: var(--poster-label); }
+.template-pahlavan .poster-hero-with-session {
+  grid-template-rows: 1fr auto;
+  border-block-end: 0;
+}
+.template-pahlavan .poster-hero-with-session + .sheet-days { padding-block-start: 10px; }
+.pahlavan-first-day {
+  grid-row: 2;
+  z-index: 1;
+  width: 36%;
+  margin: 0;
+  justify-self: start;
+}
+.pahlavan-first-day b { display: block; padding: 8px 15px 8px 47px; text-align: center; font-size: 26px; overflow-wrap: anywhere; }
+.template-pahlavan .poster-brand {
+  position: relative;
+  padding-block-end: 12px;
+}
+.template-pahlavan .poster-brand::after {
+  content: "";
+  position: absolute;
+  inset: auto 16% 0 20%;
+  height: 8px;
+  background: var(--accent);
+  clip-path: polygon(8% 29%, 100% 0, 90% 75%, 0 100%);
+}
+.template-pahlavan .poster-brand strong { color: var(--poster-label); font-size: 70px; }
 .template-pahlavan .poster-edition { color: #704528; }
 .template-pahlavan .poster-edition span::after { content: " ·"; }
 .template-pahlavan .poster-edition::before,
@@ -173,7 +216,7 @@
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 .template-pahlavan .poster-edition::after { transform: scaleX(-1); }
-.template-pahlavan .poster-hero h2 { position: relative; padding-block-end: 7px; }
+.template-pahlavan .poster-hero h2 { position: relative; padding-block-end: 10px; font-size: 57px; }
 .template-pahlavan .poster-hero h2::after {
   content: "";
   position: absolute;
@@ -183,10 +226,18 @@
   clip-path: polygon(0 92%, 18% 36%, 65% 20%, 100% 0, 88% 46%, 57% 62%, 22% 74%);
 }
 .template-pahlavan .poster-athlete {
-  background: repeating-linear-gradient(114deg, #e7d0a816 0 1px, transparent 1px 4px), var(--poster-label);
+  position: relative;
+  isolation: isolate;
   color: var(--poster-on-label);
-  padding-inline: 13px;
+  padding: 7px 20px;
   border: 0;
+}
+.template-pahlavan .poster-athlete::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("./pahlavan-paper-grain.svg"), var(--poster-label);
   clip-path: polygon(2% 3%, 37% 5%, 70% 0, 100% 5%, 98% 40%, 100% 75%, 97% 98%, 50% 95%, 3% 100%, 0 64%);
 }
 .template-pahlavan .poster-facts {
@@ -195,22 +246,24 @@
   border-inline-start: 2px solid var(--accent);
   color: #304b37;
 }
+.template-pahlavan .poster-athlete b { font-size: 27px; }
 .pahlavan-art { position: absolute; inset: 0; pointer-events: none; }
 .pahlavan-art svg { display: block; width: 100%; height: 100%; }
 .pahlavan-art img {
   position: absolute;
   inset: auto auto 0 0;
-  width: 52%;
+  width: 54%;
   height: 100%;
   object-fit: contain;
   object-position: center bottom;
 }
+.poster-sheet .poster-hero-without-art { min-height: 265px; }
 .poster-hero-without-art .poster-hero-copy { width: min(100%, 620px); }
 
 /* Use the same training rows, markers and Legend content as the other templates. */
 .poster-sheet .sheet-days {
-  gap: 13px;
-  padding: 13px 0 0;
+  gap: 18px;
+  padding: 17px 0 0;
 }
 .poster-sheet .sheet-days:empty { display: none; }
 .poster-sheet .sheet-day {
@@ -220,40 +273,60 @@
   border-radius: 0;
 }
 .poster-sheet .sheet-day h3 {
-  min-height: 36px;
+  min-height: 54px;
   background: var(--poster-paper);
   color: var(--poster-ink);
   border-bottom: 1px solid var(--poster-line);
 }
 .poster-sheet .sheet-day h3 > b {
-  flex: 0 1 auto;
-  min-width: 120px;
-  padding: 6px 18px;
+  flex: 0 1 35%;
+  min-width: 0;
+  padding: 6px 20px;
   background: var(--poster-label);
   color: var(--poster-on-label);
-  font-size: 17px;
+  font-size: 25px;
 }
-.poster-sheet .sheet-day h3 > span { color: var(--poster-muted); font-size: 12px; }
+.poster-sheet .sheet-day h3 > span { color: var(--poster-muted); font-size: 13px; }
+.poster-sheet .sheet-day h3 > .sheet-day-focus-placeholder { visibility: hidden; }
 .poster-sheet .sheet-day th {
   background: var(--poster-panel);
   color: var(--poster-ink);
-  font-size: 12px;
+  font-size: 19px;
   border-color: var(--poster-line);
-  padding: 7px 11px;
+  padding: 8px 12px;
 }
 .poster-sheet .sheet-day th:first-child { width: 53%; }
 .poster-sheet .sheet-day th:nth-child(2) { width: 27%; }
 .poster-sheet .sheet-day th:last-child { width: 20%; }
 .poster-sheet .sheet-day td {
   color: var(--poster-ink);
-  font-size: 14px;
-  padding: 8px 10px;
+  font-size: 22px;
+  padding: 11px 13px;
   border-color: var(--poster-rule);
 }
 .poster-sheet .sheet-day :is(th, td) + :is(th, td) { border-inline-start: 1px solid var(--poster-rule); }
-.poster-sheet .sheet-day td:not(:first-child) { font-size: 13px; font-weight: 700; }
-.poster-sheet .sheet-day td small { font-size: 11px; color: var(--poster-muted); }
-.poster-sheet .ex-number { background: var(--poster-label); color: var(--poster-on-label); }
+.poster-sheet .sheet-day td:not(:first-child) { font-size: 20px; font-weight: 800; }
+.poster-sheet .sheet-day td small { font-size: 12px; color: var(--poster-muted); margin-inline-start: 0; }
+.poster-sheet .exercise-line { display: flex; align-items: center; gap: 9px; }
+.poster-sheet .exercise-line .ex-number { display: none; }
+.poster-sheet .exercise-label { min-width: 0; overflow-wrap: anywhere; }
+.poster-sheet .training-system-mark {
+  width: 26px;
+  height: 26px;
+  flex-basis: 26px;
+  margin: 0;
+  background: none;
+}
+.poster-sheet .training-system-mark svg { width: 24px; height: 24px; stroke-width: 3.2px; }
+.poster-sheet .system-drop-set { color: #9a2848; }
+.poster-sheet .system-rest-pause { color: #0f7373; }
+.poster-sheet .system-fst-7 { color: #69389f; }
+.poster-sheet .sheet-days-two-columns .sheet-day h3 { min-height: 42px; }
+.poster-sheet .sheet-days-two-columns .sheet-day h3 > b { font-size: 18px; flex-basis: 43%; padding-inline-start: 8px; }
+.poster-sheet .sheet-days-two-columns .sheet-day :is(th, td) { font-size: 13px; padding: 7px 6px; }
+.poster-sheet .sheet-days-two-columns .exercise-line { gap: 4px; }
+.poster-sheet .sheet-days-two-columns .training-system-mark { width: 18px; height: 18px; flex-basis: 18px; }
+.poster-sheet .sheet-days-two-columns .training-system-mark svg { width: 16px; height: 16px; }
 .poster-sheet .sheet-day .superset { background: var(--poster-paper); }
 .poster-sheet .sheet-day .superset-label td {
   color: var(--poster-ink);
@@ -263,9 +336,9 @@
 }
 .poster-reference, .poster-supplements {
   display: flex;
-  gap: 12px;
+  gap: 13px;
   align-items: stretch;
-  margin-block-start: 13px;
+  margin-block-start: 17px;
 }
 .poster-reference:empty { display: none; }
 .poster-reference > section, .poster-supplements > section {
@@ -288,28 +361,32 @@
 .poster-reference h3, .poster-supplements h3 {
   margin: 0;
   padding: 6px 10px;
-  min-height: 33px;
+  min-height: 42px;
   display: flex;
   align-items: center;
   gap: 7px;
   background: var(--poster-label);
   color: var(--poster-on-label);
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 800;
 }
-.poster-reference .training-system-legend h3 { font-size: 12px; }
-.poster-reference .training-system-legend h3 span { font-size: 10px; }
-.poster-reference .training-system-legend ul { gap: 0; }
-.poster-reference .training-system-legend li { padding: 7px 9px; font-size: 11px; }
+.poster-reference .training-system-legend h3 { flex-direction: row-reverse; font-size: 11px; }
+.poster-reference .training-system-legend h3 strong { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.poster-reference .training-system-legend h3 span { font-size: 23px; text-transform: none; letter-spacing: 0; font-weight: 900; font-style: italic; }
+.poster-supplements h3 span { display: inline-flex; align-items: center; gap: 7px; }
+.poster-reference .training-system-legend ul { gap: 0; margin: 10px; border: 1px solid var(--poster-line); }
+.poster-reference .training-system-legend li { padding: 7px 9px; font-size: 11px; flex-direction: row-reverse; justify-content: space-between; align-items: center; }
+.poster-reference .training-system-legend li b { font-size: 17px; }
 .poster-reference .training-system-legend li + li { border-top: 1px solid var(--poster-rule); }
 .poster-reference .training-system-legend li p { color: var(--poster-muted); }
 .poster-calendar ul {
   display: grid;
   flex: 1;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  margin: 0;
+  margin: 10px;
   padding: 0;
   list-style: none;
+  border: 1px solid var(--poster-line);
 }
 .poster-calendar li {
   display: flex;
@@ -357,47 +434,83 @@
 .poster-sheet > footer b::before { background: var(--accent); }
 .poster-sheet > footer strong { font-size: 9px; letter-spacing: .11em; }
 
-/* The HUD frame uses two chamfered layers so the corners render as part of the PNG. */
+/* Frame shapes live behind each card. The content stays inside its own padded box. */
 .template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section) {
-  --hud-corner: 10px;
+  --hud-corner: 12px;
   position: relative;
   isolation: isolate;
   border: 0;
-  background: var(--poster-line);
-  clip-path: polygon(var(--hud-corner) 0, 100% 0, 100% calc(100% - var(--hud-corner)), calc(100% - var(--hud-corner)) 100%, 0 100%, 0 var(--hud-corner));
+  background: none;
+  overflow: visible;
 }
-.template-overdrive :is(.sheet-day, .poster-reference > section, .poster-supplements > section) { padding: 1px; }
 .template-overdrive .poster-hero { --hud-corner: 16px; }
-.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section)::before {
+.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section)::before,
+.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section)::after {
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 1px;
-  clip-path: inherit;
+  pointer-events: none;
+  clip-path: polygon(var(--hud-corner) 0, 100% 0, 100% calc(100% - var(--hud-corner)), calc(100% - var(--hud-corner)) 100%, 0 100%, 0 var(--hud-corner));
+}
+.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section)::before {
+  inset: 0;
+  background: var(--poster-line);
+}
+.template-overdrive :is(.poster-hero, .sheet-day, .poster-reference > section, .poster-supplements > section)::after {
+  inset: 1.5px;
   background: var(--hud-surface, var(--poster-panel));
 }
-.template-overdrive :is(.sheet-day h3, .poster-reference h3, .poster-supplements h3) {
+.template-overdrive :is(.sheet-day, .poster-reference > section, .poster-supplements > section) { padding: 8px 10px 11px; }
+.template-overdrive .sheet-day h3 {
   background:
-    repeating-linear-gradient(130deg, #d8f846 0 7px, transparent 7px 12px) left 10px center / 41px 9px no-repeat,
-    var(--poster-paper);
-  color: var(--poster-ink);
-  border-block-end: 1px solid var(--poster-line);
+    linear-gradient(var(--poster-line), var(--poster-line)) left 8px top 9px / 18% 1px no-repeat,
+    repeating-linear-gradient(130deg, #d8f846 0 7px, transparent 7px 12px) left 8px center / 36px 8px no-repeat;
+  border: 0;
 }
-.template-overdrive .sheet-day h3 > b {
-  clip-path: polygon(13px 0, 100% 0, 100% 100%, 0 100%);
-  padding-inline-end: 23px;
+.template-overdrive .sheet-day h3 > b,
+.template-overdrive :is(.poster-reference, .poster-supplements) h3 > span {
+  position: relative;
+  isolation: isolate;
+  background: none;
+  color: var(--poster-on-label);
+  padding: 6px 18px 6px 24px;
+}
+.template-overdrive .sheet-day h3 > b::before,
+.template-overdrive :is(.poster-reference, .poster-supplements) h3 > span::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--poster-label);
+  clip-path: polygon(15px 0, 100% 0, 100% 100%, 0 100%);
 }
 .template-overdrive .sheet-day h3 > span { padding-inline-end: 52px; }
+.template-overdrive .sheet-day table { width: 100%; margin: 9px 0 0; border: 1px solid var(--poster-line); }
 .template-overdrive :is(.poster-reference, .poster-supplements) h3 {
-  background: var(--poster-label);
-  color: var(--poster-on-label);
-  margin: 4px 4px 0;
-  padding-inline: 13px;
-  clip-path: polygon(9px 0, 100% 0, 100% 100%, 0 100%);
+  background: none;
+  color: #d5f4fa;
+  padding: 0;
+  gap: 9px;
 }
-.template-overdrive .sheet-day th { background: #18284b; }
+.template-overdrive .poster-reference h3::after {
+  content: "";
+  flex: 1;
+  min-width: 23px;
+  height: 11px;
+  background:
+    repeating-linear-gradient(130deg, #72e4f7 0 4px, transparent 4px 8px) left center / 27px 8px no-repeat,
+    linear-gradient(#72e4f7, #72e4f7) right center / calc(100% - 30px) 1px no-repeat;
+}
+.template-overdrive .poster-reference .training-system-legend h3::after { display: none; }
+.template-overdrive .poster-reference .training-system-legend h3 > span { flex: none; }
+.template-overdrive .poster-reference :is(.poster-calendar, .training-system-legend) ul { margin: 8px 0 0; }
+.template-overdrive .poster-supplements p { padding-inline: 7px; }
+.template-overdrive .sheet-day th { background: #141f3a; }
 .template-overdrive .sheet-day tbody tr:nth-child(even):not(.superset-label, .superset) { background: #101831; }
-.template-overdrive .ex-number { border-radius: 2px; }
+.template-overdrive .exercise-line .training-system-mark { order: -1; }
+.template-overdrive .system-drop-set { color: #f15480; }
+.template-overdrive .system-rest-pause { color: #55e5dc; }
+.template-overdrive .system-fst-7 { color: #ba91ff; }
 .template-overdrive .poster-calendar li b { color: #eaf8ff; background: #18284b; }
 .template-overdrive .poster-calendar .training .poster-calendar-mark {
   background: var(--poster-label);
@@ -405,24 +518,70 @@
   box-shadow: 0 0 0 3px #d8f84632;
 }
 
-.template-pahlavan :is(.sheet-day, .poster-reference > section, .poster-supplements > section) {
+.template-pahlavan :is(.poster-reference > section, .poster-supplements > section) {
   border: 1px solid var(--poster-line);
   border-radius: 6px;
-  background: radial-gradient(circle, #72513420 .45px, transparent .7px) 0 0 / 5px 5px, var(--poster-panel);
+  background: url("./pahlavan-paper-grain.svg"), var(--poster-panel);
   overflow: hidden;
 }
-.template-pahlavan .sheet-day h3 {
-  background: repeating-linear-gradient(122deg, #a9582c15 0 1px, transparent 1px 6px), #ecd1a6;
-}
+.template-pahlavan .sheet-day { border: 0; border-radius: 0; background: none; overflow: visible; }
+.template-pahlavan .sheet-day h3 { background: none; border: 0; }
 .template-pahlavan .sheet-day h3 > b,
-.template-pahlavan :is(.poster-reference, .poster-supplements) h3 {
-  background:
-    repeating-linear-gradient(118deg, #f1d7a81b 0 1px, transparent 1px 5px),
-    var(--poster-label);
+.pahlavan-first-day b {
+  position: relative;
+  isolation: isolate;
+  background: none;
   color: var(--poster-on-label);
-  border-inline-end: 5px solid var(--accent);
+  padding-inline-end: 42px;
 }
-.template-pahlavan .sheet-day h3 > b { clip-path: polygon(13px 0, 100% 0, 100% 100%, 0 100%); padding-inline-end: 23px; }
+.template-pahlavan .sheet-day h3 > b::before,
+.pahlavan-first-day b::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("./pahlavan-paper-grain.svg"), var(--poster-label);
+  clip-path: polygon(29px 0, 100% 0, 100% 100%, 0 100%);
+}
+.template-pahlavan .sheet-day h3 > b::after,
+.pahlavan-first-day b::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 43px;
+  z-index: -1;
+  background: var(--accent);
+  clip-path: polygon(66% 0, 100% 0, 35% 100%, 0 100%);
+}
+.template-pahlavan .sheet-day table {
+  border: 1.5px solid var(--poster-line);
+  border-radius: 6px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: url("./pahlavan-paper-grain.svg"), var(--poster-panel);
+}
+.template-pahlavan :is(.poster-reference, .poster-supplements) h3 {
+  padding: 0 11px;
+  gap: 10px;
+  background: url("./pahlavan-paper-grain.svg"), var(--poster-label);
+  color: var(--poster-on-label);
+}
+.template-pahlavan :is(.poster-reference, .poster-supplements) h3 > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-block: 5px;
+}
+.template-pahlavan :is(.poster-reference, .poster-supplements) h3 > span::after {
+  content: "";
+  width: 25px;
+  height: 37px;
+  flex: 0 0 25px;
+  background: linear-gradient(122deg, transparent 0 31%, #e9ce9e 32% 38%, var(--accent) 39% 63%, #e9ce9e 64% 70%, transparent 71%);
+}
+.template-pahlavan .poster-reference .training-system-legend h3 > span { flex-direction: row-reverse; }
+.template-pahlavan .poster-reference .training-system-legend ul { border-width: 0; }
 .template-pahlavan .sheet-day th { background: #e6c49c8f; }
 .template-pahlavan .poster-calendar li b { background: #e6c49c8f; }
 .template-pahlavan .poster-calendar .training .poster-calendar-mark {

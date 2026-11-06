@@ -25,7 +25,7 @@ export default function TrainingSystemLegend({ plan }: { plan: Plan }) {
   if (!systems.length) return null;
 
   return <section className="training-system-legend" aria-label="راهنمای سیستم های تمرینی">
-    <h3>راهنمای سیستم های تمرینی <span lang="en" dir="ltr">Legends</span></h3>
+    <h3><strong>راهنمای سیستم های تمرینی</strong><span lang="en" dir="ltr">Legends</span></h3>
     <ul>{systems.map((id) => {
       const { name, example, description } = trainingSystems[id];
       return <li key={id}>

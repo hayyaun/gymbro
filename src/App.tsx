@@ -865,7 +865,7 @@ function App() {
                   </div>
                 )}
               </section>
-              <section className={`preview-panel${draft.template === "protocol" ? " protocol-preview" : ""}`}>
+              <section className={`preview-panel ${draft.template}-preview`}>
                 <div className="preview-label">
                   <span>
                     <Settings2 size={15} />
