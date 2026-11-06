@@ -22,6 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { toPng } from "html-to-image";
+import { exportForgePng } from "./exportForgePng";
 import { exercise, newPlan, uid, useStore } from "./model";
 import type { Day, Plan } from "./model";
 import PlanSheet, { weekdays } from "./PlanSheet";
@@ -195,14 +196,18 @@ function App() {
     }
   };
   const exportImage = async () => {
-    if (!sheet.current) return;
+    const sheetNode = sheet.current;
+    if (!sheetNode) return;
     setExporting(true);
     try {
       await document.fonts.ready;
-      const url = await toPng(sheet.current, {
+      const options = {
         pixelRatio: 3,
         backgroundColor: "#ffffff",
-      });
+      };
+      const url = draft?.template === "forge"
+        ? await exportForgePng(sheetNode, options.pixelRatio, options.backgroundColor)
+        : await toPng(sheetNode, options);
       const a = document.createElement("a");
       a.download = `${draft?.athlete || "gymbro"}-workout.png`;
       a.href = url;
