@@ -795,85 +795,6 @@
   width: 800px;
   overflow: hidden;
 }
-.sheet-head {
-  border-radius: 20px 20px 0 0;
-  overflow: hidden;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  background: var(--sheet-ink);
-  color: white;
-  padding: 18px 26px;
-  min-height: 128px;
-}
-.sheet-heading {
-  flex: 1;
-  min-width: 0;
-}
-.sheet-eyebrow {
-  display: block;
-  color: #b7bac2;
-  font-size: 9px;
-  margin-bottom: 4px;
-}
-.sheet-head h2 {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1.35;
-  margin: 0 0 3px;
-  overflow-wrap: anywhere;
-}
-.sheet-head p {
-  font-size: 11px;
-  margin: 0;
-  color: #d0d2d8;
-  overflow-wrap: anywhere;
-}
-.sheet-head-details {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-top: 9px;
-  font-size: 9px;
-  color: #c2c5cd;
-}
-.sheet-head-details strong {
-  color: var(--accent);
-  font-weight: 700;
-}
-.sheet-head-details > span + span {
-  border-inline-start: 1px solid #555861;
-  padding-inline-start: 12px;
-}
-.exir-brand {
-  width: 235px;
-  aspect-ratio: 2;
-  flex-shrink: 0;
-}
-.exir-brand img {
-  display: block;
-  width: 100%;
-  height: auto;
-  image-rendering: auto;
-}
-.exir-brand-compact {
-  width: 64px;
-}
-.sheet-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  padding: 10px 26px;
-  color: #6c7078;
-  font-size: 9px;
-  border-bottom: 1px solid #e9eaed;
-}
-.sheet-meta b {
-  font-weight: 600;
-  color: #292b32;
-}
 .sheet-days {
   padding: 18px 26px;
   display: grid;
@@ -1001,89 +922,6 @@
   padding: 3px 8px;
   font-size: 9px;
   font-weight: 500;
-}
-.sheet-bottom {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  margin: 0 26px 14px;
-  align-items: stretch;
-}
-.sheet-bottom.has-cardio {
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-}
-.sheet-schedule,
-.sheet-cardio {
-  min-width: 0;
-  border: 1.3px solid #24252a;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.sheet-schedule h3,
-.sheet-cardio h3 {
-  background: var(--sheet-ink);
-  color: white;
-  font-size: 11px;
-  font-weight: 500;
-  padding: 6px 12px;
-  margin: 0;
-}
-.sheet-schedule > div {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  padding: 10px 9px;
-  gap: 4px;
-}
-.sheet-schedule span {
-  text-align: center;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.sheet-schedule b {
-  display: block;
-  background: #f0f1f3;
-  padding: 4px 1px;
-  font-size: 8px;
-  font-weight: 700;
-  border-radius: 3px;
-}
-.sheet-schedule .training b {
-  background: var(--accent);
-  color: white;
-}
-.sheet-schedule small {
-  display: block;
-  font-size: 7px;
-  margin-top: 5px;
-  line-height: 1.6;
-}
-.sheet-cardio p {
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.8;
-  padding: 12px 14px;
-  margin: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-.sheet-notes {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin: 0 26px 16px;
-}
-.sheet-notes b {
-  color: var(--accent);
-  font-size: 9px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.sheet-notes p {
-  font-size: 9px;
-  line-height: 1.7;
-  margin: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 .plan-sheet > footer {
   padding: 9px 26px;
@@ -1272,25 +1110,6 @@
   border-bottom: 5px solid #dc3045;
   color: #fff;
   border-radius: 3px;
-}
-.colors {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.colors button {
-  width: 27px;
-  height: 27px;
-  border-radius: 50%;
-  color: white;
-  display: grid;
-  place-items: center;
-}
-.colors input {
-  width: 32px;
-  height: 32px;
-  padding: 2px;
 }
 .toast {
   position: fixed;

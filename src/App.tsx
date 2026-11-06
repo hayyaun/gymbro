@@ -28,9 +28,8 @@ import { exercise, newPlan, uid, useStore } from "./model";
 import type { Day, Plan } from "./model";
 import PlanSheet, { weekdays } from "./PlanSheet";
 import SheetPreview from "./SheetPreview";
-import ExirBrand from "./ExirBrand";
 import PwaControls from "./PwaControls";
-import { forgePalettes, forgeVariables } from "./forgeTheme";
+import { defaultForgeSlogan, forgePalettes, forgeVariables } from "./forgeTheme";
 import type { ForgeAccent } from "./forgeTheme";
 import { protocolVariables } from "./protocolTheme";
 import ProtocolDesignControls from "./ProtocolDesignControls";
@@ -53,12 +52,11 @@ import "./Workspace.css";
 import "./MobileLayout.css";
 
 const templates = [
-  { id: "studio", name: "استودیو", text: "قدرتمند و حرفه ای" },
   { id: "forge", name: "فورج", text: "پوستر انیمه · تیره و روشن" },
   { id: "protocol", name: "پروتکل", text: "صنعتی · تایپوگرافی و الگو" },
   { id: "overdrive", name: "اوردرایو", text: "بازی مسابقه ای · خطوط نئونی" },
   { id: "pahlavan", name: "پهلوان", text: "پوستر زورخانه · چاپ روی کاغذ" },
-];
+] as const;
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
   const { coach, plans, students: profiles, blocks, defaultAppearance, saveBlock, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
@@ -476,19 +474,17 @@ function App() {
                           ? forgeVariables(p.forgeAccent, p.forgeMode)
                           : p.template === "protocol"
                             ? protocolVariables(p.protocolAccent)
-                            : p.template === "studio"
-                              ? { "--accent": p.color }
-                              : undefined
+                            : undefined
                       ) as React.CSSProperties}
                     >
                       <div className="mini-head">
                         {p.template === "forge" ? (
-                          <div className="mini-forge-title"><Dumbbell size={12} /><b>قوی تر از دیروز</b></div>
+                          <div className="mini-forge-title"><Dumbbell size={12} /><b>{p.forgeSlogan?.trim() || defaultForgeSlogan}</b></div>
                         ) : p.template === "protocol" ? (
                           <b>پروتکل تمرین</b>
-                        ) : p.template === "overdrive" || p.template === "pahlavan" ? (
+                        ) : (
                           <b>{templates.find((template) => template.id === p.template)?.name}</b>
-                        ) : <ExirBrand compact />}
+                        )}
                         <span>{p.athlete}</span>
                       </div>
                       <div className="mini-days">
@@ -648,6 +644,18 @@ function App() {
                         placeholder="مثلا دوره افزایش حجم"
                       />
                     </label>
+                    {draft.template === "forge" && (
+                      <label>
+                        شعار برنامه
+                        <textarea
+                          rows={2}
+                          maxLength={100}
+                          value={draft.forgeSlogan ?? defaultForgeSlogan}
+                          placeholder={defaultForgeSlogan}
+                          onChange={(e) => patch({ forgeSlogan: e.target.value })}
+                        />
+                      </label>
+                    )}
                     <label>
                       نام ورزشکار
                       <input
@@ -828,36 +836,7 @@ function App() {
                       </>
                     ) : draft.template === "protocol" ? (
                       <ProtocolDesignControls plan={draft} onChange={patch} />
-                    ) : draft.template === "studio" && (
-                      <>
-                    <h3>رنگ اختصاصی</h3>
-                    <div className="colors">
-                      {[
-                        "#dc3045",
-                        "#28735b",
-                        "#3562c4",
-                        "#8b4ab0",
-                        "#be6b23",
-                        "#202b38",
-                      ].map((c) => (
-                        <button
-                          key={c}
-                          style={{ background: c }}
-                          aria-label={`رنگ ${c}`}
-                          onClick={() => patch({ color: c })}
-                        >
-                          {draft.color === c && <Check size={17} />}
-                        </button>
-                      ))}
-                      <input
-                        aria-label="رنگ دلخواه"
-                        type="color"
-                        value={draft.color}
-                        onChange={(e) => patch({ color: e.target.value })}
-                      />
-                    </div>
-                      </>
-                    )}
+                    ) : null}
                     <SheetSectionControls plan={draft} onChange={patch} />
                   </div>
                 )}

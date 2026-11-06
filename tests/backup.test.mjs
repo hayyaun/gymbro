@@ -13,6 +13,7 @@ function fixture() {
 }
 test("a JSON backup round trip retains programs, palettes, private notes, payments and blocks", () => {
   const data = fixture();
+  data.plans[0].forgeSlogan = "قدم به قدم\nقوی تر";
   const snapshot = makeBackup({ ...data, action: () => {} });
   assert.equal("action" in snapshot.data, false);
   assert.deepEqual(parseBackup(JSON.stringify(snapshot)).data, data);
@@ -38,9 +39,20 @@ test("saved appearance and section visibility survive backup and merge preserves
   assert.deepEqual(parsed.defaultAppearance, incoming.defaultAppearance);
   assert.deepEqual(parsed.plans[0].hiddenSections, incoming.plans[0].hiddenSections);
   assert.deepEqual(restoreData(fixture(), parsed, "merge").defaultAppearance, incoming.defaultAppearance);
-  const current = { ...fixture(), defaultAppearance: { template: "studio", color: "#123456" } };
+  const current = { ...fixture(), defaultAppearance: { template: "forge", color: "#123456" } };
   assert.deepEqual(restoreData(current, parsed, "merge").defaultAppearance, current.defaultAppearance);
   assert.equal(restoreData(current, fixture(), "replace").defaultAppearance, undefined);
+});
+test("backups with retired layouts open as Forge without losing workout data", () => {
+  for (const template of ["studio", "minimal", "bold"]) {
+    const data = fixture();
+    const original = structuredClone(data.plans[0]);
+    data.plans[0].template = template;
+    data.defaultAppearance = { template, color: original.color };
+    const parsed = parseBackup(JSON.stringify(makeBackup(data))).data;
+    assert.deepEqual(parsed.plans[0], original);
+    assert.deepEqual(parsed.defaultAppearance, { template: "forge", color: original.color });
+  }
 });
 test("poster themes and their independent visibility preferences survive backup", () => {
   const data = fixture();

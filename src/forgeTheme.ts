@@ -8,6 +8,8 @@ export const forgePalettes = {
 export type ForgeAccent = keyof typeof forgePalettes;
 export type ForgeMode = "dark" | "light";
 
+export const defaultForgeSlogan = "قوی تر\nاز دیروز.";
+
 // Optional plan fields keep existing saved programs and their accent colors intact.
 export const getForgePalette = (accent?: ForgeAccent) =>
   forgePalettes[accent ?? "purple"] ?? forgePalettes.purple;

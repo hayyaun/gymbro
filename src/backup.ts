@@ -1,7 +1,7 @@
 import type { Day, Exercise, Plan, PlanAppearance } from "./model";
 import { isDate, linkStudents } from "./library.ts";
 import { trainingSystemIds } from "./trainingSystems.ts";
-import { orderedSheetSections, sheetSectionOptions, sheetTemplates } from "./sheetSections.ts";
+import { orderedSheetSections, sheetSectionOptions, sheetTemplate, sheetTemplates } from "./sheetSections.ts";
 import type { HiddenSheetSections, SheetSection, SheetSectionOrder } from "./sheetSections";
 import type { Payment, Student, WorkoutBlock } from "./library";
 
@@ -32,10 +32,10 @@ function readDay(value: unknown): Day {
 }
 function readAppearance(value: unknown): PlanAppearance {
   const item = object(value);
-  const template = choice(item.template, [...sheetTemplates, "minimal", "bold"]);
+  const template = choice(item.template, [...sheetTemplates, "studio", "minimal", "bold"]);
   const color = string(item.color, 9);
   if (!/^#[\da-f]{6}$/i.test(color)) invalid();
-  const appearance: PlanAppearance = { template: template === "minimal" || template === "bold" ? "studio" : template, color };
+  const appearance: PlanAppearance = { template: sheetTemplate(template), color };
   if (item.forgeAccent !== undefined) appearance.forgeAccent = choice(item.forgeAccent, ["purple", "orange", "lime", "yellow"]);
   if (item.forgeMode !== undefined) appearance.forgeMode = choice(item.forgeMode, ["dark", "light"]);
   if (item.protocolAccent !== undefined) appearance.protocolAccent = choice(item.protocolAccent, ["orange", "red", "purple", "cyan", "green"]);
@@ -71,6 +71,7 @@ function readPlan(value: unknown): Plan {
   const plan: Plan = { id: id(item.id), title: string(item.title), athlete: string(item.athlete), goal: string(item.goal), weeks: string(item.weeks), ...readAppearance(item),
     cardio: string(item.cardio), notes: string(item.notes), schedule, days: unique(list(item.days, readDay, 365)), updatedAt: timestamp(item.updatedAt) };
   if (item.studentId !== undefined) plan.studentId = id(item.studentId);
+  if (item.forgeSlogan !== undefined) plan.forgeSlogan = string(item.forgeSlogan);
   return plan;
 }
 function readPayment(value: unknown): Payment {

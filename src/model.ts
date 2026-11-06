@@ -7,8 +7,8 @@ import type { Student, WorkoutBlock } from "./library";
 import { restoreData } from "./backup";
 import type { LibraryData, RestoreMode } from "./backup";
 import type { TrainingSystem } from "./trainingSystems";
-import { orderedSheetSections, sheetSectionOptions, sheetTemplates } from "./sheetSections";
-import type { HiddenSheetSections, SheetSection, SheetSectionOrder } from "./sheetSections";
+import { defaultSheetTemplate, orderedSheetSections, sheetSectionOptions, sheetTemplate, sheetTemplates } from "./sheetSections";
+import type { HiddenSheetSections, SheetSection, SheetSectionOrder, SheetTemplate } from "./sheetSections";
 
 export type Exercise = {
   id: string;
@@ -33,10 +33,11 @@ export type Plan = {
   studentId?: string;
   goal: string;
   weeks: string;
-  template: string;
+  template: SheetTemplate;
   color: string;
   forgeAccent?: ForgeAccent;
   forgeMode?: ForgeMode;
+  forgeSlogan?: string;
   protocolAccent?: ProtocolAccent;
   protocolMode?: ProtocolMode;
   hiddenSections?: HiddenSheetSections;
@@ -59,7 +60,7 @@ export const exercise = (name = ""): Exercise => ({
 });
 export type PlanAppearance = Pick<Plan, "template" | "color" | "forgeAccent" | "forgeMode" | "protocolAccent" | "protocolMode" | "hiddenSections" | "sectionOrder">;
 const planAppearance = ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections, sectionOrder }: PlanAppearance): PlanAppearance =>
-  ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections, sectionOrder });
+  ({ template: sheetTemplate(template), color, forgeAccent, forgeMode, protocolAccent, protocolMode, hiddenSections, sectionOrder });
 
 export const newPlan = (appearance?: PlanAppearance): Plan => ({
   id: uid(),
@@ -67,7 +68,7 @@ export const newPlan = (appearance?: PlanAppearance): Plan => ({
   athlete: "",
   goal: "عضله سازی",
   weeks: "6",
-  template: "studio",
+  template: defaultSheetTemplate,
   color: "#dc3045",
   ...(appearance && planAppearance(appearance)),
   notes: "",
@@ -227,13 +228,14 @@ export const useStore = create<Store>()(
         const normalizedPlans = (saved?.plans ?? current.plans).map((plan) => ({
           ...plan,
           athlete: plan.athlete === "ایمان قهرمانی" || (plan.id === "sample" && plan.athlete === "ورزشکار نمونه") ? "آرمان رضایی" : plan.athlete,
-          template: plan.template === "minimal" || plan.template === "bold" ? "studio" : plan.template,
+          template: sheetTemplate(plan.template),
         }));
         return {
           ...current,
           ...saved,
           // Remove the original reference athlete from saved plans and copies.
           coach: saved?.coach === "ایمان قهرمانی" ? "مربی" : (saved?.coach ?? current.coach),
+          defaultAppearance: saved?.defaultAppearance && planAppearance(saved.defaultAppearance),
           ...linkStudents(normalizedPlans, saved?.students ?? []),
         };
       },

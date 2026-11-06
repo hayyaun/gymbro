@@ -68,10 +68,12 @@
   letter-spacing: -3.5px;
   line-height: 1.38;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 .forge-hero h2 em {
   color: var(--accent);
   font-style: normal;
+  white-space: pre-line;
 }
 .forge-hero-copy > p {
   font-size: 15px;
@@ -535,6 +537,12 @@
   align-items: center;
   gap: 4px;
   color: var(--accent);
+  min-width: 0;
+}
+.mini-forge-title > b {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .mini-forge .mini-days > div {
   border-color: var(--accent);

@@ -14,7 +14,6 @@ export type SheetSection = keyof typeof sheetSectionLabels;
 
 const commonSections = ["calendar", "legend", "notes", "cardio", "footer"] as const;
 export const sheetSectionOptions = {
-  studio: commonSections,
   forge: ["pillars", "rhythm", ...commonSections],
   protocol: ["signal", ...commonSections],
   overdrive: ["heroArt", ...commonSections],
@@ -22,13 +21,13 @@ export const sheetSectionOptions = {
 } satisfies Record<string, readonly SheetSection[]>;
 
 export type SheetTemplate = keyof typeof sheetSectionOptions;
+export const defaultSheetTemplate = "forge" satisfies SheetTemplate;
 export type HiddenSheetSections = Partial<Record<SheetTemplate, SheetSection[]>>;
 export type SheetLayoutSection = SheetSection | "workouts";
 export type SheetSectionOrder = Partial<Record<SheetTemplate, SheetLayoutSection[]>>;
 export const sheetTemplates = Object.keys(sheetSectionOptions) as SheetTemplate[];
 
 const defaultOrders: Record<SheetTemplate, readonly SheetLayoutSection[]> = {
-  studio: ["workouts", "legend", "calendar", "cardio", "notes", "footer"],
   forge: ["pillars", "workouts", "rhythm", "calendar", "cardio", "legend", "notes", "footer"],
   protocol: ["signal", "workouts", "legend", "calendar", "notes", "cardio", "footer"],
   overdrive: ["heroArt", "workouts", "legend", "calendar", "notes", "cardio", "footer"],
@@ -36,7 +35,7 @@ const defaultOrders: Record<SheetTemplate, readonly SheetLayoutSection[]> = {
 };
 
 export function sheetTemplate(template: string): SheetTemplate {
-  return sheetTemplates.find((id) => id === template) ?? "studio";
+  return sheetTemplates.find((id) => id === template) ?? defaultSheetTemplate;
 }
 
 export function orderedSheetSections(

@@ -1,8 +1,7 @@
 import { Activity, BicepsFlexed, Brain, CalendarDays, Dumbbell, Flame, HeartPulse, MoveUpRight, ShieldCheck, Target, Zap } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Plan } from "./model";
-import { forgeVariables } from "./forgeTheme";
-import SheetTitle from "./SheetTitle";
+import { defaultForgeSlogan, forgeVariables } from "./forgeTheme";
 import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import { orderedSheetSections, showsSheetSection } from "./sheetSections";
@@ -18,6 +17,7 @@ const pillars = [
 
 export default function ForgeSheet({ plan, coach, weekdays }: { plan: Plan; coach: string; weekdays: string[] }) {
   const mode = plan.forgeMode ?? "dark";
+  const [sloganLead, ...sloganAccent] = (plan.forgeSlogan?.trim() || defaultForgeSlogan).split(/\r?\n/);
   const showCalendar = showsSheetSection(plan, "calendar");
   const showCardio = plan.cardio && showsSheetSection(plan, "cardio");
   return (
@@ -29,8 +29,8 @@ export default function ForgeSheet({ plan, coach, weekdays }: { plan: Plan; coac
         </div>
         <div className="forge-hero-copy">
           <span className="forge-kicker">برای ساختن خودت</span>
-          <h2>قوی تر<br /><em>از دیروز.</em></h2>
-          <p><SheetTitle title={plan.title || "برنامه تمرینی شما"} /></p>
+          <h2>{sloganLead}{sloganAccent.length > 0 && <><br /><em>{sloganAccent.join("\n")}</em></>}</h2>
+          <p>{plan.title || "برنامه تمرینی شما"}</p>
           <div className="forge-hero-facts">
             <span><b>{plan.days.length.toLocaleString("fa-IR")}</b> روز تمرین</span>
             <span><b>{plan.weeks}</b> هفته تلاش</span>
