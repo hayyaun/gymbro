@@ -56,7 +56,7 @@ const templates = [
 ];
 const fa = (n: number) => n.toLocaleString("fa-IR");
 function App() {
-  const { coach, plans, students: profiles, blocks, saveBlock, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
+  const { coach, plans, students: profiles, blocks, defaultAppearance, saveBlock, heroDismissed, dismissHero, setCoach, save, remove } = useStore();
   const [page, setPage] = useState<"library" | "students" | "blocks" | "backup">("library");
   const [savingBlock, setSavingBlock] = useState<Day | null>(null);
   const [insertingBlock, setInsertingBlock] = useState<Day | null>(null);
@@ -121,7 +121,7 @@ function App() {
   const openStudents = (id: string | null) => navigate(() => {
     setDraft(null); setPage("students"); setProfileId(id); setWorkspaceVersion((version) => version + 1); setWorkspaceDirty(false); window.scrollTo({ top: 0 });
   });
-  const startStudentPlan = () => open({ ...newPlan(), athlete: activeStudent?.name ?? "", studentId: activeStudent?.id }, true);
+  const startStudentPlan = () => open({ ...newPlan(defaultAppearance), athlete: activeStudent?.name ?? "", studentId: activeStudent?.id }, true);
   const openBlocks = () => navigate(() => { setDraft(null); setPage("blocks"); setWorkspaceDirty(false); window.scrollTo({ top: 0 }); });
   const patch = (data: Partial<Plan>) =>
     setDraft((d) => (d ? { ...d, ...data } : d));
@@ -352,7 +352,7 @@ function App() {
           </span>
           <div className="mobile-header-brand"><Brand /></div>
         </header>
-        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(), athlete: student.name, studentId: student.id }, true)} /> : page === "blocks" ? <BlocksWorkspace editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} navigate={navigate} /> : page === "backup" ? <BackupWorkspace /> : !draft ? (
+        {page === "students" ? <StudentsWorkspace key={`${profileId ?? "all"}-${workspaceVersion}`} studentId={profileId} editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} onViewedStudentChange={setViewingStudentId} navigate={navigate} onProgram={open} onNewProgram={(student) => open({ ...newPlan(defaultAppearance), athlete: student.name, studentId: student.id }, true)} /> : page === "blocks" ? <BlocksWorkspace editorRef={workspaceRef} onDirtyChange={setWorkspaceDirty} navigate={navigate} /> : page === "backup" ? <BackupWorkspace /> : !draft ? (
           <div className="dashboard">
             <div className="page-heading">
               <div>

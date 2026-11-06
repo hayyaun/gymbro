@@ -51,7 +51,11 @@ export const exercise = (name = ""): Exercise => ({
   note: "",
   group: "",
 });
-export const newPlan = (): Plan => ({
+export type PlanAppearance = Pick<Plan, "template" | "color" | "forgeAccent" | "forgeMode" | "protocolAccent" | "protocolMode">;
+const planAppearance = ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode }: PlanAppearance): PlanAppearance =>
+  ({ template, color, forgeAccent, forgeMode, protocolAccent, protocolMode });
+
+export const newPlan = (appearance?: PlanAppearance): Plan => ({
   id: uid(),
   title: "",
   athlete: "",
@@ -59,6 +63,7 @@ export const newPlan = (): Plan => ({
   weeks: "6",
   template: "studio",
   color: "#dc3045",
+  ...(appearance && planAppearance(appearance)),
   notes: "",
   cardio: "",
   schedule: Array(7).fill("استراحت"),
@@ -142,6 +147,7 @@ type Store = {
   plans: Plan[];
   students: Student[];
   blocks: WorkoutBlock[];
+  defaultAppearance?: PlanAppearance;
   saveStudent: (student: Student) => void;
   saveBlock: (block: WorkoutBlock) => void;
   removeBlock: (id: string) => void;
@@ -162,11 +168,14 @@ export const useStore = create<Store>()(
       dismissHero: () => set({ heroDismissed: true }),
       setCoach: (coach) => set({ coach }),
       save: (plan) =>
-        set((s) => linkStudents([plan, ...s.plans.filter((p) => p.id !== plan.id)], s.students)),
+        set((s) => ({
+          ...linkStudents([plan, ...s.plans.filter((p) => p.id !== plan.id)], s.students),
+          ...(!s.plans.some((p) => p.id === plan.id) && { defaultAppearance: planAppearance(plan) }),
+        })),
       saveStudent: (student) => set((s) => updateStudent(s.plans, s.students, student)),
       saveBlock: (block) => set((s) => ({ blocks: [block, ...s.blocks.filter((item) => item.id !== block.id)] })),
       removeBlock: (id) => set((s) => ({ blocks: s.blocks.filter((item) => item.id !== id) })),
-      restoreLibrary: (data, mode) => set((s) => restoreData(s, data, mode)),
+      restoreLibrary: (data, mode) => set((s) => ({ defaultAppearance: undefined, ...restoreData(s, data, mode) })),
       remove: (id) =>
         set((s) => ({ plans: s.plans.filter((p) => p.id !== id) })),
     }),

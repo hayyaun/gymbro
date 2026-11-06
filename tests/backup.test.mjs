@@ -25,6 +25,15 @@ test("invalid backups cannot partially modify the existing library", () => {
   assert.throws(() => parseBackup("not JSON"));
   assert.throws(() => parseBackup(JSON.stringify({ ...makeBackup(current), version: 999 })));
 });
+test("a saved appearance preference survives backup and merge preserves the current choice", () => {
+  const incoming = { ...fixture(), defaultAppearance: { template: "protocol", color: "#dc3045", protocolAccent: "cyan", protocolMode: "dark" } };
+  const parsed = parseBackup(JSON.stringify(makeBackup(incoming))).data;
+  assert.deepEqual(parsed.defaultAppearance, incoming.defaultAppearance);
+  assert.deepEqual(restoreData(fixture(), parsed, "merge").defaultAppearance, incoming.defaultAppearance);
+  const current = { ...fixture(), defaultAppearance: { template: "studio", color: "#123456" } };
+  assert.deepEqual(restoreData(current, parsed, "merge").defaultAppearance, current.defaultAppearance);
+  assert.equal(restoreData(current, fixture(), "replace").defaultAppearance, undefined);
+});
 test("duplicate IDs, broken student links and impossible payment dates are rejected", () => {
   const duplicate = makeBackup(fixture()); duplicate.data.plans.push(structuredClone(duplicate.data.plans[0]));
   assert.throws(() => parseBackup(JSON.stringify(duplicate)));

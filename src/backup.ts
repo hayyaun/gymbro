@@ -1,8 +1,8 @@
-import type { Day, Exercise, Plan } from "./model";
+import type { Day, Exercise, Plan, PlanAppearance } from "./model";
 import { isDate, linkStudents } from "./library.ts";
 import type { Payment, Student, WorkoutBlock } from "./library";
 
-export type LibraryData = { coach: string; heroDismissed: boolean; plans: Plan[]; students: Student[]; blocks: WorkoutBlock[] };
+export type LibraryData = { coach: string; heroDismissed: boolean; plans: Plan[]; students: Student[]; blocks: WorkoutBlock[]; defaultAppearance?: PlanAppearance };
 export type Backup = { format: "gymbro-backup"; version: 1; createdAt: string; data: LibraryData };
 export type RestoreMode = "merge" | "replace";
 export const MAX_BACKUP_BYTES = 10 * 1024 * 1024;
@@ -26,20 +26,25 @@ function readDay(value: unknown): Day {
   const item = object(value);
   return { id: id(item.id), name: string(item.name), focus: string(item.focus), exercises: unique(list(item.exercises, readExercise, 5000)) };
 }
-function readPlan(value: unknown): Plan {
+function readAppearance(value: unknown): PlanAppearance {
   const item = object(value);
   const template = choice(item.template, ["studio", "forge", "protocol", "minimal", "bold"]);
   const color = string(item.color, 9);
   if (!/^#[\da-f]{6}$/i.test(color)) invalid();
+  const appearance: PlanAppearance = { template: template === "minimal" || template === "bold" ? "studio" : template, color };
+  if (item.forgeAccent !== undefined) appearance.forgeAccent = choice(item.forgeAccent, ["purple", "orange", "lime", "yellow"]);
+  if (item.forgeMode !== undefined) appearance.forgeMode = choice(item.forgeMode, ["dark", "light"]);
+  if (item.protocolAccent !== undefined) appearance.protocolAccent = choice(item.protocolAccent, ["orange", "red", "purple", "cyan", "green"]);
+  if (item.protocolMode !== undefined) appearance.protocolMode = choice(item.protocolMode, ["paper", "dark"]);
+  return appearance;
+}
+function readPlan(value: unknown): Plan {
+  const item = object(value);
   const schedule = list(item.schedule, (entry) => string(entry), 7);
   if (schedule.length !== 7) invalid();
-  const plan: Plan = { id: id(item.id), title: string(item.title), athlete: string(item.athlete), goal: string(item.goal), weeks: string(item.weeks), template: template === "minimal" || template === "bold" ? "studio" : template, color,
+  const plan: Plan = { id: id(item.id), title: string(item.title), athlete: string(item.athlete), goal: string(item.goal), weeks: string(item.weeks), ...readAppearance(item),
     cardio: string(item.cardio), notes: string(item.notes), schedule, days: unique(list(item.days, readDay, 365)), updatedAt: timestamp(item.updatedAt) };
   if (item.studentId !== undefined) plan.studentId = id(item.studentId);
-  if (item.forgeAccent !== undefined) plan.forgeAccent = choice(item.forgeAccent, ["purple", "orange", "lime", "yellow"]);
-  if (item.forgeMode !== undefined) plan.forgeMode = choice(item.forgeMode, ["dark", "light"]);
-  if (item.protocolAccent !== undefined) plan.protocolAccent = choice(item.protocolAccent, ["orange", "red", "purple", "cyan", "green"]);
-  if (item.protocolMode !== undefined) plan.protocolMode = choice(item.protocolMode, ["paper", "dark"]);
   return plan;
 }
 function readPayment(value: unknown): Payment {
@@ -70,11 +75,12 @@ export function parseBackup(text: string): Backup {
   const plans = unique(list(data.plans, readPlan));
   const blocks = unique(list(data.blocks, readBlock));
   if (plans.some((plan) => plan.studentId && !students.some((student) => student.id === plan.studentId))) invalid();
-  return { format: "gymbro-backup", version: 1, createdAt: timestamp(source.createdAt), data: { coach: string(data.coach), heroDismissed: bool(data.heroDismissed), blocks, ...linkStudents(plans, students) } };
+  const defaultAppearance = data.defaultAppearance === undefined ? undefined : readAppearance(data.defaultAppearance);
+  return { format: "gymbro-backup", version: 1, createdAt: timestamp(source.createdAt), data: { coach: string(data.coach), heroDismissed: bool(data.heroDismissed), blocks, ...linkStudents(plans, students), ...(defaultAppearance && { defaultAppearance }) } };
 }
 export function makeBackup(data: LibraryData): Backup {
   // Whitelist data fields: actions, file paths, and assets never enter a backup.
-  return { format: "gymbro-backup", version: 1, createdAt: new Date().toISOString(), data: structuredClone({ coach: data.coach, heroDismissed: data.heroDismissed, plans: data.plans, students: data.students, blocks: data.blocks }) };
+  return { format: "gymbro-backup", version: 1, createdAt: new Date().toISOString(), data: structuredClone({ coach: data.coach, heroDismissed: data.heroDismissed, plans: data.plans, students: data.students, blocks: data.blocks, ...(data.defaultAppearance && { defaultAppearance: data.defaultAppearance }) }) };
 }
 const keepLocal = <T extends { id: string }>(current: T[], incoming: T[]) => [...current, ...incoming.filter((item) => !current.some((local) => local.id === item.id))];
 export function restoreData(current: LibraryData, incoming: LibraryData, mode: RestoreMode): LibraryData {
@@ -85,7 +91,8 @@ export function restoreData(current: LibraryData, incoming: LibraryData, mode: R
   });
   if (students.some((student) => !Number.isSafeInteger(student.payments.reduce((total, payment) => total + payment.amount, 0)))) invalid();
   const linked = linkStudents(keepLocal(current.plans, incoming.plans), students);
-  return structuredClone({ coach: current.coach || incoming.coach, heroDismissed: current.heroDismissed, blocks: keepLocal(current.blocks, incoming.blocks), ...linked });
+  const defaultAppearance = current.defaultAppearance ?? incoming.defaultAppearance;
+  return structuredClone({ coach: current.coach || incoming.coach, heroDismissed: current.heroDismissed, blocks: keepLocal(current.blocks, incoming.blocks), ...linked, ...(defaultAppearance && { defaultAppearance }) });
 }
 export function downloadBackup(data: LibraryData) {
   const backup = makeBackup(data);
