@@ -2,6 +2,7 @@ import { Activity, BicepsFlexed, Brain, CalendarDays, Dumbbell, Flame, HeartPuls
 import type { CSSProperties } from "react";
 import type { Plan } from "./model";
 import { forgeVariables } from "./forgeTheme";
+import SheetTitle from "./SheetTitle";
 import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import { orderedSheetSections, showsSheetSection } from "./sheetSections";
@@ -29,7 +30,7 @@ export default function ForgeSheet({ plan, coach, weekdays }: { plan: Plan; coac
         <div className="forge-hero-copy">
           <span className="forge-kicker">برای ساختن خودت</span>
           <h2>قوی تر<br /><em>از دیروز.</em></h2>
-          <p>{plan.title || "برنامه تمرینی شما"}</p>
+          <p><SheetTitle title={plan.title || "برنامه تمرینی شما"} /></p>
           <div className="forge-hero-facts">
             <span><b>{plan.days.length.toLocaleString("fa-IR")}</b> روز تمرین</span>
             <span><b>{plan.weeks}</b> هفته تلاش</span>

@@ -3,7 +3,7 @@ import { getFontEmbedCSS, toCanvas } from "html-to-image";
 export async function exportPortraitPng(
   sheet: HTMLElement,
   template: "forge" | "pahlavan",
-  { pixelRatio, backgroundColor }: { pixelRatio: number; backgroundColor: string },
+  { pixelRatio }: { pixelRatio: number },
 ) {
   const isForge = template === "forge";
   // Measure an unscaled copy so the export uses the full sheet geometry at any preview size.
@@ -60,7 +60,6 @@ export async function exportPortraitPng(
     const canvas = await toCanvas(copy, {
       pixelRatio,
       fontEmbedCSS,
-      backgroundColor,
       width: sheetBox.width,
       height: sheetBox.height,
     });

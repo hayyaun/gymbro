@@ -2,29 +2,21 @@ import { BedDouble, Check, Dumbbell, HeartPulse, NotebookPen, Square } from "luc
 import type { Plan } from "./model";
 import { orderedSheetSections, showsSheetSection } from "./sheetSections";
 import { renderSheetSections } from "./renderSheetSections";
+import SheetTitle from "./SheetTitle";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import WorkoutDays from "./WorkoutDays";
 import "./PosterSheet.css";
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
 
-function OverdriveTitleTrace({ lower = false }: { lower?: boolean }) {
+function OverdriveTitleTrace() {
   return (
     <svg className="overdrive-title-trace" viewBox="0 0 320 23" preserveAspectRatio="none" aria-hidden="true">
       <g fill="none" stroke="currentColor" strokeWidth="1.4">
-        {lower ? (
-          <>
-            <path d="M4 18h97l13-12h171m-111 7h83m-95 4h58" />
-            <path d="M7 18h85m94-12h83" strokeWidth="5" strokeDasharray="4 4" />
-          </>
-        ) : (
-          <>
-            <path d="M3 5h266l16 15h16M151 9h80" />
-            <path d="M4 5h139" strokeWidth="5" strokeDasharray="4 4" />
-          </>
-        )}
+        <path d="M3 5h266l16 15h16M151 9h80" />
+        <path d="M4 5h139" strokeWidth="5" strokeDasharray="4 4" />
       </g>
-      <path d={lower ? "M288 4h5v4h-5z" : "M301 17h5v5h-5z"} fill="currentColor" />
+      <path d="M301 17h5v5h-5z" fill="currentColor" />
     </svg>
   );
 }
@@ -152,9 +144,7 @@ export default function PosterSheet({ plan, coach, weekdays, variant }: {
           <div className="poster-hero-copy">
             <div className="poster-brand" dir="ltr"><strong>GYMBRO</strong><span aria-hidden="true" /></div>
             {isOverdrive && showArt && <OverdriveTitleTrace />}
-            <div className="poster-edition" dir="ltr"><span>{isOverdrive ? "02" : "04"}</span>{edition}</div>
-            {isOverdrive && showArt && <OverdriveTitleTrace lower />}
-            <h2>{plan.title || "برنامه تمرینی"}</h2>
+            <h2><SheetTitle title={plan.title || "برنامه تمرینی"} /></h2>
             <div className="poster-athlete"><span>ورزشکار</span><b>{plan.athlete || "نام ورزشکار"}</b></div>
             <div className="poster-facts"><span>{plan.goal}</span><span>{plan.weeks} هفته</span><span>{fa(plan.days.length)} جلسه در هفته</span></div>
           </div>

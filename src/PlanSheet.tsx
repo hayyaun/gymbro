@@ -7,6 +7,7 @@ import { showsSheetSection } from "./sheetSections";
 import { renderSheetSections } from "./renderSheetSections";
 import ProtocolSheet from "./ProtocolSheet";
 import PosterSheet from "./PosterSheet";
+import SheetTitle from "./SheetTitle";
 export const weekdays = [
   "شنبه",
   "یکشنبه",
@@ -45,7 +46,7 @@ export default function PlanSheet({
         <div className="sheet-heading">
           <span className="sheet-eyebrow">برنامه اختصاصی تمرین</span>
           <h2>{coach || "نام مربی"}</h2>
-          <p>{plan.title || "برنامه تمرینی شما"}</p>
+          <p><SheetTitle title={plan.title || "برنامه تمرینی شما"} /></p>
           <div className="sheet-head-details">
             <strong>{plan.days.length} روز تمرین</strong>
             <span>{plan.goal}</span>

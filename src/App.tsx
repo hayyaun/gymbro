@@ -205,10 +205,7 @@ function App() {
     setExporting(true);
     try {
       await document.fonts.ready;
-      const options = {
-        pixelRatio: 3,
-        backgroundColor: "#ffffff",
-      };
+      const options = { pixelRatio: 3 };
       const template = draft.template;
       const hasPortrait = template === "forge" || (template === "pahlavan" && showsSheetSection(draft, "heroArt"));
       const url = hasPortrait
