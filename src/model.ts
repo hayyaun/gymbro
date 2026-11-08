@@ -33,6 +33,8 @@ export type Plan = {
   studentId?: string;
   goal: string;
   weeks: string;
+  startDate?: string;
+  endDate?: string;
   template: SheetTemplate;
   color: string;
   forgeAccent?: ForgeAccent;

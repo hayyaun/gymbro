@@ -14,9 +14,33 @@ function fixture() {
 test("a JSON backup round trip retains programs, palettes, private notes, payments and blocks", () => {
   const data = fixture();
   data.plans[0].forgeSlogan = "قدم به قدم\nقوی تر";
+  data.plans[0].startDate = "2026-11-08";
+  data.plans[0].endDate = "2026-12-20";
   const snapshot = makeBackup({ ...data, action: () => {} });
   assert.equal("action" in snapshot.data, false);
   assert.deepEqual(parseBackup(JSON.stringify(snapshot)).data, data);
+});
+test("optional program dates accept old plans and reject invalid ranges before restore", () => {
+  const legacy = fixture();
+  assert.deepEqual(parseBackup(JSON.stringify(makeBackup(legacy))).data, legacy);
+  for (const dates of [
+    { startDate: "2026-11-08" }, { endDate: "2026-12-20" },
+    { startDate: "", endDate: "" },
+    { startDate: "2028-02-29", endDate: "2028-02-29" },
+  ]) {
+    const data = fixture();
+    Object.assign(data.plans[0], dates);
+    assert.deepEqual(parseBackup(JSON.stringify(makeBackup(data))).data, data);
+  }
+  for (const dates of [
+    { startDate: "2026-02-30" }, { endDate: "2026-02-29" },
+    { startDate: "2026-11-08", endDate: "2026-11-07" },
+    { startDate: 123 }, { endDate: null },
+  ]) {
+    const data = fixture();
+    Object.assign(data.plans[0], dates);
+    assert.throws(() => parseBackup(JSON.stringify(makeBackup(data))));
+  }
 });
 test("invalid backups cannot partially modify the existing library", () => {
   const current = fixture(); const before = structuredClone(current);

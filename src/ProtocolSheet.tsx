@@ -1,6 +1,7 @@
 import { ArrowUpLeft, Crosshair, Dumbbell, Focus, Moon, MoveUpRight, Zap } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Plan } from "./model";
+import PlanDates from "./PlanDates";
 import { getProtocolPalette, protocolVariables } from "./protocolTheme";
 import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
@@ -53,6 +54,7 @@ export default function ProtocolSheet({
         <div><span>هدف تمرین</span><b>{plan.goal}</b></div>
         <div><span>مدت برنامه</span><b>{plan.weeks || "—"}<small> هفته</small></b></div>
       </section>
+      <PlanDates plan={plan} />
 
       {renderSheetSections(plan, {
         signal: showsSheetSection(plan, "signal") && <div className="protocol-signal-strip">

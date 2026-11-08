@@ -62,6 +62,12 @@ export const today = () => {
 export function isDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 }
+export function planDatesError({ startDate, endDate }: Pick<Plan, "startDate" | "endDate">) {
+  if (startDate && !isDate(startDate)) return "تاریخ شروع معتبر نیست";
+  if (endDate && !isDate(endDate)) return "تاریخ پایان معتبر نیست";
+  if (startDate && endDate && endDate < startDate) return "تاریخ پایان نباید قبل از تاریخ شروع باشد";
+  return "";
+}
 export const faNumber = (value: number) => value.toLocaleString("fa-IR");
 export const faDate = (value: string) => new Date(`${value.slice(0, 10)}T12:00:00`).toLocaleDateString("fa-IR");
 

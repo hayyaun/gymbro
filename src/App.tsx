@@ -44,7 +44,7 @@ import ExerciseEditor from "./ExerciseEditor";
 import BlocksWorkspace from "./BlocksWorkspace";
 import { SaveBlockDialog, InsertBlockDialog } from "./BlockDialogs";
 import { exerciseCatalog } from "./exerciseCatalog";
-import { cloneExercises, insertBlockExercises, isExercisePlaceholder, trimTrailingPlaceholders } from "./library";
+import { cloneExercises, faDate, insertBlockExercises, isDate, isExercisePlaceholder, planDatesError, trimTrailingPlaceholders } from "./library";
 import BackupWorkspace from "./BackupWorkspace";
 import "./App.css";
 import "./DashboardStudents.css";
@@ -158,6 +158,11 @@ function App() {
   };
   const persistPlan = () => {
     if (!draft) return false;
+    const dateError = planDatesError(draft);
+    if (dateError) {
+      setNotice(dateError);
+      return false;
+    }
     const cleaned = { ...draft, days: draft.days.map((day) => ({ ...day, exercises: trimTrailingPlaceholders(day.exercises) })) };
     if (
       !draft.title.trim() ||
@@ -200,6 +205,11 @@ function App() {
   const exportImage = async () => {
     const sheetNode = sheet.current;
     if (!sheetNode || !draft) return;
+    const dateError = planDatesError(draft);
+    if (dateError) {
+      setNotice(dateError);
+      return;
+    }
     setExporting(true);
     try {
       await document.fonts.ready;
@@ -695,6 +705,31 @@ function App() {
                         />
                       </label>
                     </div>
+                    <div className="two-fields">
+                      <label>
+                        تاریخ شروع (اختیاری)
+                        <input
+                          type="date"
+                          aria-label="تاریخ شروع (اختیاری)"
+                          value={draft.startDate ?? ""}
+                          max={draft.endDate || undefined}
+                          onChange={(e) => patch({ startDate: e.target.value })}
+                        />
+                        {draft.startDate && isDate(draft.startDate) && <small>{faDate(draft.startDate)}</small>}
+                      </label>
+                      <label>
+                        تاریخ پایان (اختیاری)
+                        <input
+                          type="date"
+                          aria-label="تاریخ پایان (اختیاری)"
+                          value={draft.endDate ?? ""}
+                          min={draft.startDate || undefined}
+                          onChange={(e) => patch({ endDate: e.target.value })}
+                        />
+                        {draft.endDate && isDate(draft.endDate) && <small>{faDate(draft.endDate)}</small>}
+                      </label>
+                    </div>
+                    {planDatesError(draft) && <p role="alert">{planDatesError(draft)}</p>}
                     <label>
                       تمرین هوازی
                       <textarea

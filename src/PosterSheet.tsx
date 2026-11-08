@@ -3,6 +3,7 @@ import type { Plan } from "./model";
 import { orderedSheetSections, showsSheetSection } from "./sheetSections";
 import { renderSheetSections } from "./renderSheetSections";
 import SheetTitle from "./SheetTitle";
+import PlanDates from "./PlanDates";
 import TrainingSystemLegend from "./TrainingSystemLegend";
 import WorkoutDays from "./WorkoutDays";
 import "./PosterSheet.css";
@@ -137,7 +138,7 @@ export default function PosterSheet({ plan, coach, weekdays, variant }: {
   return (
     <article className={`plan-sheet poster-sheet template-${variant}`} dir="rtl">
       {renderSheetSections(plan, {
-        heroArt: <header className={`poster-hero${showArt ? "" : " poster-hero-without-art"}${firstHeadingInHero ? " poster-hero-with-session" : ""}`}>
+        heroArt: <><header className={`poster-hero${showArt ? "" : " poster-hero-without-art"}${firstHeadingInHero ? " poster-hero-with-session" : ""}`}>
           {isOverdrive
             ? showArt && <div className="overdrive-art"><OverdriveArt /></div>
             : showArt && <PahlavanArt />}
@@ -149,7 +150,7 @@ export default function PosterSheet({ plan, coach, weekdays, variant }: {
             <div className="poster-facts"><span>{plan.goal}</span><span>{plan.weeks} هفته</span><span>{fa(plan.days.length)} جلسه در هفته</span></div>
           </div>
           {firstHeadingInHero && <h3 className="pahlavan-first-day"><b>{firstDay.name || "روز ۱"}</b></h3>}
-        </header>,
+        </header><PlanDates plan={plan} /></>,
 
         workouts: <WorkoutDays plan={plan} firstHeadingInHero={firstHeadingInHero} />,
 

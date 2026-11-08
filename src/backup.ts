@@ -1,5 +1,5 @@
 import type { Day, Exercise, Plan, PlanAppearance } from "./model";
-import { isDate, linkStudents } from "./library.ts";
+import { isDate, linkStudents, planDatesError } from "./library.ts";
 import { trainingSystemIds } from "./trainingSystems.ts";
 import { orderedSheetSections, sheetSectionOptions, sheetTemplate, sheetTemplates } from "./sheetSections.ts";
 import type { HiddenSheetSections, SheetSection, SheetSectionOrder } from "./sheetSections";
@@ -72,6 +72,9 @@ function readPlan(value: unknown): Plan {
     cardio: string(item.cardio), notes: string(item.notes), schedule, days: unique(list(item.days, readDay, 365)), updatedAt: timestamp(item.updatedAt) };
   if (item.studentId !== undefined) plan.studentId = id(item.studentId);
   if (item.forgeSlogan !== undefined) plan.forgeSlogan = string(item.forgeSlogan);
+  if (item.startDate !== undefined) plan.startDate = string(item.startDate, 10);
+  if (item.endDate !== undefined) plan.endDate = string(item.endDate, 10);
+  if (planDatesError(plan)) invalid();
   return plan;
 }
 function readPayment(value: unknown): Payment {

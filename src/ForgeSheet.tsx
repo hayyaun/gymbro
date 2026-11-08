@@ -1,6 +1,7 @@
 import { Activity, BicepsFlexed, Brain, CalendarDays, Dumbbell, Flame, HeartPulse, MoveUpRight, ShieldCheck, Target, Zap } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Plan } from "./model";
+import PlanDates from "./PlanDates";
 import { defaultForgeSlogan, forgeVariables } from "./forgeTheme";
 import WorkoutDays from "./WorkoutDays";
 import TrainingSystemLegend from "./TrainingSystemLegend";
@@ -43,6 +44,7 @@ export default function ForgeSheet({ plan, coach, weekdays }: { plan: Plan; coac
         </div>
         <div className="forge-athlete-tag"><span>ورزشکار</span><b>{plan.athlete || "نام ورزشکار"}</b><MoveUpRight size={22} /></div>
       </header>
+      <PlanDates plan={plan} />
 
       {renderSheetSections(plan, {
         pillars: showsSheetSection(plan, "pillars") && <section className="forge-pillars" aria-label="روحیه تمرین">

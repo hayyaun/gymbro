@@ -1,0 +1,19 @@
+.plan-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  padding: 10px 24px;
+  border-block: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  color: inherit;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.plan-dates > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.plan-dates time {
+  font-weight: 700;
+  direction: rtl;
+}
