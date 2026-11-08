@@ -1,6 +1,13 @@
 .mobile-header-brand {
   display: none;
 }
+.nav-label-full,
+.nav-label-compact {
+  font-weight: inherit;
+}
+.nav-label-compact {
+  display: none;
+}
 
 @media (max-width: 700px) {
   .app {
@@ -13,10 +20,10 @@
     inset: auto 0 0;
     width: 100%;
     height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
-    padding: 6px max(6px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+    padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     border: 0;
     border-top: 1px solid #e6e9ef;
-    box-shadow: 0 -4px 20px #20252c07;
+    box-shadow: 0 -4px 20px #20252c0a;
     flex-wrap: nowrap;
     z-index: 20;
   }
@@ -30,20 +37,75 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
     width: 100%;
     height: 100%;
-    gap: 2px;
+    align-items: center;
+    gap: 4px;
     margin: 0;
   }
 
   .sidebar nav button {
     min-width: 0;
+    min-height: 54px;
     justify-content: center;
     flex-direction: column;
     gap: 5px;
     padding: 5px 2px;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1.45;
     text-align: center;
-    border-radius: 9px;
+    border-radius: 16px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .sidebar nav button > svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .sidebar nav .nav-label-full {
+    display: none;
+  }
+
+  .sidebar nav .nav-label-compact {
+    display: inline;
+  }
+
+  .sidebar nav .nav-active {
+    background: #fdf0f2;
+    color: #c52d42;
+  }
+
+  .sidebar nav .nav-create {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: center;
+    width: 54px;
+    height: 54px;
+    min-height: 54px;
+    padding: 0;
+    border-radius: 50%;
+    background: #dc3045;
+    color: #fff;
+    box-shadow: 0 4px 10px #dc30452e;
+  }
+
+  .sidebar nav .nav-create > svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidebar nav .nav-create > span {
+    display: none;
+  }
+
+  .sidebar nav button:active {
+    transform: scale(0.96);
+  }
+
+  .sidebar nav button:focus-visible {
+    outline: 2px solid #c52d42;
+    outline-offset: 2px;
   }
 
   .topbar {
@@ -182,6 +244,11 @@
 }
 
 @media (max-width: 380px) {
+  .sidebar nav button {
+    font-size: 9px;
+    white-space: nowrap;
+  }
+
   .workspace-fields {
     grid-template-columns: minmax(0, 1fr);
   }

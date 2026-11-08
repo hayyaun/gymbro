@@ -300,14 +300,16 @@ function App() {
             برنامه های من <span>{fa(plans.length)}</span>
           </button>
           <button className={page === "students" ? "nav-active" : ""} aria-label="همه شاگردها" onClick={() => openStudents(null)}><Users size={19} />شاگردها <span>{fa(students.length)}</span></button>
-          <button className={page === "blocks" ? "nav-active" : ""} aria-label="بلوک های تمرینی" onClick={openBlocks}><Layers size={19} />بلوک های تمرینی</button>
+          <button className={page === "blocks" ? "nav-active" : ""} aria-label="بلوک های تمرینی" onClick={openBlocks}><Layers size={19} /><b className="nav-label-full">بلوک های تمرینی</b><b className="nav-label-compact" aria-hidden="true">بلوک ها</b></button>
           <button className={page === "backup" ? "nav-active" : ""} aria-label="پشتیبان گیری و بازیابی" onClick={() => navigate(() => { setDraft(null); setPage("backup"); setWorkspaceDirty(false); window.scrollTo({ top: 0 }); })}><Download size={19} />پشتیبان گیری</button>
           <button
+            className="nav-create"
             aria-label="ساخت برنامه جدید"
+            title="ساخت برنامه جدید"
             onClick={() => navigate(startStudentPlan)}
           >
             <Plus size={19} />
-            ساخت برنامه جدید
+            <span>ساخت برنامه جدید</span>
           </button>
         </nav>
         <section className="sidebar-students" aria-label="لیست شاگردها">
