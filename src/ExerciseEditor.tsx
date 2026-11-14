@@ -5,9 +5,10 @@ import { exerciseSearchKey } from "./exerciseCatalog";
 import { trainingSystemIds, trainingSystems } from "./trainingSystems";
 import "./ExerciseTools.css";
 
-export default function ExerciseEditor({ value, index, session, catalog, onChange, onRemove, onAddAfter, autoFocus = false }: {
+export default function ExerciseEditor({ value, index, session, catalog, onChange, onRemove, onAddAfter, autoFocus = false, invalidFieldId }: {
   value: Exercise; index: number; session: number | string; catalog: string[];
   onChange: (value: Exercise) => void; onRemove: () => void; onAddAfter: () => void; autoFocus?: boolean;
+  invalidFieldId?: string;
 }) {
   const listId = useId();
   const systemHintId = useId();
@@ -26,7 +27,8 @@ export default function ExerciseEditor({ value, index, session, catalog, onChang
   return <div className="exercise-editor">
     <div className="exercise-top"><span>{(index + 1).toLocaleString("fa-IR")}</span>
       <div className="exercise-name-picker">
-        <input role="combobox" autoFocus={autoFocus} autoComplete="off" maxLength={200}
+        <input id={`exercise-${value.id}-name`} aria-invalid={invalidFieldId === `exercise-${value.id}-name` || undefined}
+          role="combobox" autoFocus={autoFocus} autoComplete="off" maxLength={200}
           aria-label={`نام حرکت ${index + 1} جلسه ${session}`} aria-autocomplete="list" aria-expanded={open && matches.length > 0} aria-controls={listId}
           aria-activedescendant={open && selectedIndex >= 0 ? `${listId}-${selectedIndex}` : undefined}
           placeholder="حرکت را جستجو کنید یا بنویسید" value={value.name}
@@ -46,7 +48,7 @@ export default function ExerciseEditor({ value, index, session, catalog, onChang
     <div className="exercise-fields">{([
       { key: "sets", label: "ست", ref: sets, next: reps }, { key: "reps", label: "تکرار", ref: reps, next: rest },
       { key: "rest", label: "استراحت (ثانیه)", ref: rest, next: null }, { key: "group", label: "سوپرست", ref: group, next: note },
-    ] as const).map(({ key, label, ref, next }) => <label key={key}>{label}<input ref={ref} aria-label={`${label} حرکت ${index + 1} جلسه ${session}`} maxLength={60} value={value[key]} placeholder={key === "group" ? "A / B" : ""} onChange={(event) => onChange({ ...value, [key]: event.target.value })} onKeyDown={(event) => {
+    ] as const).map(({ key, label, ref, next }) => <label key={key}>{label}<input ref={ref} id={`exercise-${value.id}-${key}`} aria-invalid={invalidFieldId === `exercise-${value.id}-${key}` || undefined} aria-label={`${label} حرکت ${index + 1} جلسه ${session}`} maxLength={60} value={value[key]} placeholder={key === "group" ? "A / B" : ""} onChange={(event) => onChange({ ...value, [key]: event.target.value })} onKeyDown={(event) => {
       if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
       event.preventDefault();
       if (next) { next.current?.focus(); next.current?.select(); }

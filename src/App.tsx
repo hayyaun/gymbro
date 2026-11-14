@@ -46,6 +46,8 @@ import { SaveBlockDialog, InsertBlockDialog } from "./BlockDialogs";
 import { exerciseCatalog } from "./exerciseCatalog";
 import { cloneExercises, faDate, insertBlockExercises, isDate, isExercisePlaceholder, planDatesError, trimTrailingPlaceholders } from "./library";
 import BackupWorkspace from "./BackupWorkspace";
+import { preparePlanForSave } from "./planValidation";
+import type { PlanSaveIssue } from "./planValidation";
 import "./App.css";
 import "./DashboardStudents.css";
 import "./Workspace.css";
@@ -76,6 +78,7 @@ function App() {
   const [tab, setTab] = useState("details");
   const [collapsedDays, setCollapsedDays] = useState<Set<string>>(() => new Set());
   const [notice, setNotice] = useState("");
+  const [saveIssue, setSaveIssue] = useState<PlanSaveIssue | null>(null);
   const [pending, setPending] = useState<(() => void) | null>(null);
   const [deleting, setDeleting] = useState<Plan | null>(null);
   const [pendingWeek, setPendingWeek] = useState<{ selected: boolean[]; weekday: number } | null>(null);
@@ -102,6 +105,12 @@ function App() {
     const timer = setTimeout(() => setNotice(""), 3500);
     return () => clearTimeout(timer);
   }, [notice]);
+  useEffect(() => {
+    if (!saveIssue) return;
+    const field = document.getElementById(saveIssue.fieldId);
+    field?.focus({ preventScroll: true });
+    field?.scrollIntoView({ block: "center" });
+  }, [saveIssue]);
   const navigate = (action: () => void) => {
     if (dirty) setPending(() => action);
     else action();
@@ -111,6 +120,7 @@ function App() {
     setDraft(structuredClone(plan));
     setBaseline(fresh ? "" : JSON.stringify(plan));
     setTab("details");
+    setSaveIssue(null);
     setCollapsedDays(new Set(plan.days.slice(1).map((day) => day.id)));
     window.scrollTo({ top: 0 });
   };
@@ -126,8 +136,10 @@ function App() {
   });
   const startStudentPlan = () => open({ ...newPlan(defaultAppearance), athlete: activeStudent?.name ?? "", studentId: activeStudent?.id }, true);
   const openBlocks = () => navigate(() => { setDraft(null); setPage("blocks"); setWorkspaceDirty(false); window.scrollTo({ top: 0 }); });
-  const patch = (data: Partial<Plan>) =>
+  const patch = (data: Partial<Plan>) => {
+    setSaveIssue(null);
     setDraft((d) => (d ? { ...d, ...data } : d));
+  };
   const patchDay = (id: string, data: Partial<Day>) =>
     draft &&
     patch({
@@ -158,36 +170,25 @@ function App() {
   };
   const persistPlan = () => {
     if (!draft) return false;
-    const dateError = planDatesError(draft);
-    if (dateError) {
-      setNotice(dateError);
+    const result = preparePlanForSave(draft);
+    if ("issue" in result) {
+      const { issue } = result;
+      setTab(issue.tab);
+      if (issue.dayId) {
+        const dayId = issue.dayId;
+        setCollapsedDays((current) => {
+          const next = new Set(current);
+          next.delete(dayId);
+          return next;
+        });
+      }
+      setPending(null);
+      setNotice("");
+      setSaveIssue(issue);
       return false;
     }
-    const cleaned = { ...draft, days: draft.days.map((day) => ({ ...day, exercises: trimTrailingPlaceholders(day.exercises) })) };
-    if (
-      !draft.title.trim() ||
-      !draft.athlete.trim() ||
-      !draft.weeks ||
-      Number(draft.weeks) < 1 ||
-      Number(draft.weeks) > 52 ||
-      draft.days.length === 0 ||
-      cleaned.days.some(
-        (d) =>
-          !d.name.trim() ||
-          !d.exercises.length ||
-          d.exercises.some(
-            (e) =>
-              !e.name.trim() ||
-              !e.sets.trim() ||
-              !e.reps.trim() ||
-              !e.rest.trim(),
-          ),
-      )
-    ) {
-      setNotice("نام برنامه، ورزشکار، مدت، روزهای تمرین و مشخصات حرکت ها را کامل کنید");
-      return false;
-    }
-    const next = { ...cleaned, updatedAt: new Date().toISOString() };
+    setSaveIssue(null);
+    const next = { ...result.plan, updatedAt: new Date().toISOString() };
     try {
       save(next);
       const savedPlan = useStore.getState().plans.find((plan) => plan.id === next.id)!;
@@ -650,6 +651,8 @@ function App() {
                     <label>
                       نام برنامه
                       <input
+                        id="plan-title"
+                        aria-invalid={saveIssue?.fieldId === "plan-title" || undefined}
                         maxLength={100}
                         value={draft.title}
                         onChange={(e) => patch({ title: e.target.value })}
@@ -671,6 +674,8 @@ function App() {
                     <label>
                       نام ورزشکار
                       <input
+                        id="plan-athlete"
+                        aria-invalid={saveIssue?.fieldId === "plan-athlete" || undefined}
                         maxLength={80}
                         list="student-names"
                         value={draft.athlete}
@@ -699,6 +704,8 @@ function App() {
                       <label>
                         مدت (هفته)
                         <input
+                          id="plan-weeks"
+                          aria-invalid={saveIssue?.fieldId === "plan-weeks" || undefined}
                           type="number"
                           min="1"
                           max="52"
@@ -711,6 +718,8 @@ function App() {
                       <label>
                         تاریخ شروع (اختیاری)
                         <input
+                          id="plan-start-date"
+                          aria-invalid={saveIssue?.fieldId === "plan-start-date" || undefined}
                           type="date"
                           aria-label="تاریخ شروع (اختیاری)"
                           value={draft.startDate ?? ""}
@@ -722,6 +731,8 @@ function App() {
                       <label>
                         تاریخ پایان (اختیاری)
                         <input
+                          id="plan-end-date"
+                          aria-invalid={saveIssue?.fieldId === "plan-end-date" || undefined}
                           type="date"
                           aria-label="تاریخ پایان (اختیاری)"
                           value={draft.endDate ?? ""}
@@ -753,7 +764,7 @@ function App() {
                     <p className="week-help">هر روز انتخاب شده یک جلسه است؛ ترتیب از شنبه شروع می شود.</p>
                     <div className="weekday-picker" role="group" aria-label="روزهای تمرین">
                       {weekdays.map((d, i) => (
-                        <button key={d} type="button" aria-pressed={activeWeek(draft)[i]} onClick={() => toggleWeekday(i)}>
+                        <button key={d} id={i === 0 ? "plan-first-weekday" : undefined} type="button" aria-pressed={activeWeek(draft)[i]} onClick={() => toggleWeekday(i)}>
                           <b>{d}</b>
                           <small>{activeWeek(draft)[i] ? `جلسه ${fa(activeWeek(draft).slice(0, i + 1).filter(Boolean).length)}` : "استراحت"}</small>
                         </button>
@@ -814,10 +825,11 @@ function App() {
                           </label>
                         </div>
                         {day.exercises.map((ex, j) => <ExerciseEditor key={ex.id} value={ex} index={j} session={i + 1} catalog={catalog} autoFocus={focusExerciseId === ex.id}
+                          invalidFieldId={saveIssue?.fieldId}
                           onChange={(value) => patchDay(day.id, { exercises: day.exercises.map((item) => item.id === value.id ? value : item) })}
                           onRemove={() => patchDay(day.id, { exercises: day.exercises.filter((item) => item.id !== ex.id) })}
                           onAddAfter={() => addExerciseAfter(day, j)} />)}
-                        <button className="add-exercise" onClick={() => addExerciseAfter(day, day.exercises.length - 1)}><Plus size={16} />افزودن حرکت</button>
+                        <button id={`day-${day.id}-add-exercise`} className="add-exercise" onClick={() => addExerciseAfter(day, day.exercises.length - 1)}><Plus size={16} />افزودن حرکت</button>
                         </div>
                       </>}</SortableSession>
                     ))}
@@ -897,6 +909,10 @@ function App() {
           </div>
         )}
       </main>
+      {!notice && draft && saveIssue && <div className="toast" role="alert">
+        {saveIssue.message}
+        <button aria-label="بستن پیام خطا" onClick={() => setSaveIssue(null)}><X size={18} /></button>
+      </div>}
       {notice && (
         <div className="toast" role="status">
           {notice}
