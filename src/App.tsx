@@ -40,6 +40,8 @@ import { studentKey, studentsFromPlans } from "./students";
 import StudentsWorkspace from "./StudentsWorkspace";
 import type { WorkspaceHandle } from "./StudentsWorkspace";
 import Modal from "./Dialog";
+import ImageExportDialog from "./ImageExportDialog";
+import type { ExportedImage } from "./ImageExportDialog";
 import ExerciseEditor from "./ExerciseEditor";
 import BlocksWorkspace from "./BlocksWorkspace";
 import { SaveBlockDialog, InsertBlockDialog } from "./BlockDialogs";
@@ -83,6 +85,7 @@ function App() {
   const [deleting, setDeleting] = useState<Plan | null>(null);
   const [pendingWeek, setPendingWeek] = useState<{ selected: boolean[]; weekday: number } | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [exportedImage, setExportedImage] = useState<ExportedImage | null>(null);
   const [loginName, setLoginName] = useState("");
   const [storageError, setStorageError] = useState("");
   const sheet = useRef<HTMLDivElement>(null);
@@ -220,8 +223,18 @@ function App() {
       const url = hasPortrait
         ? await exportPortraitPng(sheetNode, template, options)
         : await toPng(sheetNode, options);
+      if (url === "data:,") throw new Error("Workout sheet export could not be encoded");
+      const filename = `${draft.athlete || "gymbro"}-workout.png`;
+      // iOS Home Screen apps use a preview and a fresh tap to open the native share sheet.
+      if ((navigator as Navigator & { standalone?: boolean }).standalone === true) {
+        const blob = await (await fetch(url)).blob();
+        if (sheet.current === sheetNode) {
+          setExportedImage({ url, file: new File([blob], filename, { type: "image/png" }) });
+        }
+        return;
+      }
       const a = document.createElement("a");
-      a.download = `${draft.athlete || "gymbro"}-workout.png`;
+      a.download = filename;
       a.href = url;
       a.click();
       setNotice("خروجی تصویر آماده شد");
@@ -909,6 +922,7 @@ function App() {
           </div>
         )}
       </main>
+      {exportedImage && <ImageExportDialog image={exportedImage} onClose={() => setExportedImage(null)} />}
       {!notice && draft && saveIssue && <div className="toast" role="alert">
         {saveIssue.message}
         <button aria-label="بستن پیام خطا" onClick={() => setSaveIssue(null)}><X size={18} /></button>

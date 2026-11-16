@@ -1,0 +1,7 @@
+.export-image-preview {
+  display: block;
+  width: 100%;
+  max-height: 52dvh;
+  object-fit: contain;
+  object-position: top;
+}
