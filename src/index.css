@@ -3,13 +3,36 @@
 @import "@fontsource/vazirmatn/600.css";
 @import "@fontsource/vazirmatn/700.css";
 @import "@fontsource/vazirmatn/800.css";
+
+:root {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --app-canvas: #111318;
+    --app-surface: #1a1d24;
+    --app-raised: #232833;
+    --app-line: #343b48;
+    --app-text: #eff1f6;
+    --app-muted: #adb5c3;
+    --app-selected: #38242d;
+    --app-accent-text: #ff899b;
+    --app-accent-line: #df6076;
+    --app-warning-text: #f1bd77;
+    --app-success-text: #8cddaf;
+    --app-success-bg: #20382e;
+    --app-selection: #713743;
+  }
+}
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  background: #f7f8fa;
-  color: #20252c;
+  background: var(--app-canvas, #f7f8fa);
+  color: var(--app-text, #20252c);
   font-family: Vazirmatn, Arial, sans-serif;
   font-size: 14px;
 }
@@ -40,11 +63,11 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 1px solid #dfe2e7;
-  background: white;
+  border: 1px solid var(--app-line, #dfe2e7);
+  background: var(--app-surface, white);
   border-radius: 8px;
   padding: 10px 12px;
-  color: #252a32;
+  color: var(--app-text, #252a32);
 }
 textarea {
   resize: vertical;
@@ -70,7 +93,7 @@ small {
   font-weight: 400;
 }
 ::selection {
-  background: #f5c5ce;
+  background: var(--app-selection, #f5c5ce);
 }
 
 /* Keep native select semantics while aligning the closed control with our fields. */
@@ -87,10 +110,10 @@ select {
   transition: border-color 150ms, box-shadow 150ms;
 }
 select:hover {
-  border-color: #b8c0cc;
+  border-color: var(--app-line, #b8c0cc);
 }
 select:focus-visible {
-  border-color: #d92f44;
+  border-color: var(--app-accent-line, #d92f44);
   outline: 2px solid #d92f4426;
   outline-offset: 2px;
 }

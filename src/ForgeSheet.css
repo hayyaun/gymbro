@@ -481,8 +481,8 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  background: #fff;
-  border: 1px solid #dfe2e7;
+  background: var(--app-surface, #fff);
+  border: 1px solid var(--app-line, #dfe2e7);
   padding: 12px;
   border-radius: 8px;
   font-size: 11px;
@@ -491,13 +491,13 @@
 }
 .appearance-modes button.chosen,
 .appearance-palettes button.chosen {
-  border-color: #d92f44;
-  background: #fff8f9;
+  border-color: var(--app-accent-line, #d92f44);
+  background: var(--app-selected, #fff8f9);
 }
 .appearance-modes button > svg:last-child {
   margin-inline-start: auto;
   opacity: 0;
-  color: #d92f44;
+  color: var(--app-accent-text, #d92f44);
 }
 .appearance-modes button.chosen > svg:last-child {
   opacity: 1;
@@ -512,7 +512,7 @@
 .appearance-note {
   font-size: 10px;
   line-height: 1.9;
-  color: #9298a2;
+  color: var(--app-muted, #9298a2);
   margin: 16px 0 0;
 }
 .preview-forge {

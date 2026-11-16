@@ -22,7 +22,7 @@
     height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
     padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     border: 0;
-    border-top: 1px solid #e6e9ef;
+    border-top: 1px solid var(--app-line, #e6e9ef);
     box-shadow: 0 -4px 20px #20252c0a;
     flex-wrap: nowrap;
     z-index: 20;
@@ -72,8 +72,8 @@
   }
 
   .sidebar nav .nav-active {
-    background: #fdf0f2;
-    color: #c52d42;
+    background: var(--app-selected, #fdf0f2);
+    color: var(--app-accent-text, #c52d42);
   }
 
   .sidebar nav .nav-create {
@@ -173,7 +173,7 @@
   .payment-form {
     padding: 16px 0 0;
     border: 0;
-    border-top: 1px solid #eed8dd;
+    border-top: 1px solid var(--app-line, #eed8dd);
     border-radius: 0;
   }
 
