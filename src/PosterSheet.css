@@ -299,12 +299,12 @@
 .poster-sheet .system-drop-set { color: #9a2848; }
 .poster-sheet .system-rest-pause { color: #0f7373; }
 .poster-sheet .system-fst-7 { color: #69389f; }
-.poster-sheet .sheet-days-two-columns .sheet-day:not(.sheet-day-wide) h3 { min-height: 42px; }
-.poster-sheet .sheet-days-two-columns .sheet-day:not(.sheet-day-wide) h3 > b { font-size: 18px; flex-basis: 43%; padding-inline-start: 8px; }
-.poster-sheet .sheet-days-two-columns .sheet-day:not(.sheet-day-wide) :is(th, td) { font-size: 13px; padding: 7px 6px; }
-.poster-sheet .sheet-days-two-columns .sheet-day:not(.sheet-day-wide) .exercise-line { gap: 4px; }
-.poster-sheet .sheet-days-two-columns .sheet-day:not(.sheet-day-wide) .training-system-mark { width: 18px; height: 18px; flex-basis: 18px; }
-.poster-sheet .sheet-days-two-columns .sheet-day:not(.sheet-day-wide) .training-system-mark svg { width: 16px; height: 16px; }
+.poster-sheet .sheet-days-two-columns .sheet-day h3 { min-height: 42px; }
+.poster-sheet .sheet-days-two-columns .sheet-day h3 > b { font-size: 18px; flex-basis: 43%; padding-inline-start: 8px; }
+.poster-sheet .sheet-days-two-columns .sheet-day :is(th, td) { font-size: 13px; padding: 7px 6px; }
+.poster-sheet .sheet-days-two-columns .exercise-line { gap: 4px; }
+.poster-sheet .sheet-days-two-columns .training-system-mark { width: 18px; height: 18px; flex-basis: 18px; }
+.poster-sheet .sheet-days-two-columns .training-system-mark svg { width: 16px; height: 16px; }
 .poster-sheet .sheet-day .superset { background: var(--poster-paper); }
 .poster-sheet .sheet-day .superset-label td {
   color: var(--poster-ink);
