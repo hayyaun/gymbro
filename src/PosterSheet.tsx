@@ -133,7 +133,7 @@ export default function PosterSheet({ plan, coach, weekdays, variant }: {
   const firstDay = plan.days[0];
   const order = orderedSheetSections(plan);
   const workoutsFollowHero = order.indexOf("workouts") === order.indexOf("heroArt") + 1;
-  const firstHeadingInHero = workoutsFollowHero && !isOverdrive && showArt && !!firstDay && plan.days.length <= 3 && !firstDay.focus;
+  const firstHeadingInHero = workoutsFollowHero && !isOverdrive && showArt && !!firstDay && plan.days.length <= 2 && !firstDay.focus;
 
   return (
     <article className={`plan-sheet poster-sheet template-${variant}`} dir="rtl">

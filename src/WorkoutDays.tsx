@@ -4,9 +4,9 @@ import { TrainingSystemMark } from "./TrainingSystemLegend";
 
 export default function WorkoutDays({ plan, firstHeadingInHero = false }: { plan: Plan; firstHeadingInHero?: boolean }) {
   return (
-    <div className={`sheet-days${plan.days.length > 3 ? " sheet-days-two-columns" : ""}`}>
+    <div className={`sheet-days${plan.days.length >= 3 ? " sheet-days-two-columns" : ""}`}>
       {plan.days.map((day, i) => (
-        <section className="sheet-day" key={day.id} aria-label={firstHeadingInHero && i === 0 ? day.name || "روز ۱" : undefined}>
+        <section className={`sheet-day${plan.days.length === 3 && i === 2 ? " sheet-day-wide" : ""}`} key={day.id} aria-label={firstHeadingInHero && i === 0 ? day.name || "روز ۱" : undefined}>
           {(!firstHeadingInHero || i > 0) && (
             <h3>
               <b data-day-number={String(i + 1).padStart(2, "0")}>{day.name || `روز ${i + 1}`}</b>

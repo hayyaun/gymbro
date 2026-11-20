@@ -806,6 +806,9 @@
 .sheet-days-two-columns {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.sheet-day-wide {
+  grid-column: 1 / -1;
+}
 .sheet-day {
   border: 1.3px solid #24252a;
   border-radius: 6px;
