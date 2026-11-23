@@ -1605,3 +1605,55 @@
   left: 8px;
   top: 8px;
 }
+
+.app,
+.login {
+  padding-top: var(--pwa-update-height, 0px);
+}
+.sidebar {
+  top: var(--pwa-update-height, 0px);
+}
+.pwa-update-banner {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: calc(12px + env(safe-area-inset-top)) 24px 12px;
+  background: #fff3e2;
+  color: #703d08;
+  border-bottom: 1px solid #edcb98;
+  box-shadow: 0 3px 12px #703d0810;
+}
+.pwa-update-banner > svg {
+  flex-shrink: 0;
+}
+.pwa-update-banner > div {
+  flex: 1;
+  min-width: 0;
+}
+.pwa-update-banner strong {
+  font-size: 13px;
+}
+.pwa-update-banner p {
+  margin: 3px 0 0;
+  color: #805829;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.pwa-update-banner .primary {
+  flex-shrink: 0;
+  width: auto;
+  justify-content: center;
+}
+@media (max-width: 500px) {
+  .pwa-update-banner {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding-inline: 16px;
+  }
+  .pwa-update-banner .primary {
+    width: 100%;
+  }
+}

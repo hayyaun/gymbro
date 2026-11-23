@@ -5,6 +5,11 @@ import { VitePWA } from "vite-plugin-pwa";
 const base = "/gymbro/";
 export default defineConfig({
   base,
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    strictPort: true,
+  },
   plugins: [
     react(),
     VitePWA({
